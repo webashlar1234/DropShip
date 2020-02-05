@@ -1,0 +1,50 @@
+﻿
+<link href="~/Content/custom/product-management.css" rel="stylesheet" />
+<script src="~/Scripts/custom/ProductManagement.js"></script>
+<section class="mt-5">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <p class="tbl-title">
+                    Operations Management - Product Management
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="mt-3">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-6">
+                <label for="exampleFormControlSelect1">Product Category</label>
+                @if (ViewBag.AliCategory != null)
+                {
+                    @Html.DropDownList("ddlProductCat", new SelectList(ViewBag.AliCategory, "CategoryID", "Name"), "All", new { @class = "selectpicker form-control", @title = "Product Category", @data_live_search = "true" })
+                }
+                else
+                {
+                    @Html.DropDownList("ddlProductCat", new List<SelectListItem> { new SelectListItem { Text = "", Value = "" }, }, new { @class = "selectpicker form-control" })
+                }
+            </div>
+            <div class="col-lg-6">
+                <label for="exampleFormControlSelect1">Bulk Actions</label>
+                <select class="selectpicker form-control" title="Select" id="ddlProductBulkAction">
+                    <option value="1">Pick selected products</option>
+                    @*<option>Delete selected products</option>
+                        <option>Action</option>
+                        <option>Actions</option>
+                        <option>Actions</option>*@
+                </select>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="mt-3">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12 table-responsive  mb-5">
+                <table id="ProductsDt" class="display" style="width:100%"></table>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,82 @@
+@media (min-width: 1440px) and (max-width: 2560px) {
+    .footer {
+        padding-top: 20px;
+        background-color: #000000;
+        position: fixed;
+        bottom: 0px;
+        left: 0px;
+        right: 0px;
+        width: 100%;
+    }
+    body {
+        /*margin-bottom: 8%;*/
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .main-features .media-body h5 {
+        font-size: 21px;
+    }
+    .main-header {
+        font-size: 30px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .navbar {
+        justify-content: center !important;
+        padding: 10px;
+    }
+    .section-header {
+        font-size: 32px;
+    }
+    .main-header {
+        font-size: 25px;
+    }
+}
+
+@media (min-width: 320px) and (max-width: 425px) {
+    .section-padding {
+        padding-top: 3rem;
+        padding-bottom: 3rem;
+    }
+    .navbar {
+        justify-content: left !important;
+        padding: 10px;
+    }
+    .navbar-toggler {
+        margin-left: 25px;
+    }
+    .navbar-expand-sm .navbar-nav .nav-link {
+        padding: 7px 30px;
+        color: #fff;
+    }
+    .footer-nav li a {
+        padding: 5px 1rem;
+    }
+    .section-header {
+        font-size: 32px;
+    }
+    .main-header {
+        font-size: 25px;
+    }
+}
+
+@media all and (max-width: 500px) {
+    .testim .arrow {
+        font-size: 1.5em;
+    }
+    .testim .cont div p {
+        line-height: 25px;
+    }
+}
+
+.login-body {
+    min-height: 505px;
+}
+
+@media all and (max-width: 300px) {
+    body {
+        font-size: 14px;
+    }
+}

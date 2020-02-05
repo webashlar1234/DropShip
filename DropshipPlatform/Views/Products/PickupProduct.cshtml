@@ -1,0 +1,101 @@
+﻿
+@{
+    ViewBag.Title = "PickupProduct";
+    <script src="~/Scripts/custom/PickupProduct.js"></script>
+    <link href="~/Content/custom/pickup-product-management.css" rel="stylesheet" />
+
+    <style>
+        .innertable {
+            margin-left: 2%;
+            width: 98%;
+            border: 1px lightgray solid;
+        }
+
+        table.innertable tbody tr {
+            /*background: #f1f1f1;*/
+        }
+        
+        table.display tbody {
+            max-height: 80vh;
+            overflow: auto;
+        }
+
+        select.error, textarea.error, input.error {
+            color: #FF0000;
+        }
+        input.error {
+            border-color: red;
+            border-width: 0.5px;
+        }
+        .updatedPrice, .pickedInvetory{
+            width:70px;
+        }
+        
+    </style>
+}
+
+<section class="mt-2">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <p class="tbl-title">
+                    Pick up Products
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="mt-2">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-3">
+                <label for="exampleFormControlSelect1">Product Category</label>
+                @if (ViewBag.AliCategory != null)
+                {
+                    @Html.DropDownList("ddlProductCat", new SelectList(ViewBag.AliCategory, "CategoryID", "Name"), "All", new { @class = "selectpicker form-control", @title = "Product Category", @data_live_search = "true" })
+                }
+                else
+                {
+                    @Html.DropDownList("ddlProductCat", new List<SelectListItem> { new SelectListItem { Text = "", Value = "" }, }, new { @class = "selectpicker form-control" })
+                }
+            </div>
+            <div class="col-lg-9 text-right">
+                <button id="btnSave" disabled type="button" class="btn btn-sm btn-primary" onclick="SavePickedProducts()">Save</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<form method="post" id="frmPickedProduct">
+    <section class="mt-3">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-12  mb-5 table-responsive">
+                    <table id="TblPickedProduct" class="display TablePickupProducts" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th scope="col">Product Title</th>
+                                <th scope="col">Category</th>
+                                <th scope="col">Cost (USD)</th>
+                                <th scope="col">Inventory</th>
+                                <th scope="col">Shipping Weight (KG)</th>
+                                <th scope="col">Manufature Name</th>
+                                <th scope="col">Origin</th>
+                                <th scope="col">
+                                    <label class="rememberme mt-checkbox">
+                                        <input type="checkbox" id="chkAllProduct" name="remember" value="0">
+                                        <span></span>&nbsp;Check All
+                                    </label>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+  </form>

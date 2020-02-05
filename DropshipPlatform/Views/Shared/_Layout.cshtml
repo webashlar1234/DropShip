@@ -1,0 +1,122 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Membership Management </title>
+
+    <link rel="shortcut icon" type="img/png" href="~/Images/logo/favicon.png" />
+    @Styles.Render("~/layoutContent/css")
+
+    @Scripts.Render("~/layoutBundles/jquery")
+    @RenderSection("scripts", required: false)
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+</head>
+<body>
+
+    <section class="header_main">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-2 col-sm-3 col-3 p-0">
+                    <div class="logo_container">
+                        <div class="logo">
+                            <a href="index.html"><img src="~/Images/logo.png" width="100%"></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-10">
+                    <div class="top_bar_content pull-right pt-2">
+                        <div class="top_bar_user">
+                            <div class="user_icon"><i class="fa fa-user-o pt-1" aria-hidden="true"></i></div>
+                            <div><b><a href="#">Lorem Ipsum</a></b></div>
+                            <div><a href="#">Logout</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="menu-header">
+        <div class="container-fluid">
+            <div class="row">
+                <nav class="navbar navbar-expand-lg navbar-dark navbar-heder">
+                    <div class="container-fluid">
+                        <button type="button" data-toggle="collapse" data-target="#navbarContent" aria-controls="navbars" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div id="navbarContent" class="collapse navbar-collapse">
+                            <ul class="navbar-nav mr-auto">
+                                <!-- End Level one -->
+                                <li class="nav-item"><a href="@Url.Action("Index", "Category")" class="nav-link">Category Mapping</a></li>
+                                <li class="nav-item"><a href="user-management.html" class="nav-link">User Management</a></li>
+                                <li class="nav-item"><a href="#" class="nav-link">Fulfillment</a></li>
+                                <li class="nav-item"><a href="membership-management.html" class="nav-link">Membership</a></li>
+                                <!-- Level one dropdown -->
+                                <li class="nav-item dropdown">
+                                    <a id="dropdownMenu1" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">Product</a>
+                                    <ul aria-labelledby="dropdownMenu1" class="dropdown-menu border-0 shadow">
+                                        <li><a href="@Url.Action("PickupProduct", "Products")" class="dropdown-item">Pick up Products</a></li>
+                                        <li><a href="store-order-management.html" class="dropdown-item">Store Orders</a></li>
+
+                                        <li class="dropdown-divider"></li>
+
+                                        <!-- Level two dropdown-->
+                                        <li class="nav-item dropdown">
+                                            <a id="dropdownMenu1" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">Product</a>
+                                            <ul aria-labelledby="dropdownMenu1" class="dropdown-menu border-0 shadow">
+                                                <li><a href="@Url.Action("PickupProduct", "Products")" class="dropdown-item">Pick up Products</a></li>
+                                                <li><a href="store-order-management.html" class="dropdown-item">Store Orders</a></li>
+
+                                                <li class="dropdown-divider"></li>
+
+
+                                            </ul>
+                                        </li>
+                                        <!-- End Level two -->
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </section>
+    @RenderBody()
+
+    <section class="footer mt-1">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col col-lg-12 col-sm-12">
+                    <ul class="nav footer-nav justify-content-center">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Features</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Testimonials</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Contact</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Download</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col col-lg-6 col-sm-12">
+                    <div class="footer-contaent">
+                        <p>1717 Harrison St, San Francisco, CA 94103, USA</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>

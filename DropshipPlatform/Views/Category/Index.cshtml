@@ -1,0 +1,32 @@
+﻿<script src="~/Scripts/custom/CategoryMapping.js"></script>
+<link href="~/Content/custom/CategoryMapping.css" rel="stylesheet" />
+
+<section class="mt-5">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <p class="tbl-title">
+                    Category Mapping
+                </p>
+            </div>
+            <div class="col-lg-3">
+                <select id="category-filter" class="form-control">
+                    <option value="all">All</option>
+                    <option value="mapped">Mapped</option>
+                    <option value="unmapped">UnMapped</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="mt-3">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12 table-responsive  mb-5">
+                <table id="categoryMappingDT" class="display" style="width:100%"></table>
+            </div>
+        </div>
+    </div>
+</section>
+

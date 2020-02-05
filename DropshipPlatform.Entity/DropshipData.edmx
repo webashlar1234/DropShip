@@ -1,0 +1,888 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="DropshipDataModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="AliExpressCategories">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AliExpressCategoryID" Type="bigint" Nullable="false" />
+          <Property Name="AliExpressCategoryName" Type="nvarchar" MaxLength="150" />
+          <Property Name="AliExpressParentCategoryID" Type="bigint" />
+          <Property Name="AliExpressCategoryIsLeaf" Type="bit" Nullable="false" />
+          <Property Name="AliExpressCategoryLevel" Type="bigint" Nullable="false" />
+          <Property Name="AliCategoryFullPath" Type="nchar" MaxLength="150" />
+        </EntityType>
+        <EntityType Name="AliExpressOrderItems">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AliExpressProductID" Type="nvarchar" MaxLength="50" />
+          <Property Name="ProductID" Type="int" />
+          <Property Name="ProductName" Type="nvarchar" MaxLength="250" />
+          <Property Name="Price" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="CurrencyCode" Type="nvarchar" MaxLength="50" />
+          <Property Name="ItemCreatedBy" Type="int" />
+          <Property Name="ItemCreatedWhen" Type="datetime" />
+          <Property Name="ItemModifyBy" Type="int" />
+          <Property Name="ItemModifyWhen" Type="datetime" />
+        </EntityType>
+        <EntityType Name="AliExpressOrders">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="BuyerLoginId" Type="nvarchar" MaxLength="50" />
+          <Property Name="AliExpressSellerID" Type="nvarchar" MaxLength="50" />
+          <Property Name="DeliveryCountry" Type="nvarchar" MaxLength="50" />
+          <Property Name="PaymentStatus" Type="int" />
+          <Property Name="TrackingNo" Type="nvarchar" MaxLength="50" />
+          <Property Name="ShippingWeight" Type="nvarchar" MaxLength="50" />
+          <Property Name="OrderAmount" Type="nvarchar" MaxLength="50" />
+          <Property Name="CurrencyCode" Type="nvarchar" MaxLength="50" />
+          <Property Name="OrderStatus" Type="nvarchar" MaxLength="50" />
+          <Property Name="NoOfOrderItems" Type="int" />
+          <Property Name="ItemCreatedBy" Type="int" />
+          <Property Name="ItemCreatedWhen" Type="datetime" />
+          <Property Name="ItemModifyBy" Type="int" />
+          <Property Name="ItemModifyWhen" Type="datetime" />
+        </EntityType>
+        <EntityType Name="ApplicationLogs">
+          <Key>
+            <PropertyRef Name="ApplicationLogID" />
+          </Key>
+          <Property Name="ApplicationLogID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserID" Type="int" />
+          <Property Name="ApplicationName" Type="nvarchar" MaxLength="50" />
+          <Property Name="IP" Type="nvarchar" MaxLength="50" />
+          <Property Name="Agent" Type="nvarchar(max)" />
+          <Property Name="ErrorMsg" Type="nvarchar(max)" />
+          <Property Name="ErrorDescription" Type="nvarchar(max)" />
+          <Property Name="ItemCreatedBy" Type="int" />
+          <Property Name="ItemCreatedOn" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Category">
+          <Key>
+            <PropertyRef Name="CategoryID" />
+          </Key>
+          <Property Name="CategoryID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="500" />
+          <Property Name="CategoryLevel" Type="int" />
+          <Property Name="ParentCategoryID" Type="nchar" MaxLength="10" />
+          <Property Name="IsLeafCategory" Type="bit" />
+          <Property Name="AliExpressCategoryName" Type="nvarchar" MaxLength="500" />
+          <Property Name="AliExpressCategoryId" Type="bigint" />
+          <Property Name="ItemCreatedBy" Type="int" />
+          <Property Name="ItemCreatedWhen" Type="datetime" />
+          <Property Name="ItemModifyBy" Type="int" />
+          <Property Name="ItemModifyWhen" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Country">
+          <Key>
+            <PropertyRef Name="CountryID" />
+          </Key>
+          <Property Name="CountryID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="150" />
+          <Property Name="CountryCode" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="MembershipTypes">
+          <Key>
+            <PropertyRef Name="MembershipID" />
+          </Key>
+          <Property Name="MembershipID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Type" Type="nvarchar" MaxLength="50" />
+          <Property Name="Price" Type="int" />
+          <Property Name="PickLimit" Type="int" />
+          <Property Name="Description" Type="nvarchar(max)" />
+          <Property Name="CycleType" Type="int" />
+          <Property Name="ItemCreatedBy" Type="int" />
+          <Property Name="ItemCreatedWhen" Type="datetime" />
+          <Property Name="ItemModifyBy" Type="int" />
+          <Property Name="ItemModifyWhen" Type="datetime" />
+          <Property Name="OrderLimit" Type="int" />
+        </EntityType>
+        <EntityType Name="Orders">
+          <Key>
+            <PropertyRef Name="OrderID" />
+          </Key>
+          <Property Name="OrderID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AliExpressOrderID" Type="nvarchar" MaxLength="150" />
+          <Property Name="DeliveryCountry" Type="nvarchar" MaxLength="50" />
+          <Property Name="PaymentStatus" Type="int" />
+          <Property Name="AliExpressSellerID" Type="int" />
+          <Property Name="TrackingNo" Type="nvarchar" MaxLength="50" />
+          <Property Name="ShippingWeight" Type="nvarchar" MaxLength="50" />
+          <Property Name="OrderAmount" Type="nvarchar" MaxLength="50" />
+          <Property Name="OrderStatus" Type="nvarchar" MaxLength="50" />
+          <Property Name="ItemCreatedBy" Type="int" />
+          <Property Name="ItemCreatedWhen" Type="datetime" />
+          <Property Name="ItemModifyBy" Type="int" />
+          <Property Name="ItemModifyWhen" Type="datetime" />
+        </EntityType>
+        <EntityType Name="PaymentProfile">
+          <Key>
+            <PropertyRef Name="PaymentProfileID" />
+          </Key>
+          <Property Name="PaymentProfileID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserID" Type="int" />
+          <Property Name="CreditCardNumber" Type="nvarchar" MaxLength="50" />
+          <Property Name="CreditCardType" Type="nvarchar" MaxLength="50" />
+          <Property Name="ExpiryDate" Type="datetime" />
+          <Property Name="NameOnCard" Type="nvarchar" MaxLength="50" />
+          <Property Name="IsDefault" Type="bit" />
+          <Property Name="ItemCreatedBy" Type="int" />
+          <Property Name="ItemCreatedWhen" Type="datetime" />
+          <Property Name="ItemModifyBy" Type="int" />
+          <Property Name="ItemModifyWhen" Type="datetime" />
+          <Property Name="IsAgreedPaymentPolicy" Type="bit" />
+          <Property Name="AgreedPaymentPolicyTime" Type="datetime" />
+          <Property Name="AuthorizeNetProfileId" Type="bigint" />
+        </EntityType>
+        <EntityType Name="PickedProduct">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ProductId" Type="bigint" Nullable="false" />
+          <Property Name="SKU" Type="nchar" MaxLength="10" Nullable="false" />
+          <Property Name="UpdatedInventory" Type="bigint" />
+          <Property Name="UpdatedPrice" Type="bigint" />
+          <Property Name="CreatedBy" Type="int" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="UpdatedBy" Type="int" />
+          <Property Name="UpdatedDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="ProductMedia">
+          <Key>
+            <PropertyRef Name="ProductMediaID" />
+          </Key>
+          <Property Name="ProductMediaID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ProductID" Type="int" />
+          <Property Name="MediaType" Type="bit" />
+          <Property Name="MediaExt" Type="nvarchar" MaxLength="50" />
+          <Property Name="MediaLink" Type="nvarchar(max)" />
+          <Property Name="IsMainImage" Type="bit" />
+          <Property Name="ItemCreatedBy" Type="int" />
+          <Property Name="ItemCreatedWhen" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Products">
+          <Key>
+            <PropertyRef Name="ProductID" />
+          </Key>
+          <Property Name="ProductID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Title" Type="nvarchar" MaxLength="500" />
+          <Property Name="CategoryID" Type="int" />
+          <Property Name="SellingPrice" Type="float" />
+          <Property Name="SellingPriceCurrency" Type="nvarchar" MaxLength="50" />
+          <Property Name="OriginalProductID" Type="nvarchar" MaxLength="50" />
+          <Property Name="Brand" Type="nvarchar" MaxLength="250" />
+          <Property Name="Description" Type="nvarchar(max)" />
+          <Property Name="Inventory" Type="nvarchar" MaxLength="50" />
+          <Property Name="ManufacturerName" Type="nvarchar" MaxLength="150" />
+          <Property Name="ExternalCode" Type="nvarchar" MaxLength="50" />
+          <Property Name="ExternalCodeType" Type="nvarchar" MaxLength="50" />
+          <Property Name="ParentProductID" Type="int" />
+          <Property Name="NoOfCustomerReviews" Type="int" />
+          <Property Name="CustomerReviewRating" Type="int" />
+          <Property Name="NetWeight" Type="nvarchar" MaxLength="50" />
+          <Property Name="ShippingWeight" Type="nvarchar" MaxLength="50" />
+          <Property Name="CountryOfOrigin" Type="nvarchar" MaxLength="50" />
+          <Property Name="Size" Type="nvarchar" MaxLength="50" />
+          <Property Name="Color" Type="nvarchar" MaxLength="50" />
+          <Property Name="SourceWebsite" Type="nvarchar(max)" />
+          <Property Name="IsActive" Type="bit" />
+          <Property Name="ItemCreatedBy" Type="int" />
+          <Property Name="ItemCreatedWhen" Type="datetime" />
+          <Property Name="ItemModifyBy" Type="int" />
+          <Property Name="ItemModifyWhen" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Roles">
+          <Key>
+            <PropertyRef Name="RoleID" />
+          </Key>
+          <Property Name="RoleID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="150" />
+          <Property Name="ItemCreatedBy" Type="int" />
+          <Property Name="ItemCreatedWhen" Type="datetime" />
+          <Property Name="ItemModifyBy" Type="int" />
+          <Property Name="ItemModifyWhen" Type="datetime" />
+        </EntityType>
+        <EntityType Name="SellersPickedProducts">
+          <Key>
+            <PropertyRef Name="SellersPickedID" />
+          </Key>
+          <Property Name="SellersPickedID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserID" Type="int" />
+          <Property Name="ParentProductID" Type="int" />
+          <Property Name="AliExpressProductID" Type="nvarchar" MaxLength="50" />
+          <Property Name="ItemCreatedBy" Type="int" />
+          <Property Name="ItemCreatedWhen" Type="datetime" />
+          <Property Name="ItemModifyBy" Type="int" />
+          <Property Name="ItemModifyWhen" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Subscriptions">
+          <Key>
+            <PropertyRef Name="SubscriptionID" />
+          </Key>
+          <Property Name="SubscriptionID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="MembershipID" Type="int" />
+          <Property Name="UserID" Type="int" />
+          <Property Name="NextBillDate" Type="datetime" />
+          <Property Name="MembershipExpiredDate" Type="datetime" />
+          <Property Name="MembershipCreatedBy" Type="int" />
+          <Property Name="MembershipCreatedOn" Type="datetime" />
+          <Property Name="MembershipModifyBy" Type="int" />
+          <Property Name="MembershipModifyOn" Type="datetime" />
+        </EntityType>
+        <EntityType Name="User_Roles">
+          <Key>
+            <PropertyRef Name="UserRoleID" />
+          </Key>
+          <Property Name="UserRoleID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserID" Type="int" Nullable="false" />
+          <Property Name="RoleID" Type="int" Nullable="false" />
+          <Property Name="ItemCreatedBy" Type="int" />
+          <Property Name="ItemCreatedWhen" Type="datetime" />
+          <Property Name="ItemModifyBy" Type="int" />
+          <Property Name="ItemModifyWhen" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Users">
+          <Key>
+            <PropertyRef Name="UserID" />
+          </Key>
+          <Property Name="UserID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="250" />
+          <Property Name="EmailID" Type="nvarchar" MaxLength="150" />
+          <Property Name="Phone" Type="nvarchar" MaxLength="50" />
+          <Property Name="CountryID" Type="int" />
+          <Property Name="Password" Type="nvarchar" MaxLength="150" />
+          <Property Name="AliExpressSellerID" Type="nvarchar" MaxLength="150" />
+          <Property Name="IsActive" Type="bit" />
+          <Property Name="ItemCreatedBy" Type="int" />
+          <Property Name="ItemCreatedWhen" Type="datetime" />
+          <Property Name="ItemModifyBy" Type="int" />
+          <Property Name="ItemModifyWhen" Type="datetime" />
+          <Property Name="IsPolicyAccepted" Type="bit" />
+        </EntityType>
+        <EntityContainer Name="DropshipDataModelStoreContainer">
+          <EntitySet Name="AliExpressCategories" EntityType="Self.AliExpressCategories" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AliExpressOrderItems" EntityType="Self.AliExpressOrderItems" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AliExpressOrders" EntityType="Self.AliExpressOrders" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ApplicationLogs" EntityType="Self.ApplicationLogs" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Category" EntityType="Self.Category" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Country" EntityType="Self.Country" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MembershipTypes" EntityType="Self.MembershipTypes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Orders" EntityType="Self.Orders" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PaymentProfile" EntityType="Self.PaymentProfile" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PickedProduct" EntityType="Self.PickedProduct" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ProductMedia" EntityType="Self.ProductMedia" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Products" EntityType="Self.Products" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Roles" EntityType="Self.Roles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SellersPickedProducts" EntityType="Self.SellersPickedProducts" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Subscriptions" EntityType="Self.Subscriptions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="User_Roles" EntityType="Self.User_Roles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="DropshipDataModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="DropshipDataEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="AliExpressCategories" EntityType="DropshipDataModel.AliExpressCategory" />
+          <EntitySet Name="AliExpressOrderItems" EntityType="DropshipDataModel.AliExpressOrderItem" />
+          <EntitySet Name="AliExpressOrders" EntityType="DropshipDataModel.AliExpressOrder" />
+          <EntitySet Name="ApplicationLogs" EntityType="DropshipDataModel.ApplicationLog" />
+          <EntitySet Name="Categories" EntityType="DropshipDataModel.Category" />
+          <EntitySet Name="Countries" EntityType="DropshipDataModel.Country" />
+          <EntitySet Name="MembershipTypes" EntityType="DropshipDataModel.MembershipType" />
+          <EntitySet Name="Orders" EntityType="DropshipDataModel.Order" />
+          <EntitySet Name="PaymentProfiles" EntityType="DropshipDataModel.PaymentProfile" />
+          <EntitySet Name="PickedProducts" EntityType="DropshipDataModel.PickedProduct" />
+          <EntitySet Name="ProductMedias" EntityType="DropshipDataModel.ProductMedia" />
+          <EntitySet Name="Products" EntityType="DropshipDataModel.Product" />
+          <EntitySet Name="Roles" EntityType="DropshipDataModel.Role" />
+          <EntitySet Name="SellersPickedProducts" EntityType="DropshipDataModel.SellersPickedProduct" />
+          <EntitySet Name="Subscriptions" EntityType="DropshipDataModel.Subscription" />
+          <EntitySet Name="User_Roles" EntityType="DropshipDataModel.User_Roles" />
+          <EntitySet Name="Users" EntityType="DropshipDataModel.User" />
+        </EntityContainer>
+        <EntityType Name="AliExpressCategory">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AliExpressCategoryID" Type="Int64" Nullable="false" />
+          <Property Name="AliExpressCategoryName" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="AliExpressParentCategoryID" Type="Int64" />
+          <Property Name="AliExpressCategoryIsLeaf" Type="Boolean" Nullable="false" />
+          <Property Name="AliExpressCategoryLevel" Type="Int64" Nullable="false" />
+          <Property Name="AliCategoryFullPath" Type="String" MaxLength="150" FixedLength="true" Unicode="true" />
+        </EntityType>
+        <EntityType Name="AliExpressOrderItem">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AliExpressProductID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ProductID" Type="Int32" />
+          <Property Name="ProductName" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="Price" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CurrencyCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ItemCreatedBy" Type="Int32" />
+          <Property Name="ItemCreatedWhen" Type="DateTime" Precision="3" />
+          <Property Name="ItemModifyBy" Type="Int32" />
+          <Property Name="ItemModifyWhen" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="AliExpressOrder">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="BuyerLoginId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="AliExpressSellerID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="DeliveryCountry" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="PaymentStatus" Type="Int32" />
+          <Property Name="TrackingNo" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ShippingWeight" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="OrderAmount" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CurrencyCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="OrderStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="NoOfOrderItems" Type="Int32" />
+          <Property Name="ItemCreatedBy" Type="Int32" />
+          <Property Name="ItemCreatedWhen" Type="DateTime" Precision="3" />
+          <Property Name="ItemModifyBy" Type="Int32" />
+          <Property Name="ItemModifyWhen" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="ApplicationLog">
+          <Key>
+            <PropertyRef Name="ApplicationLogID" />
+          </Key>
+          <Property Name="ApplicationLogID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserID" Type="Int32" />
+          <Property Name="ApplicationName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="IP" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Agent" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ErrorMsg" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ErrorDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ItemCreatedBy" Type="Int32" />
+          <Property Name="ItemCreatedOn" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="Category">
+          <Key>
+            <PropertyRef Name="CategoryID" />
+          </Key>
+          <Property Name="CategoryID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="CategoryLevel" Type="Int32" />
+          <Property Name="ParentCategoryID" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="IsLeafCategory" Type="Boolean" />
+          <Property Name="AliExpressCategoryName" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="AliExpressCategoryId" Type="Int64" />
+          <Property Name="ItemCreatedBy" Type="Int32" />
+          <Property Name="ItemCreatedWhen" Type="DateTime" Precision="3" />
+          <Property Name="ItemModifyBy" Type="Int32" />
+          <Property Name="ItemModifyWhen" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="Country">
+          <Key>
+            <PropertyRef Name="CountryID" />
+          </Key>
+          <Property Name="CountryID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="CountryCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="MembershipType">
+          <Key>
+            <PropertyRef Name="MembershipID" />
+          </Key>
+          <Property Name="MembershipID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Type" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Price" Type="Int32" />
+          <Property Name="PickLimit" Type="Int32" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CycleType" Type="Int32" />
+          <Property Name="ItemCreatedBy" Type="Int32" />
+          <Property Name="ItemCreatedWhen" Type="DateTime" Precision="3" />
+          <Property Name="ItemModifyBy" Type="Int32" />
+          <Property Name="ItemModifyWhen" Type="DateTime" Precision="3" />
+          <Property Name="OrderLimit" Type="Int32" />
+        </EntityType>
+        <EntityType Name="Order">
+          <Key>
+            <PropertyRef Name="OrderID" />
+          </Key>
+          <Property Name="OrderID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AliExpressOrderID" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="DeliveryCountry" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="PaymentStatus" Type="Int32" />
+          <Property Name="AliExpressSellerID" Type="Int32" />
+          <Property Name="TrackingNo" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ShippingWeight" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="OrderAmount" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="OrderStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ItemCreatedBy" Type="Int32" />
+          <Property Name="ItemCreatedWhen" Type="DateTime" Precision="3" />
+          <Property Name="ItemModifyBy" Type="Int32" />
+          <Property Name="ItemModifyWhen" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="PaymentProfile">
+          <Key>
+            <PropertyRef Name="PaymentProfileID" />
+          </Key>
+          <Property Name="PaymentProfileID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserID" Type="Int32" />
+          <Property Name="CreditCardNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CreditCardType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ExpiryDate" Type="DateTime" Precision="3" />
+          <Property Name="NameOnCard" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="IsDefault" Type="Boolean" />
+          <Property Name="ItemCreatedBy" Type="Int32" />
+          <Property Name="ItemCreatedWhen" Type="DateTime" Precision="3" />
+          <Property Name="ItemModifyBy" Type="Int32" />
+          <Property Name="ItemModifyWhen" Type="DateTime" Precision="3" />
+          <Property Name="IsAgreedPaymentPolicy" Type="Boolean" />
+          <Property Name="AgreedPaymentPolicyTime" Type="DateTime" Precision="3" />
+          <Property Name="AuthorizeNetProfileId" Type="Int64" />
+        </EntityType>
+        <EntityType Name="PickedProduct">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ProductId" Type="Int64" Nullable="false" />
+          <Property Name="SKU" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="UpdatedInventory" Type="Int64" />
+          <Property Name="UpdatedPrice" Type="Int64" />
+          <Property Name="CreatedBy" Type="Int32" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedBy" Type="Int32" />
+          <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="ProductMedia">
+          <Key>
+            <PropertyRef Name="ProductMediaID" />
+          </Key>
+          <Property Name="ProductMediaID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ProductID" Type="Int32" />
+          <Property Name="MediaType" Type="Boolean" />
+          <Property Name="MediaExt" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="MediaLink" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="IsMainImage" Type="Boolean" />
+          <Property Name="ItemCreatedBy" Type="Int32" />
+          <Property Name="ItemCreatedWhen" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="Product">
+          <Key>
+            <PropertyRef Name="ProductID" />
+          </Key>
+          <Property Name="ProductID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Title" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="CategoryID" Type="Int32" />
+          <Property Name="SellingPrice" Type="Double" />
+          <Property Name="SellingPriceCurrency" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="OriginalProductID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Brand" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Inventory" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ManufacturerName" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="ExternalCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ExternalCodeType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ParentProductID" Type="Int32" />
+          <Property Name="NoOfCustomerReviews" Type="Int32" />
+          <Property Name="CustomerReviewRating" Type="Int32" />
+          <Property Name="NetWeight" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ShippingWeight" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CountryOfOrigin" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Size" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Color" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="SourceWebsite" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="IsActive" Type="Boolean" />
+          <Property Name="ItemCreatedBy" Type="Int32" />
+          <Property Name="ItemCreatedWhen" Type="DateTime" Precision="3" />
+          <Property Name="ItemModifyBy" Type="Int32" />
+          <Property Name="ItemModifyWhen" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="Role">
+          <Key>
+            <PropertyRef Name="RoleID" />
+          </Key>
+          <Property Name="RoleID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="ItemCreatedBy" Type="Int32" />
+          <Property Name="ItemCreatedWhen" Type="DateTime" Precision="3" />
+          <Property Name="ItemModifyBy" Type="Int32" />
+          <Property Name="ItemModifyWhen" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="SellersPickedProduct">
+          <Key>
+            <PropertyRef Name="SellersPickedID" />
+          </Key>
+          <Property Name="SellersPickedID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserID" Type="Int32" />
+          <Property Name="ParentProductID" Type="Int32" />
+          <Property Name="AliExpressProductID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ItemCreatedBy" Type="Int32" />
+          <Property Name="ItemCreatedWhen" Type="DateTime" Precision="3" />
+          <Property Name="ItemModifyBy" Type="Int32" />
+          <Property Name="ItemModifyWhen" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="Subscription">
+          <Key>
+            <PropertyRef Name="SubscriptionID" />
+          </Key>
+          <Property Name="SubscriptionID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="MembershipID" Type="Int32" />
+          <Property Name="UserID" Type="Int32" />
+          <Property Name="NextBillDate" Type="DateTime" Precision="3" />
+          <Property Name="MembershipExpiredDate" Type="DateTime" Precision="3" />
+          <Property Name="MembershipCreatedBy" Type="Int32" />
+          <Property Name="MembershipCreatedOn" Type="DateTime" Precision="3" />
+          <Property Name="MembershipModifyBy" Type="Int32" />
+          <Property Name="MembershipModifyOn" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="User_Roles">
+          <Key>
+            <PropertyRef Name="UserRoleID" />
+          </Key>
+          <Property Name="UserRoleID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserID" Type="Int32" Nullable="false" />
+          <Property Name="RoleID" Type="Int32" Nullable="false" />
+          <Property Name="ItemCreatedBy" Type="Int32" />
+          <Property Name="ItemCreatedWhen" Type="DateTime" Precision="3" />
+          <Property Name="ItemModifyBy" Type="Int32" />
+          <Property Name="ItemModifyWhen" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="UserID" />
+          </Key>
+          <Property Name="UserID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="EmailID" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="Phone" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CountryID" Type="Int32" />
+          <Property Name="Password" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="AliExpressSellerID" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="IsActive" Type="Boolean" />
+          <Property Name="ItemCreatedBy" Type="Int32" />
+          <Property Name="ItemCreatedWhen" Type="DateTime" Precision="3" />
+          <Property Name="ItemModifyBy" Type="Int32" />
+          <Property Name="ItemModifyWhen" Type="DateTime" Precision="3" />
+          <Property Name="IsPolicyAccepted" Type="Boolean" />
+        </EntityType>
+        </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="DropshipDataModelStoreContainer" CdmEntityContainer="DropshipDataEntities">
+          <EntitySetMapping Name="AliExpressCategories">
+            <EntityTypeMapping TypeName="DropshipDataModel.AliExpressCategory">
+              <MappingFragment StoreEntitySet="AliExpressCategories">
+                <ScalarProperty Name="AliCategoryFullPath" ColumnName="AliCategoryFullPath" />
+                <ScalarProperty Name="AliExpressCategoryLevel" ColumnName="AliExpressCategoryLevel" />
+                <ScalarProperty Name="AliExpressCategoryIsLeaf" ColumnName="AliExpressCategoryIsLeaf" />
+                <ScalarProperty Name="AliExpressParentCategoryID" ColumnName="AliExpressParentCategoryID" />
+                <ScalarProperty Name="AliExpressCategoryName" ColumnName="AliExpressCategoryName" />
+                <ScalarProperty Name="AliExpressCategoryID" ColumnName="AliExpressCategoryID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AliExpressOrderItems">
+            <EntityTypeMapping TypeName="DropshipDataModel.AliExpressOrderItem">
+              <MappingFragment StoreEntitySet="AliExpressOrderItems">
+                <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
+                <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
+                <ScalarProperty Name="ItemCreatedWhen" ColumnName="ItemCreatedWhen" />
+                <ScalarProperty Name="ItemCreatedBy" ColumnName="ItemCreatedBy" />
+                <ScalarProperty Name="CurrencyCode" ColumnName="CurrencyCode" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="ProductName" ColumnName="ProductName" />
+                <ScalarProperty Name="ProductID" ColumnName="ProductID" />
+                <ScalarProperty Name="AliExpressProductID" ColumnName="AliExpressProductID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AliExpressOrders">
+            <EntityTypeMapping TypeName="DropshipDataModel.AliExpressOrder">
+              <MappingFragment StoreEntitySet="AliExpressOrders">
+                <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
+                <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
+                <ScalarProperty Name="ItemCreatedWhen" ColumnName="ItemCreatedWhen" />
+                <ScalarProperty Name="ItemCreatedBy" ColumnName="ItemCreatedBy" />
+                <ScalarProperty Name="NoOfOrderItems" ColumnName="NoOfOrderItems" />
+                <ScalarProperty Name="OrderStatus" ColumnName="OrderStatus" />
+                <ScalarProperty Name="CurrencyCode" ColumnName="CurrencyCode" />
+                <ScalarProperty Name="OrderAmount" ColumnName="OrderAmount" />
+                <ScalarProperty Name="ShippingWeight" ColumnName="ShippingWeight" />
+                <ScalarProperty Name="TrackingNo" ColumnName="TrackingNo" />
+                <ScalarProperty Name="PaymentStatus" ColumnName="PaymentStatus" />
+                <ScalarProperty Name="DeliveryCountry" ColumnName="DeliveryCountry" />
+                <ScalarProperty Name="AliExpressSellerID" ColumnName="AliExpressSellerID" />
+                <ScalarProperty Name="BuyerLoginId" ColumnName="BuyerLoginId" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ApplicationLogs">
+            <EntityTypeMapping TypeName="DropshipDataModel.ApplicationLog">
+              <MappingFragment StoreEntitySet="ApplicationLogs">
+                <ScalarProperty Name="ItemCreatedOn" ColumnName="ItemCreatedOn" />
+                <ScalarProperty Name="ItemCreatedBy" ColumnName="ItemCreatedBy" />
+                <ScalarProperty Name="ErrorDescription" ColumnName="ErrorDescription" />
+                <ScalarProperty Name="ErrorMsg" ColumnName="ErrorMsg" />
+                <ScalarProperty Name="Agent" ColumnName="Agent" />
+                <ScalarProperty Name="IP" ColumnName="IP" />
+                <ScalarProperty Name="ApplicationName" ColumnName="ApplicationName" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="ApplicationLogID" ColumnName="ApplicationLogID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Categories">
+            <EntityTypeMapping TypeName="DropshipDataModel.Category">
+              <MappingFragment StoreEntitySet="Category">
+                <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
+                <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
+                <ScalarProperty Name="ItemCreatedWhen" ColumnName="ItemCreatedWhen" />
+                <ScalarProperty Name="ItemCreatedBy" ColumnName="ItemCreatedBy" />
+                <ScalarProperty Name="AliExpressCategoryId" ColumnName="AliExpressCategoryId" />
+                <ScalarProperty Name="AliExpressCategoryName" ColumnName="AliExpressCategoryName" />
+                <ScalarProperty Name="IsLeafCategory" ColumnName="IsLeafCategory" />
+                <ScalarProperty Name="ParentCategoryID" ColumnName="ParentCategoryID" />
+                <ScalarProperty Name="CategoryLevel" ColumnName="CategoryLevel" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Countries">
+            <EntityTypeMapping TypeName="DropshipDataModel.Country">
+              <MappingFragment StoreEntitySet="Country">
+                <ScalarProperty Name="CountryCode" ColumnName="CountryCode" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="CountryID" ColumnName="CountryID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MembershipTypes">
+            <EntityTypeMapping TypeName="DropshipDataModel.MembershipType">
+              <MappingFragment StoreEntitySet="MembershipTypes">
+                <ScalarProperty Name="OrderLimit" ColumnName="OrderLimit" />
+                <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
+                <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
+                <ScalarProperty Name="ItemCreatedWhen" ColumnName="ItemCreatedWhen" />
+                <ScalarProperty Name="ItemCreatedBy" ColumnName="ItemCreatedBy" />
+                <ScalarProperty Name="CycleType" ColumnName="CycleType" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="PickLimit" ColumnName="PickLimit" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="MembershipID" ColumnName="MembershipID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Orders">
+            <EntityTypeMapping TypeName="DropshipDataModel.Order">
+              <MappingFragment StoreEntitySet="Orders">
+                <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
+                <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
+                <ScalarProperty Name="ItemCreatedWhen" ColumnName="ItemCreatedWhen" />
+                <ScalarProperty Name="ItemCreatedBy" ColumnName="ItemCreatedBy" />
+                <ScalarProperty Name="OrderStatus" ColumnName="OrderStatus" />
+                <ScalarProperty Name="OrderAmount" ColumnName="OrderAmount" />
+                <ScalarProperty Name="ShippingWeight" ColumnName="ShippingWeight" />
+                <ScalarProperty Name="TrackingNo" ColumnName="TrackingNo" />
+                <ScalarProperty Name="AliExpressSellerID" ColumnName="AliExpressSellerID" />
+                <ScalarProperty Name="PaymentStatus" ColumnName="PaymentStatus" />
+                <ScalarProperty Name="DeliveryCountry" ColumnName="DeliveryCountry" />
+                <ScalarProperty Name="AliExpressOrderID" ColumnName="AliExpressOrderID" />
+                <ScalarProperty Name="OrderID" ColumnName="OrderID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PaymentProfiles">
+            <EntityTypeMapping TypeName="DropshipDataModel.PaymentProfile">
+              <MappingFragment StoreEntitySet="PaymentProfile">
+                <ScalarProperty Name="AuthorizeNetProfileId" ColumnName="AuthorizeNetProfileId" />
+                <ScalarProperty Name="AgreedPaymentPolicyTime" ColumnName="AgreedPaymentPolicyTime" />
+                <ScalarProperty Name="IsAgreedPaymentPolicy" ColumnName="IsAgreedPaymentPolicy" />
+                <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
+                <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
+                <ScalarProperty Name="ItemCreatedWhen" ColumnName="ItemCreatedWhen" />
+                <ScalarProperty Name="ItemCreatedBy" ColumnName="ItemCreatedBy" />
+                <ScalarProperty Name="IsDefault" ColumnName="IsDefault" />
+                <ScalarProperty Name="NameOnCard" ColumnName="NameOnCard" />
+                <ScalarProperty Name="ExpiryDate" ColumnName="ExpiryDate" />
+                <ScalarProperty Name="CreditCardType" ColumnName="CreditCardType" />
+                <ScalarProperty Name="CreditCardNumber" ColumnName="CreditCardNumber" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="PaymentProfileID" ColumnName="PaymentProfileID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PickedProducts">
+            <EntityTypeMapping TypeName="DropshipDataModel.PickedProduct">
+              <MappingFragment StoreEntitySet="PickedProduct">
+                <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="UpdatedPrice" ColumnName="UpdatedPrice" />
+                <ScalarProperty Name="UpdatedInventory" ColumnName="UpdatedInventory" />
+                <ScalarProperty Name="SKU" ColumnName="SKU" />
+                <ScalarProperty Name="ProductId" ColumnName="ProductId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ProductMedias">
+            <EntityTypeMapping TypeName="DropshipDataModel.ProductMedia">
+              <MappingFragment StoreEntitySet="ProductMedia">
+                <ScalarProperty Name="ItemCreatedWhen" ColumnName="ItemCreatedWhen" />
+                <ScalarProperty Name="ItemCreatedBy" ColumnName="ItemCreatedBy" />
+                <ScalarProperty Name="IsMainImage" ColumnName="IsMainImage" />
+                <ScalarProperty Name="MediaLink" ColumnName="MediaLink" />
+                <ScalarProperty Name="MediaExt" ColumnName="MediaExt" />
+                <ScalarProperty Name="MediaType" ColumnName="MediaType" />
+                <ScalarProperty Name="ProductID" ColumnName="ProductID" />
+                <ScalarProperty Name="ProductMediaID" ColumnName="ProductMediaID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Products">
+            <EntityTypeMapping TypeName="DropshipDataModel.Product">
+              <MappingFragment StoreEntitySet="Products">
+                <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
+                <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
+                <ScalarProperty Name="ItemCreatedWhen" ColumnName="ItemCreatedWhen" />
+                <ScalarProperty Name="ItemCreatedBy" ColumnName="ItemCreatedBy" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="SourceWebsite" ColumnName="SourceWebsite" />
+                <ScalarProperty Name="Color" ColumnName="Color" />
+                <ScalarProperty Name="Size" ColumnName="Size" />
+                <ScalarProperty Name="CountryOfOrigin" ColumnName="CountryOfOrigin" />
+                <ScalarProperty Name="ShippingWeight" ColumnName="ShippingWeight" />
+                <ScalarProperty Name="NetWeight" ColumnName="NetWeight" />
+                <ScalarProperty Name="CustomerReviewRating" ColumnName="CustomerReviewRating" />
+                <ScalarProperty Name="NoOfCustomerReviews" ColumnName="NoOfCustomerReviews" />
+                <ScalarProperty Name="ParentProductID" ColumnName="ParentProductID" />
+                <ScalarProperty Name="ExternalCodeType" ColumnName="ExternalCodeType" />
+                <ScalarProperty Name="ExternalCode" ColumnName="ExternalCode" />
+                <ScalarProperty Name="ManufacturerName" ColumnName="ManufacturerName" />
+                <ScalarProperty Name="Inventory" ColumnName="Inventory" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Brand" ColumnName="Brand" />
+                <ScalarProperty Name="OriginalProductID" ColumnName="OriginalProductID" />
+                <ScalarProperty Name="SellingPriceCurrency" ColumnName="SellingPriceCurrency" />
+                <ScalarProperty Name="SellingPrice" ColumnName="SellingPrice" />
+                <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="ProductID" ColumnName="ProductID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Roles">
+            <EntityTypeMapping TypeName="DropshipDataModel.Role">
+              <MappingFragment StoreEntitySet="Roles">
+                <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
+                <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
+                <ScalarProperty Name="ItemCreatedWhen" ColumnName="ItemCreatedWhen" />
+                <ScalarProperty Name="ItemCreatedBy" ColumnName="ItemCreatedBy" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="RoleID" ColumnName="RoleID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SellersPickedProducts">
+            <EntityTypeMapping TypeName="DropshipDataModel.SellersPickedProduct">
+              <MappingFragment StoreEntitySet="SellersPickedProducts">
+                <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
+                <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
+                <ScalarProperty Name="ItemCreatedWhen" ColumnName="ItemCreatedWhen" />
+                <ScalarProperty Name="ItemCreatedBy" ColumnName="ItemCreatedBy" />
+                <ScalarProperty Name="AliExpressProductID" ColumnName="AliExpressProductID" />
+                <ScalarProperty Name="ParentProductID" ColumnName="ParentProductID" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="SellersPickedID" ColumnName="SellersPickedID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Subscriptions">
+            <EntityTypeMapping TypeName="DropshipDataModel.Subscription">
+              <MappingFragment StoreEntitySet="Subscriptions">
+                <ScalarProperty Name="MembershipModifyOn" ColumnName="MembershipModifyOn" />
+                <ScalarProperty Name="MembershipModifyBy" ColumnName="MembershipModifyBy" />
+                <ScalarProperty Name="MembershipCreatedOn" ColumnName="MembershipCreatedOn" />
+                <ScalarProperty Name="MembershipCreatedBy" ColumnName="MembershipCreatedBy" />
+                <ScalarProperty Name="MembershipExpiredDate" ColumnName="MembershipExpiredDate" />
+                <ScalarProperty Name="NextBillDate" ColumnName="NextBillDate" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="MembershipID" ColumnName="MembershipID" />
+                <ScalarProperty Name="SubscriptionID" ColumnName="SubscriptionID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="User_Roles">
+            <EntityTypeMapping TypeName="DropshipDataModel.User_Roles">
+              <MappingFragment StoreEntitySet="User_Roles">
+                <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
+                <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
+                <ScalarProperty Name="ItemCreatedWhen" ColumnName="ItemCreatedWhen" />
+                <ScalarProperty Name="ItemCreatedBy" ColumnName="ItemCreatedBy" />
+                <ScalarProperty Name="RoleID" ColumnName="RoleID" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="UserRoleID" ColumnName="UserRoleID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="DropshipDataModel.User">
+              <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="IsPolicyAccepted" ColumnName="IsPolicyAccepted" />
+                <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
+                <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
+                <ScalarProperty Name="ItemCreatedWhen" ColumnName="ItemCreatedWhen" />
+                <ScalarProperty Name="ItemCreatedBy" ColumnName="ItemCreatedBy" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="AliExpressSellerID" ColumnName="AliExpressSellerID" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="CountryID" ColumnName="CountryID" />
+                <ScalarProperty Name="Phone" ColumnName="Phone" />
+                <ScalarProperty Name="EmailID" ColumnName="EmailID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="false" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
