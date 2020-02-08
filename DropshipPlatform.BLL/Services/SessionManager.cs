@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DropshipPlatform.DLL;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -52,6 +53,33 @@ namespace DropshipPlatform.BLL.Services
             {
                 HttpContext.Current.Session["UserID"] = value;
             }
+        }
+
+        public static void SetUserSession(User user)
+        {
+            if (user != null)
+            {
+                HttpContext.Current.Session["userSession"] = HttpUtility.UrlEncode(Newtonsoft.Json.JsonConvert.SerializeObject(user));
+            }
+        }
+
+        public static User GetUserSession()
+        {
+            User token = new User();
+            try
+            {
+                if (HttpContext.Current.Session != null && HttpContext.Current.Session["userSession"] != null)
+                {
+                    string data = HttpContext.Current.Session["userSession"].ToString();
+                    token = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(HttpUtility.UrlDecode(data));
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return token;
         }
     }
 }

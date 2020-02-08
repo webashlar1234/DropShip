@@ -1,0 +1,177 @@
+﻿<link href="~/Content/custom/my-account.css" rel="stylesheet" />
+<script src="https://js.stripe.com/v3/"></script>
+<script src="~/Scripts/custom/stripe_custom.js"></script>
+
+<section class="subsription mt-3">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <h5 class="box-title">
+                    Your Subscription
+                </h5>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4 mt-2">
+                <div class="subscription-box">
+                    <h2 class="plan-title mt-2">Silver</h2>
+                    <p class="plan-description">You are currunt subscribed to the starter plan with monthly billing.</p>
+                    <button type="button" class="btn btn-dark btn-upgrade">Upgrade</button>
+                </div>
+            </div>
+
+            <div class="col-lg-8 mt-2">
+                <div class="subscription-details">
+                    <div class="card">
+                        <h5 class="card-header">Details</h5>
+                        <div class="card-body">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">Next Bill Date</th>
+                                        <td>26/09/2020</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Next Bill Amount</th>
+                                        <td><b>$0.00</b> / Month</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <button type="button" class="btn btn-dark btn-upgrade">Cancel My Subscription</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="mt-5">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <h5 class="box-title">
+                    Payment Method
+                </h5>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 pt-1">
+                <div class="card text-center">
+                    <div class="card-header card-cstm-title">
+                        <i class="fa fa-credit-card" aria-hidden="true"></i> &nbsp; Credit Card
+                    </div>
+                    <div class="card-body card-body-custom">
+                        
+                        <h6 class="add-card-details"><i class="fa fa-plus" aria-hidden="true"></i> &nbsp;Click To Add</h6>
+                        <div class="col-md-4" id="stripe_card_setup_body" style="display:none;">
+                            <input id="cardholder-name" type="text" class="form-control" placeholder="Card holder's name">
+                            <!-- placeholder for Elements -->
+                            <form id="payment-form">
+                                <div id="card-element" class="form-control"></div>
+                                <div class="col-md-12 mt-3">
+                                    <button id="card-button" class="btn btn-dark btn-upgrade">
+                                        Save Card
+                                    </button>
+                                    <button id="cancelCardSetup" type="button" class="btn btn-secondary">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card-footer text-muted">
+                        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ut temporibus velit reprehenderit explicabo ratione recusandae eligendi, illo odio nemo cupiditate excepturi voluptas quisquam eos incidunt, fugit accusantium, consequuntur mollitia! Expedita.
+                        <br>
+                        <label class="rememberme mt-checkbox mt-checkbox-outline">
+                            <input type="checkbox" name="remember" value="1">
+                            <span></span>
+                        </label> I Agree
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="mt-5 pb-5">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <h5 class="box-title">
+                    Choose Your Plan and Get Started Today !
+                </h5>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 pt-1">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="monthly-tab" data-toggle="tab" href="#monthly" role="tab" aria-controls="monthly" aria-selected="true">Monthly</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="annually-tab" data-toggle="tab" href="#annually" role="tab" aria-controls="profile" aria-selected="false">Annually</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="monthly" role="tabpanel" aria-labelledby="home-tab">
+                        <table class="table tbl-plan mt-2">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th scope="col">Silver Member</th>
+                                    <th scope="col">Gold Member</th>
+                                    <th scope="col">platinum Member</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th>2500 Products</th>
+                                    <td>15,000 Products</td>
+                                    <td>50,000 Products</td>
+                                </tr>
+                                <tr>
+                                    <th>Unlimited Orders</th>
+                                    <th>Unlimited Orders</th>
+                                    <th>Unlimited Orders</th>
+                                </tr>
+                                <tr>
+                                    <th>Choose This Plan</th>
+                                    <th>Choose This Plan</th>
+                                    <th>Choose This Plan</th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="tab-pane fade" id="annually" role="tabpanel" aria-labelledby="annually-tab">
+                        <table class="table tbl-plan mt-2">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th scope="col">Silver Member</th>
+                                    <th scope="col">Gold Member</th>
+                                    <th scope="col">platinum Member</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th>2500 Products</th>
+                                    <td>15,000 Products</td>
+                                    <td>50,000 Products</td>
+                                </tr>
+                                <tr>
+                                    <th>Unlimited Orders</th>
+                                    <th>Unlimited Orders</th>
+                                    <th>Unlimited Orders</th>
+                                </tr>
+                                <tr>
+                                    <th>Choose This Plan</th>
+                                    <th>Choose This Plan</th>
+                                    <th>Choose This Plan</th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

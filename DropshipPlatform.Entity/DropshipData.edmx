@@ -262,6 +262,7 @@
           <Property Name="CountryID" Type="int" />
           <Property Name="Password" Type="nvarchar" MaxLength="150" />
           <Property Name="AliExpressSellerID" Type="nvarchar" MaxLength="150" />
+          <Property Name="StripeCustomerID" Type="nvarchar" MaxLength="150" />
           <Property Name="IsActive" Type="bit" />
           <Property Name="ItemCreatedBy" Type="int" />
           <Property Name="ItemCreatedWhen" Type="datetime" />
@@ -574,6 +575,7 @@
           <Property Name="ItemModifyBy" Type="Int32" />
           <Property Name="ItemModifyWhen" Type="DateTime" Precision="3" />
           <Property Name="IsPolicyAccepted" Type="Boolean" />
+          <Property Name="StripeCustomerID" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -846,6 +848,7 @@
           <EntitySetMapping Name="Users">
             <EntityTypeMapping TypeName="DropshipDataModel.User">
               <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="StripeCustomerID" ColumnName="StripeCustomerID" />
                 <ScalarProperty Name="IsPolicyAccepted" ColumnName="IsPolicyAccepted" />
                 <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
                 <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />

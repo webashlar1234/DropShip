@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using DropshipPlatform.BLL.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,19 +14,14 @@ namespace DropshipPlatform.BLL.Services
 {
     public class AliExpressAuthService 
     {
-        string appkey = System.Web.Configuration.WebConfigurationManager.AppSettings["AliExpress_appKey"].ToString();
-        string secret = System.Web.Configuration.WebConfigurationManager.AppSettings["AliExpress_appSecreat"].ToString();
-        string redirectURL = System.Web.Configuration.WebConfigurationManager.AppSettings["AliExpress_RedirectURL"].ToString();
-        string url = System.Web.Configuration.WebConfigurationManager.AppSettings["AliExpress_URL"].ToString();
-
         public string getAuthorizeUrl()
         {
-            string authorizeUrl = "https://oauth.aliexpress.com/authorize?response_type=code&client_id=" + appkey + "&redirect_uri="+ redirectURL + "&sp=ae";
+            string authorizeUrl = "https://oauth.aliexpress.com/authorize?response_type=code&client_id=" + StaticValues.aliAppkey + "&redirect_uri="+ StaticValues.aliRedirectURL + "&sp=ae";
             return authorizeUrl;
         }
         public AliExpressAccessToken getAccessToken(string code) {
 
-            ITopClient client = new DefaultTopClient(url, appkey, secret);
+            ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret);
             TopAuthTokenCreateRequest req = new TopAuthTokenCreateRequest();
             req.Code = code;
             TopAuthTokenCreateResponse rsp = client.Execute(req);

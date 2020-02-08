@@ -16,16 +16,11 @@ namespace DropshipPlatform.BLL.Services
     public class CategoryService
     {
         readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
-        string appkey = System.Web.Configuration.WebConfigurationManager.AppSettings["AliExpress_appKey"].ToString();
-        string secret = System.Web.Configuration.WebConfigurationManager.AppSettings["AliExpress_appSecreat"].ToString();
-        string redirectURL = System.Web.Configuration.WebConfigurationManager.AppSettings["AliExpress_RedirectURL"].ToString();
-        string url = System.Web.Configuration.WebConfigurationManager.AppSettings["AliExpress_URL"].ToString();
-
+        
         public List<AliExpressCategory> getAliExpressCategory()
         {
             string sessionKey = SessionManager.GetAccessToken().access_token;
-            ITopClient client = new DefaultTopClient(url, appkey, secret);
+            ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret);
             List<AliExpressCategory> list = new List<AliExpressCategory>();
 
             list = getAliExpressChildCategory(client, sessionKey, 0, list);
