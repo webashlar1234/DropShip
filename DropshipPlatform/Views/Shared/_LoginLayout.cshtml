@@ -1,0 +1,28 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Membership Management </title>
+
+    <link rel="shortcut icon" type="img/png" href="~/Images/logo/favicon.png" />
+    @Styles.Render("~/layoutContent/css")
+
+    @Scripts.Render("~/layoutBundles/jquery")
+    @RenderSection("scripts", required: false)
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/responsive.css">
+</head>
+<body>
+    <div class="wrapper">
+        @RenderBody()
+    </div>
+</body>
+</html>

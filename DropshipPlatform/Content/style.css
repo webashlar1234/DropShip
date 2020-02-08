@@ -131,13 +131,13 @@
     
     .footer-contaent {
         text-align: center;
-        padding-bottom: 10px;
-        padding-top: 10px;
+        padding-bottom: 5px;
+        padding-top: 5px;
     }
     
     .footer-contaent p {
         color: #7a7a7a;
-        font-size: 15px;
+        font-size: 12px;
         margin-bottom: 0px;
     }
     
@@ -179,7 +179,7 @@
     .btn-submit {
         background-color: #000000;
         color: #ffffff;
-        padding: 10px 35px;
+        padding: 5px 15px;
         border-radius: 5px;
         border: 2px solid transparent;
         transition: 0.3s;

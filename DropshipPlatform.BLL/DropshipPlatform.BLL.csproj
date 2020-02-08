@@ -71,7 +71,9 @@
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\globalModal.cs" />
     <Compile Include="Models\ProductViewModel.cs" />
+    <Compile Include="Models\ResponseModel.cs" />
     <Compile Include="Models\StaticValues.cs" />
+    <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\AliExpressAuthService.cs" />
     <Compile Include="Services\CategoryService.cs" />
