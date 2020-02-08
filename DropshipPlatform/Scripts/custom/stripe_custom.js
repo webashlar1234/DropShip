@@ -1,19 +1,21 @@
 ﻿var stripe = Stripe('pk_test_E9HeQv0TvOfPCUvf3yFBR2Kz00joNNU5qD');
+var CardsDT = null;
 var stripeCustom = {
     init: function () {
         stripeCustom.click();
+        stripeCustom.initCardsDT();
     },
     click: function () {
         $(document).on('click', '.add-card-details', function () {
-            $(this).hide();
             $('#stripe_card_setup_body').show();
             stripeCustom.SetUpCard();
         });
         $(document).on('click', '#cancelCardSetup', function () {
             $('#stripe_card_setup_body').hide();
-            $('.add-card-details').show();
+        }); 
+        $(document).on('click', '.deletePaymentMethod', function () {
+            stripeCustom.DeleteCard($(this).attr('payment_method_id'));
         });
-        
     },
     SetUpCard: function (data) {
         $.ajax({
@@ -83,7 +85,59 @@ var stripeCustom = {
             data: { intent: data },
             success: function (data) {
                 SuccessMessage("Card Added successfully");
+                stripeCustom.initCardsDT();
             }
+        });
+    },
+    DeleteCard: function (data) {
+        $.ajax({
+            type: "POST",
+            url: "/Stripe/DeletePaymentMethod",
+            dataType: "json",
+            data:{paymentMethodID:data},
+            async: false,
+            success: function (data) {
+                SuccessMessage("Card deleted successfully");
+                stripeCustom.initCardsDT();
+            }
+        });
+    },
+    initCardsDT: function () {
+        if (CardsDT) {
+            CardsDT.destroy();
+        }
+        CardsDT = $('#CardsDT').DataTable({
+            "ajax": {
+                "url": "/Stripe/getStripePaymentMethodsList",
+                "type": "GET",
+                "datatype": "json"
+            },
+            sort: false,
+            filter: false,
+            paging: false,
+            info: false,
+            columnDefs: [
+                {
+                    targets: 0,
+                    sortable: true,
+                    width: "80%",
+                    "render": function (data, type, full) {
+                        return '<span class="brand">' + data.Brand + '</span>' + '<span class="card_lastdigit">...' + data.Last4 + '</span>';
+                    }
+                },
+                {
+                    targets: 1,
+                    sortable: false,
+                    width: "10%",
+                    "render": function (data, type, full, meta) {
+                        return '<a payment_method_id = '+full.Id+' class="deletePaymentMethod"><i class="fa fa-trash" aria-hidden="true"></i></a>';
+                    }
+                }
+            ],
+            columns: [
+                { "title": 'Cards', "mData": 'Card', sDefaultContent: "", className: "card_row" },
+                { "title": 'Action', "mData": '', sDefaultContent: "", className: "" }
+            ]
         });
     }
 }

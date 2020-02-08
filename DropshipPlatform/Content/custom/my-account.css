@@ -69,10 +69,6 @@
     margin: 20px;
 }
 
-.add-card-details {
-    padding: 25px;
-}
-
     .add-card-details:hover {
         cursor: pointer;
     }
@@ -127,4 +123,16 @@
 
 #payment-form {
     margin-top: 20px;
+}
+#CardsDT tbody tr td{
+    text-align:left;
+}
+#CardsDT .card_row .brand{
+    font-size:16px;
+    font-weight:500;
+    margin-right:20px;
+}
+.deletePaymentMethod{
+    cursor:pointer;
+    font-size:16px;
 }

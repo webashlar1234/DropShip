@@ -78,7 +78,10 @@ namespace DropshipPlatform.BLL.Services
             {
 
             }
-
+            token.UserID = 1;
+            token.Name = "Priti";
+            token.EmailID = "priti@gmail.com";
+            token.StripeCustomerID = "cus_GhDpDtCJ8WM9ZO";
             return token;
         }
     }
