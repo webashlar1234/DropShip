@@ -1,0 +1,41 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    <script src="~/Scripts/custom/Login.js"></script>
+}
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        <section class="section-padding login-body">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-5">
+                        <div class="login-form">
+                            <form role="form" method="post" action="@Url.Action("Index","Login")" novalidate="" class="mb-lg form-horizontal" id="frmLogin">
+                                <div class="form-group">
+                                    <label>UserName</label>
+                                    <input id="TxtUserName" value="" type="text" placeholder="UserName" autocomplete="off" required="required" class="form-control" name="UserName" maxlength="30" />
+                                </div>
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input id="TxtEmail" value="" type="email" placeholder="Email" autocomplete="off" required="required" class="form-control" name="Email" maxlength="50" />
+                                </div>
+                                <div class="form-group">
+                                    <label>Password:</label>
+                                    <input type="password" value="" id="TxtPassword" placeholder="Password" required="required" class="form-control" name="Password" maxlength="15" />
+                                </div>
+
+                                <button type="submit" onclick="LoginUser()" class="btn btn-submit col-lg-6 pull-right">Login</button>
+                                <a href="@Url.Action("Registration", "Login")" class="pt-2">Registration</a>
+                            </form>
+                            <label class="text-danger">@ViewBag.Message</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+
