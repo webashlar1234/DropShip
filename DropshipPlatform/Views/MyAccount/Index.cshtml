@@ -63,11 +63,11 @@
                         <h6 class="add-card-details float-right"><i class="fa fa-plus" aria-hidden="true"></i> &nbsp;Click To Add</h6>
                     </div>
                     <div class="card-body card-body-custom">
-                       
+
                         <div class="col-md-6 float-left">
                             <table id="CardsDT" class="display" style="width:100%"></table>
                         </div>
-                       
+
                         <div class="col-md-4 float-right" id="stripe_card_setup_body" style="display:none;">
                             <input id="cardholder-name" type="text" class="form-control" placeholder="Card holder's name">
                             <!-- placeholder for Elements -->
@@ -100,6 +100,8 @@
 
 <section class="mt-5 pb-5">
     <div class="container-fluid">
+        <a href="@Url.Action("Plan", "Subscriptions")" class="nav-link btn btn-submit pull-right">Create Plan</a>
+
         <div class="row">
             <div class="col-lg-12">
                 <h5 class="box-title">
@@ -107,6 +109,7 @@
                 </h5>
             </div>
         </div>
+
         <div class="row">
             <div class="col-lg-12 pt-1">
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -142,6 +145,11 @@
                                     <th>Choose This Plan</th>
                                     <th>Choose This Plan</th>
                                     <th>Choose This Plan</th>
+                                </tr>
+                                <tr>
+                                    <th><a href="@Url.Action("Index", "Subscriptions")" class="nav-link btn btn-submit">Select Plan</a></li></th>
+                                    <th><a href="@Url.Action("Index", "Subscriptions")" class="nav-link btn btn-submit">Select Plan</a></li></th>
+                                    <th><a href="@Url.Action("Index", "Subscriptions")" class="nav-link btn btn-submit">Select Plan</a></li></th>
                                 </tr>
                             </tbody>
                         </table>

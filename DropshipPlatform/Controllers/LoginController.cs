@@ -29,6 +29,9 @@ namespace DropshipPlatform.Controllers
                 response = userService.LoginUser(model);
                 if (response.IsSuccess)
                 {
+                    UserModel user = (UserModel)response.Data;
+                    Session["UserName"] = user.Name;
+                    Session["UserID"] = user.UserID;
                     return RedirectToAction("Index", "Home");
                 }
             }
@@ -57,7 +60,7 @@ namespace DropshipPlatform.Controllers
                 response = userService.RegisterUser(model);
                 if (response.IsSuccess)
                 {
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Index", "Login");
                 }
             }
             catch (Exception ex)

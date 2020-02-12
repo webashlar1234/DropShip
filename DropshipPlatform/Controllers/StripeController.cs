@@ -75,6 +75,7 @@ namespace DropshipPlatform.Controllers
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
         
+        [HttpPost]
         public JsonResult SetupCard()
         {
             var options = new SetupIntentCreateOptions { };

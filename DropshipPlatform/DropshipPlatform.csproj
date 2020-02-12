@@ -227,6 +227,7 @@
     <Compile Include="Controllers\MyAccountController.cs" />
     <Compile Include="Controllers\ProductsController.cs" />
     <Compile Include="Controllers\StripeController.cs" />
+    <Compile Include="Controllers\SubscriptionsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -249,6 +250,8 @@
     <Content Include="Content\custom\category-mapping.css" />
     <Content Include="Content\custom\CategoryMapping.css" />
     <Content Include="Content\custom\custom.css" />
+    <Content Include="Content\custom\SubscriptionGlobal.css" />
+    <Content Include="Content\custom\subscription.css" />
     <Content Include="Content\editor.dataTables.min.css" />
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
@@ -303,8 +306,11 @@
     <Content Include="Scripts\custom\Login.js" />
     <Content Include="Scripts\custom\PickupProduct.js" />
     <Content Include="Scripts\custom\ProductManagement.js" />
+    <Content Include="Scripts\custom\ProductPlan.js" />
+    <Content Include="Scripts\custom\Subscription.js" />
     <Content Include="Scripts\custom\site.js" />
     <Content Include="Scripts\custom\stripe_custom.js" />
+    <Content Include="Scripts\custom\SubscriptionPlan.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
@@ -358,6 +364,8 @@
     <Content Include="Views\Shared\_LoginLayout.cshtml" />
     <Content Include="Views\Login\Index.cshtml" />
     <Content Include="Views\Login\Registration.cshtml" />
+    <Content Include="Views\Subscriptions\Index.cshtml" />
+    <Content Include="Views\Subscriptions\Plan.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -26,7 +26,14 @@ namespace DropshipPlatform.BLL.Services
                     User dbUser = datacontext.Users.Where(m => m.EmailID == model.Email && m.Name == model.Username && m.Password == model.Password).FirstOrDefault();
                     if (dbUser != null)
                     {
-                        response.Data = dbUser;
+                        UserModel userModel = new UserModel();
+                        userModel.UserID = dbUser.UserID;
+                        userModel.Name = dbUser.Name;
+                        userModel.IsPolicyAccepted = dbUser.IsPolicyAccepted.Value;
+                        userModel.AliExpressSellerID = dbUser.AliExpressSellerID;
+                        userModel.StripeCustomerID = dbUser.StripeCustomerID;
+
+                        response.Data = userModel;
                         response.Message = "Success";
                         response.IsSuccess = true;
                     }

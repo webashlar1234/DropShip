@@ -1,0 +1,52 @@
+﻿
+@{
+    ViewBag.Title = "Subscription Plan";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    <script src="~/Scripts/custom/ProductPlan.js"></script >
+}
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        <section class="section-padding">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-5">
+                        <div class="Plan-form">
+                            <h4 class="mb-4 text-center">Subscription Plan</h4>
+                            <form>
+                                <div class="form-group">
+                                    <label>Plan Name</label>
+                                    <input id="TxtPlanName" value="" type="text" class="form-control" name="TxtProductName" maxlength="50" />
+                                </div>
+                                <div class="form-group">
+                                    <label>Amount</label>
+                                    <input id="TxtAmount" value="" type="text" class="form-control" name="Amount" />
+                                </div>
+                                <div class="form-group">
+                                    <label>Interval</label>
+                                    <select id="LstInterval" class="form-control" name="Interval">
+                                        <option value="" selected disabled>Select a Interval</option>
+                                        <option value="month">Month</option>
+                                        <option value="annual">Annual</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Currency</label>
+                                    <select id="LstCurrency" class="form-control" name="Currency">
+                                        <option value="" selected>Select a Currency</option>
+                                        <option value="hkd">Hongkong Dollor</option>
+                                        <option value="usd">USA Dollor</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <button type="button" onclick="createPlan()" class="btn btn-submit col-lg-6 pull-right">Create</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
