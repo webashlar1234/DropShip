@@ -1,5 +1,5 @@
 ﻿using DropshipPlatform.BLL.Models;
-using DropshipPlatform.DLL;
+using DropshipPlatform.Entity;
 using FastJSON;
 using System;
 using System.Collections.Generic;
@@ -259,40 +259,55 @@ namespace DropshipPlatform.BLL.Services
             string ProductID = String.Empty;
             try
             {
-                AliExpressPostProductModel model = new AliExpressPostProductModel();
-                model.category_id = dbProduct.CategoryID.Value;
-                model.locale = "es_EN";
-                model.product_units_type = "100000015";
-                model.image_url_list = new List<string>() { "https://upload.wikimedia.org/wikipedia/commons/b/ba/E-SENS_architecture.jpg" };
-                model.inventory_deduction_strategy = "payment_success_deduct";
+                //AliExpressPostProductModel model = new AliExpressPostProductModel();
+                //model.category_id = dbProduct.CategoryID.Value;
+                //model.locale = "es_EN";
+                //model.product_units_type = "100000015";
+                //model.image_url_list = new List<string>() { "https://upload.wikimedia.org/wikipedia/commons/b/ba/E-SENS_architecture.jpg" };
+                //model.inventory_deduction_strategy = "payment_success_deduct";
 
-                model.title_multi_language_list = new List<TitleMultiLanguageList>();
-                TitleMultiLanguageList _titleMultiLanguageList = new TitleMultiLanguageList();
-                _titleMultiLanguageList.locale = "es_EN";
-                _titleMultiLanguageList.title = dbProduct.Title;
-                model.title_multi_language_list.Add(_titleMultiLanguageList);
+                //model.title_multi_language_list = new List<TitleMultiLanguageList>();
+                //TitleMultiLanguageList _titleMultiLanguageList = new TitleMultiLanguageList();
+                //_titleMultiLanguageList.locale = "es_EN";
+                //_titleMultiLanguageList.title = dbProduct.Title;
+                //model.title_multi_language_list.Add(_titleMultiLanguageList);
 
-                model.sku_info_list = new List<SkuInfoList>();
-                SkuInfoList sku_info = new SkuInfoList();
-                sku_info.inventory = Convert.ToInt32(dbProduct.Inventory);
-                sku_info.sku_code =dbProduct.OriginalProductID;
-                sku_info.price = Convert.ToInt32(dbProduct.SellingPrice);
-
-                model.category_attributes.BrandName.value = dbProduct.Brand;
-                model.category_attributes.Color.value = dbProduct.Color;
-                model.category_attributes.Size.value = dbProduct.Size;
-                model.category_attributes.ManufacturerName.value = dbProduct.ManufacturerName;
+                //model.sku_info_list = new List<SkuInfoList>();
+                //SkuInfoList sku_info = new SkuInfoList();
+                //sku_info.inventory = Convert.ToInt32(dbProduct.Inventory);
+                //sku_info.sku_code =dbProduct.OriginalProductID;
+                //sku_info.price = Convert.ToInt32(dbProduct.SellingPrice);
 
 
+                //model.category_attributes = new CategoryAttributes();
 
-                string json = Newtonsoft.Json.JsonConvert.SerializeObject(model);
+                //model.category_attributes.BrandName = new BrandName();
+                //model.category_attributes.BrandName.value = dbProduct.Brand;
+                //model.category_attributes.Color = new Color();
+                //model.category_attributes.Color.value = dbProduct.Color;
+                //model.category_attributes.Size = new Size();
+                //model.category_attributes.Size.value = dbProduct.Size;
+                //model.category_attributes.ManufacturerName = new ManufacturerName();
+                //model.category_attributes.ManufacturerName.value = dbProduct.ManufacturerName;
 
+                //string json = Newtonsoft.Json.JsonConvert.SerializeObject(model);
+
+                //ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret);
+                //AliexpressSolutionSchemaProductInstancePostRequest req = new AliexpressSolutionSchemaProductInstancePostRequest();
+                //req.ProductInstanceRequest = "{\"category_id\":348,\"title_multi_language_list\":[{\"locale\":\"es_ES\",\"title\":\"atestproducttesttest001\"}],\"description_multi_language_list\":[{\"locale\":\"es_ES\",\"module_list\":[{\"type\":\"html\",\"html\":{\"content\":\"unotesttestdescription002\"}}]}],\"locale\":\"es_ES\",\"product_units_type\":\"100000015\",\"image_url_list\":[\"https://upload.wikimedia.org/wikipedia/commons/b/ba/E-SENS_architecture.jpg\"],\"category_attributes\":{\"BrandName\":{\"value\":\"200010868\"},\"ShirtsType\":{\"value\":\"200001208\"},\"Material\":{\"value\":[\"567\"]},\"SleeveLength(cm)\":{\"value\":\"200001500\"}},\"sku_info_list\":[{\"sku_code\":\"WEO19293829123\",\"inventory\":3,\"price\":9900,\"discount_price\":9800,\"sku_attributes\":{\"Size\":{\"alias\":\"Uni\",\"value\":\"200003528\"}}}],\"inventory_deduction_strategy\":\"payment_success_deduct\",\"package_weight\":1.5,\"package_length\":10,\"package_height\":20,\"package_width\":30,\"shipping_preparation_time\":3,\"shipping_template_id\":\"714844311\",\"service_template_id\":\"0\"}";
+                //req.ProductInstanceRequest = json;
+
+                //ITopClient client = new DefaultTopClient(url, appkey, secret);
                 ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret);
                 AliexpressSolutionSchemaProductInstancePostRequest req = new AliexpressSolutionSchemaProductInstancePostRequest();
-                //req.ProductInstanceRequest = "{\"category_id\":348,\"title_multi_language_list\":[{\"locale\":\"es_ES\",\"title\":\"atestproducttesttest001\"}],\"description_multi_language_list\":[{\"locale\":\"es_ES\",\"module_list\":[{\"type\":\"html\",\"html\":{\"content\":\"unotesttestdescription002\"}}]}],\"locale\":\"es_ES\",\"product_units_type\":\"100000015\",\"image_url_list\":[\"https://upload.wikimedia.org/wikipedia/commons/b/ba/E-SENS_architecture.jpg\"],\"category_attributes\":{\"BrandName\":{\"value\":\"200010868\"},\"ShirtsType\":{\"value\":\"200001208\"},\"Material\":{\"value\":[\"567\"]},\"SleeveLength(cm)\":{\"value\":\"200001500\"}},\"sku_info_list\":[{\"sku_code\":\"WEO19293829123\",\"inventory\":3,\"price\":9900,\"discount_price\":9800,\"sku_attributes\":{\"Size\":{\"alias\":\"Uni\",\"value\":\"200003528\"}}}],\"inventory_deduction_strategy\":\"payment_success_deduct\",\"package_weight\":1.5,\"package_length\":10,\"package_height\":20,\"package_width\":30,\"shipping_preparation_time\":3,\"shipping_template_id\":\"714844311\",\"service_template_id\":\"0\"}";
-                req.ProductInstanceRequest = json;
-                AliexpressSolutionSchemaProductInstancePostResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
-                Console.WriteLine(rsp.Body);
+                req.ProductInstanceRequest = "{\"category_id\":348,\"title_multi_language_list\":[{\"locale\":\"es_ES\",\"title\":\"atestproducttesttest001\"}],\"description_multi_language_list\":[{\"locale\":\"es_ES\",\"module_list\":[{\"type\":\"html\",\"html\":{\"content\":\"unotesttestdescription002\"}}]}],\"locale\":\"es_ES\",\"product_units_type\":\"100000015\",\"image_url_list\":[\"https://upload.wikimedia.org/wikipedia/commons/b/ba/E-SENS_architecture.jpg\"],\"category_attributes\":{\"BrandName\":{\"value\":\"200010868\"},\"ShirtsType\":{\"value\":\"200001208\"},\"Material\":{\"value\":[\"567\"]},\"SleeveLength(cm)\":{\"value\":\"200001500\"}},\"sku_info_list\":[{\"sku_code\":\"WEO19293829123\",\"inventory\":3,\"price\":9900,\"discount_price\":9800,\"sku_attributes\":{\"Size\":{\"alias\":\"Uni\",\"value\":\"200003528\"}}}],\"inventory_deduction_strategy\":\"payment_success_deduct\",\"package_weight\":1.5,\"package_length\":10,\"package_height\":20,\"package_width\":30,\"shipping_preparation_time\":3,\"shipping_template_id\":\"714844311\",\"service_template_id\":\"0\"}";
+
+                if (SessionManager.GetAccessToken().access_token != null)
+                {
+                    AliexpressSolutionSchemaProductInstancePostResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
+                    Console.WriteLine(rsp.Body);
+                }
+                
             }
             catch (Exception ex)
             {

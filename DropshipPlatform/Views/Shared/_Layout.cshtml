@@ -29,7 +29,17 @@
                         <div class="top_bar_user">
                             <div class="user_icon"><i class="fa fa-user-o pt-1" aria-hidden="true"></i></div>
                             <div><b><a href="#">Lorem Ipsum</a></b></div>
-                            <div><a href="#">Logout</a></div>
+                            <div>
+                                @if (Session["UserName"] == null)
+                                {
+                                    <a href="@Url.Action("Index", "Login")">Log in</a>
+                                }
+                                else
+                                {
+                                    <a href="@Url.Action("Index", "Logout")">Log out</a>
+                                }
+                            </div>
+                            
                         </div>
                     </div>
                 </div>
@@ -55,13 +65,14 @@
                                 <li class="nav-item dropdown">
                                     <a id="dropdownMenu1" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">Product</a>
                                     <ul aria-labelledby="dropdownMenu1" class="dropdown-menu border-0 shadow">
+                                        <li><a href="@Url.Action("Index", "Products")" class="dropdown-item">Products</a></li>
                                         <li><a href="@Url.Action("PickupProduct", "Products")" class="dropdown-item">Pick up Products</a></li>
-                                        <li><a href="store-order-management.html" class="dropdown-item">Store Orders</a></li>
+                                        @*<li><a href="store-order-management.html" class="dropdown-item">Store Orders</a></li>*@
 
-                                        <li class="dropdown-divider"></li>
+                                        @*<li class="dropdown-divider"></li>*@
 
                                         <!-- Level two dropdown-->
-                                        <li class="nav-item dropdown">
+                                        @*<li class="nav-item dropdown">
                                             <a id="dropdownMenu1" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">Product</a>
                                             <ul aria-labelledby="dropdownMenu1" class="dropdown-menu border-0 shadow">
                                                 <li><a href="@Url.Action("PickupProduct", "Products")" class="dropdown-item">Pick up Products</a></li>
@@ -71,10 +82,11 @@
 
 
                                             </ul>
-                                        </li>
+                                        </li>*@
                                         <!-- End Level two -->
                                     </ul>
                                 </li>
+                                <li class="nav-item"><a href="@Url.Action("Index", "MyAccount")" class="nav-link">My Account</a></li>
                             </ul>
                         </div>
                     </div>

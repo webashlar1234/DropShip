@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace DropshipPlatform.DLL
+namespace DropshipPlatform.Entity
 {
     using System;
     using System.Collections.Generic;

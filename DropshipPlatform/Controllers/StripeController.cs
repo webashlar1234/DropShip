@@ -1,5 +1,5 @@
 ﻿using DropshipPlatform.BLL.Services;
-using DropshipPlatform.DLL;
+using DropshipPlatform.Entity;
 using System;
 using System.IO;
 using System.Web;
@@ -124,6 +124,5 @@ namespace DropshipPlatform.Controllers
             User user = SessionManager.GetUserSession();
             return Json(_stripeService.DeletePaymentMethod(paymentMethodID), JsonRequestBehavior.AllowGet);
         }
-
     }
 }

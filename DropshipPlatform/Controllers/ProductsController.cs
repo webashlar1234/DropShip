@@ -1,6 +1,6 @@
 ﻿using DropshipPlatform.BLL.Models;
 using DropshipPlatform.BLL.Services;
-using DropshipPlatform.DLL;
+using DropshipPlatform.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,6 +43,10 @@ namespace DropshipPlatform.Controllers
 
         public ActionResult PickupProduct()
         {
+            //if (SessionManager.GetAccessToken().access_token == null)
+            //{
+            //    return RedirectToAction("Index", "AliExpress");
+            //}
             ViewBag.AliCategory = new CategoryService().getCategories();
             return View();
         }
@@ -55,7 +59,7 @@ namespace DropshipPlatform.Controllers
 
         [HttpPost]
         public JsonResult UpdatePickedProduct(List<UpdateProductModel> UpdatedModels)
-        {
+        {          
             bool result = false;
             result = _productService.UpdatePickedProduct(UpdatedModels);
             //string pId = _productService.SyncWithAliExpress();
