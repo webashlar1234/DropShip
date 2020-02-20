@@ -59,7 +59,7 @@ namespace DropshipPlatform.Controllers
 
         [HttpPost]
         public JsonResult UpdatePickedProduct(List<UpdateProductModel> UpdatedModels)
-        {
+        {          
             bool result = false;
             result = _productService.UpdatePickedProduct(UpdatedModels);
             //string pId = _productService.SyncWithAliExpress();

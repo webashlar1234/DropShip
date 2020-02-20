@@ -261,18 +261,18 @@ namespace DropshipPlatform.BLL.Services
             string result = String.Empty;
             try
             {
-                AliExpressPostProductModel model = new AliExpressPostProductModel();
-                model.category_id = dbProduct.CategoryID.Value;
-                model.locale = "es_EN";
-                model.product_units_type = "100000015";
-                model.image_url_list = new List<string>() { "https://upload.wikimedia.org/wikipedia/commons/b/ba/E-SENS_architecture.jpg" };
-                model.inventory_deduction_strategy = "payment_success_deduct";
+                //AliExpressPostProductModel model = new AliExpressPostProductModel();
+                //model.category_id = dbProduct.CategoryID.Value;
+                //model.locale = "es_EN";
+                //model.product_units_type = "100000015";
+                //model.image_url_list = new List<string>() { "https://upload.wikimedia.org/wikipedia/commons/b/ba/E-SENS_architecture.jpg" };
+                //model.inventory_deduction_strategy = "payment_success_deduct";
 
-                model.title_multi_language_list = new List<TitleMultiLanguageList>();
-                TitleMultiLanguageList _titleMultiLanguageList = new TitleMultiLanguageList();
-                _titleMultiLanguageList.locale = "es_EN";
-                _titleMultiLanguageList.title = dbProduct.Title;
-                model.title_multi_language_list.Add(_titleMultiLanguageList);
+                //model.title_multi_language_list = new List<TitleMultiLanguageList>();
+                //TitleMultiLanguageList _titleMultiLanguageList = new TitleMultiLanguageList();
+                //_titleMultiLanguageList.locale = "es_EN";
+                //_titleMultiLanguageList.title = dbProduct.Title;
+                //model.title_multi_language_list.Add(_titleMultiLanguageList);
 
                 model.sku_info_list = new List<SkuInfoList>();
                 SkuInfoList sku_info = new SkuInfoList();
@@ -294,6 +294,7 @@ namespace DropshipPlatform.BLL.Services
 
                 string json = JsonConvert.SerializeObject(model);
 
+                //string json = Newtonsoft.Json.JsonConvert.SerializeObject(model);
 
                 ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret, "json");
                 AliexpressSolutionFeedSubmitRequest req = new AliexpressSolutionFeedSubmitRequest();
