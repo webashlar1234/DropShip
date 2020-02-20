@@ -20,9 +20,6 @@ var category = {
             serverSide: true,
             sort: true,
             filter: true,
-            search: {
-                //search: "Search"
-            },
             language: {
                 sSearch: "",
                 searchPlaceholder: "Search category",
@@ -38,13 +35,13 @@ var category = {
             initComplete: function (setting, json) {
                 var input = $('.dataTables_filter input').unbind(),
                     self = this.api(),
-                    $searchButton = $('<button>')
-                        .text('search')
+                    $searchButton = $('<button class="btn btn-sm btn-black mr-2 ml-2">')
+                        .text('Search')
                         .click(function () {
                             self.search(input.val()).draw();
                         }),
-                    $clearButton = $('<button>')
-                        .text('clear')
+                    $clearButton = $('<button class="btn btn-sm  btn-white">')
+                        .text('Clear')
                         .click(function () {
                             input.val('');
                             $searchButton.click();
@@ -135,7 +132,7 @@ var category = {
 $(document).ready(function () {
     category.init();
     $('#category-filter').change(function () {
-        category.change();
+        //category.change();
     });
     $(document).on('change', '.dllAliExpressCat', function () {
         if ($(this).val() > 0) {

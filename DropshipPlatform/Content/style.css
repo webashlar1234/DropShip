@@ -441,7 +441,6 @@ button:focus {
         font-size: 2.8rem;
         font-weight: 300;
         color: #000000;
-        padding-top: 15px;
     }
 
     .testim .cont div p {
@@ -450,7 +449,6 @@ button:focus {
         width: 80%;
         margin: auto;
         text-align: center;
-        padding-top: 30px;
     }
 
     .testim .cont div.active .img img {

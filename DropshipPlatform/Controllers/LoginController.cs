@@ -34,7 +34,7 @@ namespace DropshipPlatform.Controllers
                     SessionManager.SetUserSession(user);
                     Session["UserName"] = user.Name;
                     Session["UserID"] = user.UserID;
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Index", "AliExpress");
                 }
             }
             catch (Exception ex)
