@@ -156,15 +156,24 @@ getPublicKey();
 var orderComplete = function (subscription) {
     changeLoadingState(false);
     var subscriptionJson = JSON.stringify(subscription, null, 2);
-    document.querySelectorAll('.payment-view').forEach(function (view) {
-        view.classList.add('hidden');
-    });
-    document.querySelectorAll('.completed-view').forEach(function (view) {
-        view.classList.remove('hidden');
-    });
-    document.querySelector('.order-status').textContent = subscription.Status;
-    document.querySelector('#code').textContent = JSON.stringify(subscription.LatestInvoice);
     console.log('subscriptionJson', subscriptionJson);
+
+    subscription.CurrentPeriodStart = global.jsonDateToDatetime(subscription.CurrentPeriodStart);
+    subscription.CurrentPeriodEnd = global.jsonDateToDatetime(subscription.CurrentPeriodEnd);
+
+    $.ajax({
+        type: "POST",
+        url: "/Subscriptions/SaveSubscriptionToDb",
+        dataType: "json",
+        data: {subscription:subscription},
+        async: false,
+        success: function (data) {
+            SuccessMessage("Your Subscription created successfully");
+            window.location.href = "/MyAccount";
+        }
+    });
+    //document.querySelector('.order-status').textContent = subscription.Status;
+    //document.querySelector('#code').textContent = JSON.stringify(subscription.LatestInvoice);
 };
 
 // Show a spinner on subscription submission

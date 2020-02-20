@@ -1,5 +1,6 @@
 ﻿using DropshipPlatform.BLL.Models;
 using DropshipPlatform.BLL.Services;
+using DropshipPlatform.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +30,8 @@ namespace DropshipPlatform.Controllers
                 response = userService.LoginUser(model);
                 if (response.IsSuccess)
                 {
-                    UserModel user = (UserModel)response.Data;
+                    User user = (User)response.Data;
+                    SessionManager.SetUserSession(user);
                     Session["UserName"] = user.Name;
                     Session["UserID"] = user.UserID;
                     return RedirectToAction("Index", "Home");
@@ -71,6 +73,15 @@ namespace DropshipPlatform.Controllers
             }
             ViewBag.Message = response.Message;
             return View();
+        }
+
+        public void UpdateUserSession()
+        {
+            User user = new UserService().GetUser(SessionManager.GetUserSession().UserID);
+            if (user != null)
+            {
+                SessionManager.SetUserSession(user);
+            }
         }
     }
 }

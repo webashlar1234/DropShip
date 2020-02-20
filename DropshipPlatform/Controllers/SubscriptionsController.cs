@@ -1,5 +1,7 @@
 ﻿using DropshipPlatform.BLL.Models;
+using DropshipPlatform.BLL.Services;
 using DropshipPlatform.BLL.SubscriptionModels;
+using DropshipPlatform.Entity;
 using Stripe;
 using System;
 using System.Collections.Generic;
@@ -11,15 +13,18 @@ namespace DropshipPlatform.Controllers
 {
     public class SubscriptionsController : Controller
     {
+        StripeService _stripeService = new StripeService();
+
         private readonly StripeClient client;
         public SubscriptionsController()
         {
             this.client = new StripeClient(StaticValues.stripeTestSecretKey);
         }
 
-        public ActionResult Index()
+        public ActionResult Index(int PlandID)
         {
-            return View();
+            MembershipType model = new MemberShipService().GetMemberShipDetail(PlandID);
+            return View(model);
         }
 
         //[HttpGet]
@@ -33,41 +38,27 @@ namespace DropshipPlatform.Controllers
         [HttpPost]
         public async Task<JsonResult> CreateCustomerAsync(CustomerCreateRequest request)
         {
-            Subscription result = new Subscription();
+            Stripe.Subscription result = new Stripe.Subscription();
+            bool hasPaymentMethod = true;
             try
-            {
-                var customerService = new CustomerService(this.client);
-
-                var customer = await customerService.CreateAsync(new CustomerCreateOptions
+            { 
+                User user = SessionManager.GetUserSession();
+                if (string.IsNullOrEmpty(user.StripeCustomerID))
                 {
-                    Email = request.Email,
-                    PaymentMethod = request.PaymentMethod,
-                    InvoiceSettings = new CustomerInvoiceSettingsOptions
-                    {
-                        DefaultPaymentMethod = request.PaymentMethod,
-                    }
-                });
-
-                var subscriptionService = new SubscriptionService(this.client);
-
-                var subscription = await subscriptionService.CreateAsync(new SubscriptionCreateOptions
+                    hasPaymentMethod = _stripeService.stripe_CreateCustomer(user, request.PaymentMethod);
+                    new LoginController().UpdateUserSession();
+                    user = SessionManager.GetUserSession();
+                }
+                else
                 {
-                    Items = new List<SubscriptionItemOptions>
+                    hasPaymentMethod = _stripeService.AddCardToExistingCustomer(request.PaymentMethod, user.StripeCustomerID);
+                }
+                if (hasPaymentMethod)
                 {
-                    new SubscriptionItemOptions {
-                        Plan = "plan_GiQrXsdH6vbs2u"   // created on stripe
-                        },
-                },
-                    Customer = customer.Id,
-                    Expand = new List<string> { "latest_invoice.payment_intent" }
-                });
-                result = subscription;
-                //return subscription;
-
+                    result = _stripeService.CreateSubscription(user.StripeCustomerID, "plan_GiQrXsdH6vbs2u");
+                }
             }
-#pragma warning disable CS0168 // The variable 'ex' is declared but never used
             catch (Exception ex)
-#pragma warning restore CS0168 // The variable 'ex' is declared but never used
             {
                 throw;
             }
@@ -102,20 +93,20 @@ namespace DropshipPlatform.Controllers
         [HttpPost]
         public JsonResult createPlan(PlanViewModel planModel)
         {
-            string result = String.Empty;
-            StripeConfiguration.ApiKey = StaticValues.stripeTestAPIKey;
-            var options = new PlanCreateOptions
+            bool result = true;
+            result = _stripeService.CreatePlan(SessionManager.GetUserSession(), planModel);
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public JsonResult SaveSubscriptionToDb(SubscriptionModel subscription)
+        {
+            bool result = true;
+            User user = SessionManager.GetUserSession();
+            if (user != null && subscription != null)
             {
-                Product = new PlanProductCreateOptions
-                {
-                    Name = planModel.name
-                },
-                Amount = planModel.amount,
-                Currency = planModel.currency,
-                Interval = planModel.interval
-            };
-            var service = new PlanService();
-            Plan plan = service.Create(options);
+                result = _stripeService.SaveSubscriptionToDb(user, subscription);
+            }
             return Json(result, JsonRequestBehavior.AllowGet);
         }
     }

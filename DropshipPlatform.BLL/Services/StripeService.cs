@@ -1,4 +1,5 @@
 ﻿using DropshipPlatform.BLL.Models;
+using DropshipPlatform.BLL.SubscriptionModels;
 using DropshipPlatform.Entity;
 using Stripe;
 using System;
@@ -52,7 +53,11 @@ namespace DropshipPlatform.BLL.Services
                     Name = user.Name,
                     Email = user.EmailID,
                     Phone = user.Phone,
-                    PaymentMethod = string.IsNullOrEmpty(PaymentMethodId) ? null : PaymentMethodId
+                    PaymentMethod = string.IsNullOrEmpty(PaymentMethodId) ? null : PaymentMethodId,
+                    InvoiceSettings = new CustomerInvoiceSettingsOptions
+                    {
+                        DefaultPaymentMethod = PaymentMethodId
+                    }
                 };
                 var service = new CustomerService();
                 var customer  = service.Create(options);
@@ -101,7 +106,7 @@ namespace DropshipPlatform.BLL.Services
             return result;
         }
 
-        public bool AddCardToExistingCustomer(SetupIntent intent, string StripeCustomerID)
+        public bool AddCardToExistingCustomer(string PaymentMethodId, string StripeCustomerID)
         {
             bool result = true;
             try
@@ -111,7 +116,7 @@ namespace DropshipPlatform.BLL.Services
                     Customer = StripeCustomerID,
                 };
                 var service = new PaymentMethodService();
-                var paymentMethod = service.Attach(intent.PaymentMethodId, options);
+                var paymentMethod = service.Attach(PaymentMethodId, options);
             }
             catch (Exception ex)
             {
@@ -207,6 +212,157 @@ namespace DropshipPlatform.BLL.Services
             }
 
             return result;
+        }
+
+        public bool SaveSubscriptionToDb(User user, SubscriptionModel subscription)
+        {
+            bool result = true;
+            try
+            {
+                using (DropshipDataEntities datacontext = new DropshipDataEntities())
+                {
+                    List<Entity.Subscription> list = datacontext.Subscriptions.Where(x => x.UserID == user.UserID).ToList();
+
+                    foreach(var item in list)
+                    {
+                        item.IsActive = false;
+                        datacontext.Entry(item).State = System.Data.Entity.EntityState.Modified;
+                    }
+
+                    Entity.Subscription obj = new Entity.Subscription();
+                    obj.UserID = user.UserID;
+                    obj.StripeSubscriptionID = subscription.Id;
+                    obj.MembershipID = datacontext.MembershipTypes.Where(x => x.StripePlanID == subscription.Plan.Id).FirstOrDefault().MembershipID;
+                    obj.MembershipStartDate = subscription.CurrentPeriodStart;
+                    obj.MembershipExpiredDate = subscription.CurrentPeriodEnd;
+                    obj.MembershipCreatedOn = DateTime.Now;
+                    obj.MembershipCreatedBy = user.UserID;
+                    obj.IsActive = true;
+
+                    datacontext.Subscriptions.Add(obj);
+                    datacontext.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString());
+                result = false;
+            }
+
+            return result;
+        }
+
+        public bool CreatePlan(User user, PlanViewModel planModel)
+        {
+            bool result = true;
+            try
+            {
+                var options = new PlanCreateOptions
+                {
+                    Product = new PlanProductCreateOptions
+                    {
+                        Name = planModel.name
+                    },
+                    Amount = planModel.amount,
+                    Currency = planModel.currency,
+                    Interval = planModel.interval
+                };
+                var service = new PlanService();
+                Plan plan = service.Create(options);
+
+                if (plan != null)
+                {
+                    using (DropshipDataEntities datacontext = new DropshipDataEntities())
+                    {
+                        MembershipType obj = new MembershipType();
+                        obj.Name = planModel.name;
+                        obj.StripePlanID = plan.Id;
+                        obj.Type = planModel.interval;
+                        obj.Price = (int)planModel.amount;
+                        obj.ItemCreatedBy = user.UserID;
+                        obj.ItemCreatedWhen = DateTime.Now;
+
+                        datacontext.MembershipTypes.Add(obj);
+                        datacontext.SaveChanges();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString());
+                result = false;
+            }
+
+            return result;
+        }
+
+        public Stripe.Subscription CreateSubscription(string StripeCustomerID, string PlanID)
+        {
+            Stripe.Subscription subscription = new Stripe.Subscription();
+            try
+            {
+                var subscriptionService = new SubscriptionService();
+
+                subscription = subscriptionService.Create(new SubscriptionCreateOptions
+                {
+                    Items = new List<SubscriptionItemOptions>
+                            {
+                                new SubscriptionItemOptions {
+                                    Plan = PlanID
+                                    },
+                            },
+                    Customer = StripeCustomerID,
+                    Expand = new List<string> { "latest_invoice.payment_intent" }
+                });
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString());
+            }
+            return subscription;
+        }
+
+        public Stripe.Subscription UpgradeSubscription(string SubscriptionID, string PlanID)
+        {
+            Stripe.Subscription subscription = new Stripe.Subscription();
+            try
+            {
+                var options = new SubscriptionUpdateOptions
+                {
+                    Items = new List<SubscriptionItemOptions>
+                            {
+                                new SubscriptionItemOptions {
+                                    Plan = PlanID
+                                    },
+                            },
+                };
+                var service = new SubscriptionService();
+                subscription = service.Update(SubscriptionID, options);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString());
+            }
+            return subscription;
+        }
+
+        public Stripe.Subscription CancelSubscription(string SubscriptionID)
+        {
+            Stripe.Subscription subscription = new Stripe.Subscription();
+            try
+            {
+                var service = new SubscriptionService();
+                var options = new SubscriptionCancelOptions
+                {
+                    InvoiceNow = true
+                };
+                service.Cancel(SubscriptionID, options);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString());
+            }
+            return subscription;
         }
     }
 }

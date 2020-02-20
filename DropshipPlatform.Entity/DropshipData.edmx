@@ -107,8 +107,10 @@
             <PropertyRef Name="MembershipID" />
           </Key>
           <Property Name="MembershipID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="100" />
+          <Property Name="StripePlanID" Type="nvarchar" MaxLength="100" />
           <Property Name="Type" Type="nvarchar" MaxLength="50" />
-          <Property Name="Price" Type="int" />
+          <Property Name="Price" Type="float" />
           <Property Name="PickLimit" Type="int" />
           <Property Name="Description" Type="nvarchar(max)" />
           <Property Name="CycleType" Type="int" />
@@ -244,8 +246,11 @@
           <Property Name="SubscriptionID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="MembershipID" Type="int" />
           <Property Name="UserID" Type="int" />
+          <Property Name="StripeSubscriptionID" Type="nvarchar" MaxLength="100" />
           <Property Name="NextBillDate" Type="datetime" />
+          <Property Name="MembershipStartDate" Type="datetime" />
           <Property Name="MembershipExpiredDate" Type="datetime" />
+          <Property Name="IsActive" Type="bit" />
           <Property Name="MembershipCreatedBy" Type="int" />
           <Property Name="MembershipCreatedOn" Type="datetime" />
           <Property Name="MembershipModifyBy" Type="int" />
@@ -426,6 +431,8 @@
           <Property Name="ItemModifyBy" Type="Int32" />
           <Property Name="ItemModifyWhen" Type="DateTime" Precision="3" />
           <Property Name="OrderLimit" Type="Int32" />
+          <Property Name="StripePlanID" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Order">
           <Key>
@@ -559,6 +566,9 @@
           <Property Name="MembershipCreatedOn" Type="DateTime" Precision="3" />
           <Property Name="MembershipModifyBy" Type="Int32" />
           <Property Name="MembershipModifyOn" Type="DateTime" Precision="3" />
+          <Property Name="StripeSubscriptionID" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="MembershipStartDate" Type="DateTime" Precision="3" />
+          <Property Name="IsActive" Type="Boolean" />
         </EntityType>
         <EntityType Name="User_Roles">
           <Key>
@@ -703,6 +713,8 @@
           <EntitySetMapping Name="MembershipTypes">
             <EntityTypeMapping TypeName="DropshipDataModel.MembershipType">
               <MappingFragment StoreEntitySet="MembershipTypes">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="StripePlanID" ColumnName="StripePlanID" />
                 <ScalarProperty Name="OrderLimit" ColumnName="OrderLimit" />
                 <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
                 <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
@@ -846,6 +858,9 @@
           <EntitySetMapping Name="Subscriptions">
             <EntityTypeMapping TypeName="DropshipDataModel.Subscription">
               <MappingFragment StoreEntitySet="Subscriptions">
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="MembershipStartDate" ColumnName="MembershipStartDate" />
+                <ScalarProperty Name="StripeSubscriptionID" ColumnName="StripeSubscriptionID" />
                 <ScalarProperty Name="MembershipModifyOn" ColumnName="MembershipModifyOn" />
                 <ScalarProperty Name="MembershipModifyBy" ColumnName="MembershipModifyBy" />
                 <ScalarProperty Name="MembershipCreatedOn" ColumnName="MembershipCreatedOn" />

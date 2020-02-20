@@ -40,6 +40,14 @@
             selectedItems.push($(item).attr(attrid));
         });
         return selectedItems;
+    },
+    jsonDateToDatetime(dateStr) {
+        var date = new Date(parseInt(dateStr.substr(6)));
+        var formatted = date.getFullYear() + "-" +
+              ("0" + (date.getMonth() + 1)).slice(-2) + "-" +
+              ("0" + date.getDate()).slice(-2) + " " + date.getHours() + ":" +
+              date.getMinutes();
+        return formatted;
     }
 }
 

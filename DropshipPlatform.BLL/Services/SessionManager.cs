@@ -29,9 +29,7 @@ namespace DropshipPlatform.BLL.Services
                     token = Newtonsoft.Json.JsonConvert.DeserializeObject<AliExpressAccessToken>(HttpUtility.UrlDecode(data));
                 }
             }
-#pragma warning disable CS0168 // The variable 'ex' is declared but never used
             catch (Exception ex)
-#pragma warning restore CS0168 // The variable 'ex' is declared but never used
             {
 
             }
@@ -76,16 +74,10 @@ namespace DropshipPlatform.BLL.Services
                     token = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(HttpUtility.UrlDecode(data));
                 }
             }
-#pragma warning disable CS0168 // The variable 'ex' is declared but never used
             catch (Exception ex)
-#pragma warning restore CS0168 // The variable 'ex' is declared but never used
             {
 
             }
-            token.UserID = 1;
-            token.Name = "Priti";
-            token.EmailID = "priti@gmail.com";
-            token.StripeCustomerID = "cus_GhDpDtCJ8WM9ZO";
             return token;
         }
     }

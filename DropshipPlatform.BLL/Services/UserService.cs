@@ -26,14 +26,14 @@ namespace DropshipPlatform.BLL.Services
                     User dbUser = datacontext.Users.Where(m => m.EmailID == model.Email && m.Password == model.Password).FirstOrDefault();
                     if (dbUser != null)
                     {
-                        UserModel userModel = new UserModel();
-                        userModel.UserID = dbUser.UserID;
-                        userModel.Name = dbUser.Name;
-                        userModel.IsPolicyAccepted = dbUser.IsPolicyAccepted.Value;
-                        userModel.AliExpressSellerID = dbUser.AliExpressSellerID;
-                        userModel.StripeCustomerID = dbUser.StripeCustomerID;
+                        //UserModel userModel = new UserModel();
+                        //userModel.UserID = dbUser.UserID;
+                        //userModel.Name = dbUser.Name;
+                        //userModel.IsPolicyAccepted = dbUser.IsPolicyAccepted.Value;
+                        //userModel.AliExpressSellerID = dbUser.AliExpressSellerID;
+                        //userModel.StripeCustomerID = dbUser.StripeCustomerID;
 
-                        response.Data = userModel;
+                        response.Data = dbUser;
                         response.Message = "Success";
                         response.IsSuccess = true;
                     }
@@ -80,6 +80,24 @@ namespace DropshipPlatform.BLL.Services
                 response.IsSuccess = false;
             }
             return response;
+        }
+
+        public User GetUser(int UserID)
+        {
+            User dbUser = new User();
+            try
+            {
+                using (DropshipDataEntities datacontext = new DropshipDataEntities())
+                {
+                    dbUser = datacontext.Users.Where(m => m.UserID == UserID).FirstOrDefault();
+                }
+            }
+            catch (Exception ex)
+            {
+                dbUser = null;
+                logger.Error(ex.ToString());
+            }
+            return dbUser;
         }
     }
 }

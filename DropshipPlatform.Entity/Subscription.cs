@@ -23,5 +23,8 @@ namespace DropshipPlatform.Entity
         public Nullable<System.DateTime> MembershipCreatedOn { get; set; }
         public Nullable<int> MembershipModifyBy { get; set; }
         public Nullable<System.DateTime> MembershipModifyOn { get; set; }
+        public string StripeSubscriptionID { get; set; }
+        public Nullable<System.DateTime> MembershipStartDate { get; set; }
+        public Nullable<bool> IsActive { get; set; }
     }
 }

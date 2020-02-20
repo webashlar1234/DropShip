@@ -97,7 +97,7 @@ namespace DropshipPlatform.Controllers
             }
             else
             {
-                result =_stripeService.AddCardToExistingCustomer(intent, user.StripeCustomerID);
+                result =_stripeService.AddCardToExistingCustomer(intent.PaymentMethodId, user.StripeCustomerID);
             }
             return Json(result, JsonRequestBehavior.AllowGet);
         }

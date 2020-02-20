@@ -1,4 +1,5 @@
 ﻿
+@model DropshipPlatform.Entity.MembershipType
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -8,12 +9,12 @@
 
 }
 
-<h4>Subscription</h4>
+@*<h4>Subscription</h4>*@
 <div class="sr-root">
     <div class="sr-main">
         <div class="sr-payment-summary payment-view">
-            <h1 class="order-amount">$10.00</h1>
-            <h4>Subscribe to the GOLD plan</h4>
+            <h1 class="order-amount">@Model.Price</h1>
+            <h4>Subscribe to the @Model.Name plan</h4>
         </div>
         <form>
             <div class="sr-payment-form payment-view">
@@ -41,7 +42,7 @@
                 </button>
                 <div class="sr-legal-text">
                     Your card will be immediately charged
-                    <span class="order-total">$14.00</span>.
+                    <span class="order-total">@Model.Price</span>.
                 </div>
             </div>
         </form>

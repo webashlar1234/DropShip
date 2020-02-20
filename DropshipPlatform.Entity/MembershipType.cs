@@ -25,5 +25,7 @@ namespace DropshipPlatform.Entity
         public Nullable<int> ItemModifyBy { get; set; }
         public Nullable<System.DateTime> ItemModifyWhen { get; set; }
         public Nullable<int> OrderLimit { get; set; }
+        public string StripePlanID { get; set; }
+        public string Name { get; set; }
     }
 }
