@@ -1,5 +1,5 @@
 ﻿using DropshipPlatform.BLL.Models;
-using DropshipPlatform.DLL;
+using DropshipPlatform.Entity;
 using Stripe;
 using System;
 using System.Collections.Generic;

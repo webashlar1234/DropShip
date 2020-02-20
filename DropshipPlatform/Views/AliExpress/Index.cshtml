@@ -2,7 +2,34 @@
 @{
     ViewBag.Title = "Index";
 }
+<link href="~/Content/custom/my-account.css" rel="stylesheet" />
+<section class="subsription mt-3">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <h5 class="box-title">
+                    Connect to AliExpress
+                </h5>
+            </div>
+        </div>
+        <div class="row">
+            @if (ViewBag.isAuthorised == true)
+            {
+                <div class="col-lg-12 mt-2">
+                    <h2 class="plan-title mt-2">Connected</h2>
+                    <p class="plan-description">You are conneced to aliexpress as <b> @ViewBag.AliExpressUserName </b></p>
+                </div>
+            }
+            else
+            {
+                <div class="col-lg-12 mt-2">
+                    <div class="subscription-box">
+                        <p class="plan-description">Login to alieExpress Account</p>
+                        <a href="@ViewBag.authorizeUrl" class="btn btn-dark btn-upgrade">Connect to AliExpress</a>
+                    </div>
+                </div>
+            }
 
-<h2>Index</h2>
-
-<a href="@ViewBag.authorizeUrl">Login</a>
+        </div>
+    </div>
+</section>

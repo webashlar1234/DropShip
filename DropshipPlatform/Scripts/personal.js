@@ -1,8 +1,8 @@
-$(document).ready(function() {
+$(document).ready(function () {
     //rotation speed and timer
     var speed = 3000;
 
-    $('#example').on('click', 'tbody td:not(:first-child)', function(e) {
+    $('#example').on('click', 'tbody td:not(:first-child)', function (e) {
         editor.inline(this);
     });
 
@@ -22,7 +22,7 @@ $(document).ready(function() {
 
     //if user clicked on prev button
 
-    $('#buttons a').click(function(e) {
+    $('#buttons a').click(function (e) {
         //slide the item
 
         if (container.is(':animated')) {
@@ -31,7 +31,7 @@ $(document).ready(function() {
         if (e.target.id == previous) {
             container.stop().animate({
                 'left': 0
-            }, 1500, function() {
+            }, 1500, function () {
                 container.find(elm + ':first').before(container.find(elm + ':last'));
                 resetSlides();
             });
@@ -40,7 +40,7 @@ $(document).ready(function() {
         if (e.target.id == next) {
             container.stop().animate({
                 'left': item_width * -2
-            }, 1500, function() {
+            }, 1500, function () {
                 container.find(elm + ':last').after(container.find(elm + ':first'));
                 resetSlides();
             });
@@ -52,9 +52,9 @@ $(document).ready(function() {
     });
 
     //if mouse hover, pause the auto rotation, otherwise rotate it    
-    container.parent().mouseenter(function() {
+    container.parent().mouseenter(function () {
         clearInterval(run);
-    }).mouseleave(function() {
+    }).mouseleave(function () {
         run = setInterval(rotate, speed);
     });
 
@@ -67,115 +67,115 @@ $(document).ready(function() {
     }
 
 
-    var myTable =  $('#example').DataTable({
+    var myTable = $('#example').DataTable({
         responsive: true
     });
-    $('#example').on('click', 'tbody td', function() {
+    $('#example').on('click', 'tbody td', function () {
         myTable.cell(this).edit('bubble');
     });
 
     var JsonData = {
 
         "data": [{
-                "title": "Grace Hopper",
-                "category": "Shirt",
-                "cost": "20",
-                "inventory": "12",
-                "shippingweight": "20 KG",
-                "status": "Online",
-                "updateprice": "Update",
-                "yourprice": "<input type=\"text\" name=\"price\">",
-                "check": "<input type=\"checkbox\" name=\"price\"> ",
-                "product": [
-                    "product1", "product2", "product1", "product2"
-                ],
-                "price": [
-                    "$5", "$5", "$5", "$5"
-                ],
-                "size": [
-                    "120 cm", "120 cm", "120 cm", "120 cm"
-                ],
-                "weight": [
-                    "55 kg", "55 kg", "55 kg", "55 kg"
-                ],
-                "color": [
-                    "red", "red", "red", "red"
-                ],
+            "title": "Grace Hopper",
+            "category": "Shirt",
+            "cost": "20",
+            "inventory": "12",
+            "shippingweight": "20 KG",
+            "status": "Online",
+            "updateprice": "Update",
+            "yourprice": "<input type=\"text\" name=\"price\">",
+            "check": "<input type=\"checkbox\" name=\"price\"> ",
+            "product": [
+                "product1", "product2", "product1", "product2"
+            ],
+            "price": [
+                "$5", "$5", "$5", "$5"
+            ],
+            "size": [
+                "120 cm", "120 cm", "120 cm", "120 cm"
+            ],
+            "weight": [
+                "55 kg", "55 kg", "55 kg", "55 kg"
+            ],
+            "color": [
+                "red", "red", "red", "red"
+            ],
 
-                "checkin": [
-                    "<input type=\"checkbox\" name=\"price\">", "<input type=\"checkbox\" name=\"price\">", "<input type=\"checkbox\" name=\"price\">", "<input type=\"checkbox\" name=\"price\">", "<input type=\"checkbox\" name=\"price\">"
-                ],
-            },
-            {
-                "title": "Grace Hopper",
-                "category": "Shirt",
-                "cost": "20",
-                "inventory": "12",
-                "shippingweight": "20 KG",
-                "status": "Online",
-                "updateprice": "Update",
-                "yourprice": "<input type=\"text\" name=\"price\">",
-                "check": "<input type=\"checkbox\" name=\"price\"> ",
-                "product": [
-                    "product1", "product2", "product1", "product2"
-                ],
-                "price": [
-                    "$5", "$5", "$5", "$5"
-                ],
-                "size": [
-                    "120 cm", "120 cm", "120 cm", "120 cm"
-                ],
-                "weight": [
-                    "55 kg", "55 kg", "55 kg", "55 kg"
-                ],
-                "color": [
-                    "red", "red", "red", "red"
-                ],
+            "checkin": [
+                "<input type=\"checkbox\" name=\"price\">", "<input type=\"checkbox\" name=\"price\">", "<input type=\"checkbox\" name=\"price\">", "<input type=\"checkbox\" name=\"price\">", "<input type=\"checkbox\" name=\"price\">"
+            ],
+        },
+        {
+            "title": "Grace Hopper",
+            "category": "Shirt",
+            "cost": "20",
+            "inventory": "12",
+            "shippingweight": "20 KG",
+            "status": "Online",
+            "updateprice": "Update",
+            "yourprice": "<input type=\"text\" name=\"price\">",
+            "check": "<input type=\"checkbox\" name=\"price\"> ",
+            "product": [
+                "product1", "product2", "product1", "product2"
+            ],
+            "price": [
+                "$5", "$5", "$5", "$5"
+            ],
+            "size": [
+                "120 cm", "120 cm", "120 cm", "120 cm"
+            ],
+            "weight": [
+                "55 kg", "55 kg", "55 kg", "55 kg"
+            ],
+            "color": [
+                "red", "red", "red", "red"
+            ],
 
-                "checkin": [
-                    "<input type=\"checkbox\" name=\"price\">", "<input type=\"checkbox\" name=\"price\">", "<input type=\"checkbox\" name=\"price\">", "<input type=\"checkbox\" name=\"price\">", "<input type=\"checkbox\" name=\"price\">"
-                ],
-            },
-            {
-                "title": "Grace Hopper",
-                "category": "Shirt",
-                "cost": "20",
-                "inventory": "12",
-                "shippingweight": "20 KG",
-                "status": "Online",
-                "updateprice": "Update",
-                "yourprice": "<input type=\"text\" name=\"price\">",
-                "check": "<input type=\"checkbox\" name=\"price\"> ",
-                "product": [
-                    "product1", "product2", "product1", "product2"
-                ],
-                "price": [
-                    "$5", "$5", "$5", "$5"
-                ],
-                "size": [
-                    "120 cm", "120 cm", "120 cm", "120 cm"
-                ],
-                "weight": [
-                    "55 kg", "55 kg", "55 kg", "55 kg"
-                ],
-                "color": [
-                    "red", "red", "red", "red"
-                ],
+            "checkin": [
+                "<input type=\"checkbox\" name=\"price\">", "<input type=\"checkbox\" name=\"price\">", "<input type=\"checkbox\" name=\"price\">", "<input type=\"checkbox\" name=\"price\">", "<input type=\"checkbox\" name=\"price\">"
+            ],
+        },
+        {
+            "title": "Grace Hopper",
+            "category": "Shirt",
+            "cost": "20",
+            "inventory": "12",
+            "shippingweight": "20 KG",
+            "status": "Online",
+            "updateprice": "Update",
+            "yourprice": "<input type=\"text\" name=\"price\">",
+            "check": "<input type=\"checkbox\" name=\"price\"> ",
+            "product": [
+                "product1", "product2", "product1", "product2"
+            ],
+            "price": [
+                "$5", "$5", "$5", "$5"
+            ],
+            "size": [
+                "120 cm", "120 cm", "120 cm", "120 cm"
+            ],
+            "weight": [
+                "55 kg", "55 kg", "55 kg", "55 kg"
+            ],
+            "color": [
+                "red", "red", "red", "red"
+            ],
 
-                "checkin": [
-                    "<input type=\"checkbox\" name=\"price\">", "<input type=\"checkbox\" name=\"price\">", "<input type=\"checkbox\" name=\"price\">", "<input type=\"checkbox\" name=\"price\">", "<input type=\"checkbox\" name=\"price\">"
-                ],
-            }
+            "checkin": [
+                "<input type=\"checkbox\" name=\"price\">", "<input type=\"checkbox\" name=\"price\">", "<input type=\"checkbox\" name=\"price\">", "<input type=\"checkbox\" name=\"price\">", "<input type=\"checkbox\" name=\"price\">"
+            ],
+        }
         ]
     }
 
     function format(d) {
         console.log(d.product);
         var trs = '';
-        $.each($(d.product), function(key, value) {
-                trs += '<tr><td>' + value + '</td><td>' + d.price[key] + '</td> <td>' + d.size[key] + '</td><td>' + d.weight[key] + '</td><td>' + d.color[key] + '</td><td>' + d.checkin[key] + '</td></tr>';
-            })
-            // `d` is the original data object for the row
+        $.each($(d.product), function (key, value) {
+            trs += '<tr><td>' + value + '</td><td>' + d.price[key] + '</td> <td>' + d.size[key] + '</td><td>' + d.weight[key] + '</td><td>' + d.color[key] + '</td><td>' + d.checkin[key] + '</td></tr>';
+        })
+        // `d` is the original data object for the row
         return '<table class="table table-border table-hover">' +
             '<thead>' +
             '<th>Product</th>' +
@@ -191,31 +191,31 @@ $(document).ready(function() {
     }
 
 
-   
+
     var table = $('#examplechild').DataTable({
         //  "ajax": 'https://raw.githubusercontent.com/kshkrao3/JsonFileSample/master/Employees.json',
         "data": JsonData.data,
         "columns": [{
-                "class": 'details-control',
-                "orderable": false,
-                "data": null,
-                "defaultContent": ''
-            },
-            { "data": "title" },
-            { "data": "category" },
-            { "data": "cost" },
-            { "data": "inventory" },
-            { "data": "shippingweight" },
-            { "data": "yourprice" },
-            { "data": "status" },
-            { "data": "updateprice" },
-            { "data": "check" },
+            "class": 'details-control',
+            "orderable": false,
+            "data": null,
+            "defaultContent": ''
+        },
+        { "data": "title" },
+        { "data": "category" },
+        { "data": "cost" },
+        { "data": "inventory" },
+        { "data": "shippingweight" },
+        { "data": "yourprice" },
+        { "data": "status" },
+        { "data": "updateprice" },
+        { "data": "check" },
 
         ]
     });
 
     // Add event listener for opening and closing details
-    $('#examplechild tbody').on('click', 'td.details-control', function() {
+    $('#examplechild tbody').on('click', 'td.details-control', function () {
         var tr = $(this).closest('tr');
         var row = table.row(tr);
 
@@ -238,13 +238,13 @@ function rotate() {
     $('#next').click();
 }
 
-$(window).scroll(function() {
-    var sticky = $('.menu-header'),
-        scroll = $(window).scrollTop();
+//$(window).scroll(function () {
+//    var sticky = $('.menu-header'),
+//        scroll = $(window).scrollTop();
 
-    if (scroll >= 50) sticky.addClass('nav-fixed');
-    else sticky.removeClass('nav-fixed');
-});
+//    if (scroll >= 50) sticky.addClass('nav-fixed');
+//    else sticky.removeClass('nav-fixed');
+//});
 
 function toggleChevron(e) {
     $(e.target)
@@ -256,11 +256,121 @@ $('#accordion').on('hidden.bs.collapse', toggleChevron);
 $('#accordion').on('shown.bs.collapse', toggleChevron);
 
 
-$(function() {
+// vars
+'use strict'
+var testim = document.getElementById("testim"),
+    testimDots = Array.prototype.slice.call(document.getElementById("testim-dots").children),
+    testimContent = Array.prototype.slice.call(document.getElementById("testim-content").children),
+    testimLeftArrow = document.getElementById("left-arrow"),
+    testimRightArrow = document.getElementById("right-arrow"),
+    testimSpeed = 5000,
+    currentSlide = 0,
+    currentActive = 0,
+    testimTimer,
+    touchStartPos,
+    touchEndPos,
+    touchPosDiff,
+    ignoreTouch = 30;;
+
+window.onload = function () {
+
+    // Testim Script
+    function playSlide(slide) {
+        for (var k = 0; k < testimDots.length; k++) {
+            testimContent[k].classList.remove("active");
+            testimContent[k].classList.remove("inactive");
+            testimDots[k].classList.remove("active");
+        }
+
+        if (slide < 0) {
+            slide = currentSlide = testimContent.length - 1;
+        }
+
+        if (slide > testimContent.length - 1) {
+            slide = currentSlide = 0;
+        }
+
+        if (currentActive != currentSlide) {
+            testimContent[currentActive].classList.add("inactive");
+        }
+        testimContent[slide].classList.add("active");
+        testimDots[slide].classList.add("active");
+
+        currentActive = currentSlide;
+
+        clearTimeout(testimTimer);
+        testimTimer = setTimeout(function () {
+            playSlide(currentSlide += 1);
+        }, testimSpeed)
+    }
+
+    testimLeftArrow.addEventListener("click", function () {
+        playSlide(currentSlide -= 1);
+    })
+
+    testimRightArrow.addEventListener("click", function () {
+        playSlide(currentSlide += 1);
+    })
+
+    for (var l = 0; l < testimDots.length; l++) {
+        testimDots[l].addEventListener("click", function () {
+            playSlide(currentSlide = testimDots.indexOf(this));
+        })
+    }
+
+    playSlide(currentSlide);
+
+    // keyboard shortcuts
+    document.addEventListener("keyup", function (e) {
+        switch (e.keyCode) {
+            case 37:
+                testimLeftArrow.click();
+                break;
+
+            case 39:
+                testimRightArrow.click();
+                break;
+
+            case 39:
+                testimRightArrow.click();
+                break;
+
+            default:
+                break;
+        }
+    })
+
+    testim.addEventListener("touchstart", function (e) {
+        touchStartPos = e.changedTouches[0].clientX;
+    })
+
+    testim.addEventListener("touchend", function (e) {
+        touchEndPos = e.changedTouches[0].clientX;
+
+        touchPosDiff = touchStartPos - touchEndPos;
+
+        console.log(touchPosDiff);
+        console.log(touchStartPos);
+        console.log(touchEndPos);
+
+
+        if (touchPosDiff > 0 + ignoreTouch) {
+            testimLeftArrow.click();
+        } else if (touchPosDiff < 0 - ignoreTouch) {
+            testimRightArrow.click();
+        } else {
+            return;
+        }
+
+    })
+}
+
+
+$(function () {
     // ------------------------------------------------------- //
     // Multi Level dropdowns
     // ------------------------------------------------------ //
-    $("ul.dropdown-menu [data-toggle='dropdown']").on("click", function(event) {
+    $("ul.dropdown-menu [data-toggle='dropdown']").on("click", function (event) {
         event.preventDefault();
         event.stopPropagation();
 
@@ -270,7 +380,7 @@ $(function() {
         if (!$(this).next().hasClass('show')) {
             $(this).parents('.dropdown-menu').first().find('.show').removeClass("show");
         }
-        $(this).parents('li.nav-item.dropdown.show').on('hidden.bs.dropdown', function(e) {
+        $(this).parents('li.nav-item.dropdown.show').on('hidden.bs.dropdown', function (e) {
             $('.dropdown-submenu .show').removeClass("show");
         });
 

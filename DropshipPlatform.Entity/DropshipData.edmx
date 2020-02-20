@@ -17,6 +17,18 @@
           <Property Name="AliExpressCategoryLevel" Type="bigint" Nullable="false" />
           <Property Name="AliCategoryFullPath" Type="nchar" MaxLength="150" />
         </EntityType>
+        <EntityType Name="AliExpressJobLog">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="JobId" Type="bigint" />
+          <Property Name="SuccessItemCount" Type="bigint" />
+          <Property Name="ContentId" Type="nvarchar(max)" />
+          <Property Name="Result" Type="nvarchar(max)" />
+          <Property Name="CreatedOn" Type="datetime" />
+          <Property Name="CreatedBy" Type="int" />
+        </EntityType>
         <EntityType Name="AliExpressOrderItems">
           <Key>
             <PropertyRef Name="ID" />
@@ -272,6 +284,7 @@
         </EntityType>
         <EntityContainer Name="DropshipDataModelStoreContainer">
           <EntitySet Name="AliExpressCategories" EntityType="Self.AliExpressCategories" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AliExpressJobLog" EntityType="Self.AliExpressJobLog" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AliExpressOrderItems" EntityType="Self.AliExpressOrderItems" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AliExpressOrders" EntityType="Self.AliExpressOrders" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ApplicationLogs" EntityType="Self.ApplicationLogs" Schema="dbo" store:Type="Tables" />
@@ -311,6 +324,7 @@
           <EntitySet Name="Subscriptions" EntityType="DropshipDataModel.Subscription" />
           <EntitySet Name="User_Roles" EntityType="DropshipDataModel.User_Roles" />
           <EntitySet Name="Users" EntityType="DropshipDataModel.User" />
+          <EntitySet Name="AliExpressJobLogs" EntityType="DropshipDataModel.AliExpressJobLog" />
         </EntityContainer>
         <EntityType Name="AliExpressCategory">
           <Key>
@@ -576,6 +590,18 @@
           <Property Name="ItemModifyWhen" Type="DateTime" Precision="3" />
           <Property Name="IsPolicyAccepted" Type="Boolean" />
           <Property Name="StripeCustomerID" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="AliExpressJobLog">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="JobId" Type="Int64" />
+          <Property Name="SuccessItemCount" Type="Int64" />
+          <Property Name="ContentId" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Result" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+          <Property Name="CreatedBy" Type="Int32" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -862,6 +888,19 @@
                 <ScalarProperty Name="EmailID" ColumnName="EmailID" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="UserID" ColumnName="UserID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AliExpressJobLogs">
+            <EntityTypeMapping TypeName="DropshipDataModel.AliExpressJobLog">
+              <MappingFragment StoreEntitySet="AliExpressJobLog">
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="Result" ColumnName="Result" />
+                <ScalarProperty Name="ContentId" ColumnName="ContentId" />
+                <ScalarProperty Name="SuccessItemCount" ColumnName="SuccessItemCount" />
+                <ScalarProperty Name="JobId" ColumnName="JobId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

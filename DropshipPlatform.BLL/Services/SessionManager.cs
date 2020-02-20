@@ -1,4 +1,4 @@
-﻿using DropshipPlatform.DLL;
+﻿using DropshipPlatform.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +29,9 @@ namespace DropshipPlatform.BLL.Services
                     token = Newtonsoft.Json.JsonConvert.DeserializeObject<AliExpressAccessToken>(HttpUtility.UrlDecode(data));
                 }
             }
+#pragma warning disable CS0168 // The variable 'ex' is declared but never used
             catch (Exception ex)
+#pragma warning restore CS0168 // The variable 'ex' is declared but never used
             {
 
             }
@@ -74,7 +76,9 @@ namespace DropshipPlatform.BLL.Services
                     token = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(HttpUtility.UrlDecode(data));
                 }
             }
+#pragma warning disable CS0168 // The variable 'ex' is declared but never used
             catch (Exception ex)
+#pragma warning restore CS0168 // The variable 'ex' is declared but never used
             {
 
             }

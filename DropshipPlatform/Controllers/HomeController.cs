@@ -29,5 +29,22 @@ namespace DropshipPlatform.Controllers
             Response.End();
             return View();
         }
+        [HttpGet]
+        public ActionResult LogOut()
+        {
+            Session["UserName"] = null;
+            Session["UserID"] = null;
+            return RedirectToAction("Index", "Home");
+        }
+
+        public ActionResult UserManagement()
+        {
+            return View();
+        }
+
+        public ActionResult Membership()
+        {
+            return View();
+        }
     }
 }

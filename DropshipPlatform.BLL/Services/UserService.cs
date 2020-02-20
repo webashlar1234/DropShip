@@ -1,5 +1,5 @@
 ﻿using DropshipPlatform.BLL.Models;
-using DropshipPlatform.DLL;
+using DropshipPlatform.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +23,7 @@ namespace DropshipPlatform.BLL.Services
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    User dbUser = datacontext.Users.Where(m => m.EmailID == model.Email && m.Name == model.Username && m.Password == model.Password).FirstOrDefault();
+                    User dbUser = datacontext.Users.Where(m => m.EmailID == model.Email && m.Password == model.Password).FirstOrDefault();
                     if (dbUser != null)
                     {
                         UserModel userModel = new UserModel();

@@ -132,4 +132,8 @@ namespace DropshipPlatform.BLL.Models
         public string service_template_id { get; set; }
     }
 
+    //public class AliexpressSolutionFeedSubmitResponse
+    //{
+    //    public long job_id { get; set; }
+    //}
 }

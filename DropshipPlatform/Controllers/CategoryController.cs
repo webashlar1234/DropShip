@@ -6,7 +6,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Linq.Dynamic;
 using DropshipPlatform.BLL.Models;
-using DropshipPlatform.DLL;
+using DropshipPlatform.Entity;
 
 namespace DropshipPlatform.Controllers
 {

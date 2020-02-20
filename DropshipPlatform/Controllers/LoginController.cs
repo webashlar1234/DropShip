@@ -48,6 +48,8 @@ namespace DropshipPlatform.Controllers
             return View();
         }
 
+       
+
         [HttpPost]
         public ActionResult Registration(RegisterUserModel model)
         {

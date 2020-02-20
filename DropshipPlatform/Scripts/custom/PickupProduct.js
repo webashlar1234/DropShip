@@ -214,6 +214,7 @@ function SavePickedProducts() {
             }
 
             if (UpdatedModels.length > 0) {
+                $("#btnSave").attr("disabled", true);
                 $.ajax({
                     type: "POST",
                     url: "UpdatePickedProduct",
@@ -228,10 +229,12 @@ function SavePickedProducts() {
                         else {
                             ErrorMessage("Product not updated, try again");
                         }
-
+                        $("#btnSave").removeAttr("disabled");
                     },
                     error: function (jqXhr, textStatus, errorMessage) {
+                        ErrorMessage("Product not updated, try again");
                         console.log(errorMessage);
+                        $("#btnSave").removeAttr("disabled");
                     }
                 });
             }

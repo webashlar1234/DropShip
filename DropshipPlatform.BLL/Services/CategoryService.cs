@@ -9,7 +9,7 @@ using Top.Api;
 using Top.Api.Request;
 using Top.Api.Response;
 using static Top.Api.Response.AliexpressCategoryRedefiningGetchildrenpostcategorybyidResponse;
-using DropshipPlatform.DLL;
+using DropshipPlatform.Entity;
 
 namespace DropshipPlatform.BLL.Services
 {

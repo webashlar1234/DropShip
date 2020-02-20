@@ -7,8 +7,8 @@
     <ProjectGuid>{E03A1F92-1839-472F-BA23-C03EE3B0CCDA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DropshipPlatform.DLL</RootNamespace>
-    <AssemblyName>DropshipPlatform.DLL</AssemblyName>
+    <RootNamespace>DropshipPlatform.Entity</RootNamespace>
+    <AssemblyName>DropshipPlatform.Entity</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -51,6 +51,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AliExpressCategory.cs">
+      <DependentUpon>DropshipData.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AliExpressJobLog.cs">
       <DependentUpon>DropshipData.tt</DependentUpon>
     </Compile>
     <Compile Include="AliExpressOrder.cs">

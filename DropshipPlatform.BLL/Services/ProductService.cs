@@ -1,6 +1,7 @@
 ﻿using DropshipPlatform.BLL.Models;
-using DropshipPlatform.DLL;
+using DropshipPlatform.Entity;
 using FastJSON;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,7 @@ namespace DropshipPlatform.BLL.Services
     public class ProductService
     {
         readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private AliExpressJobLogService _aliExpressJobLogService = new AliExpressJobLogService();
         public List<Product> GetAllProducts()
         {
             List<Product> products = new List<Product>();
@@ -218,7 +220,7 @@ namespace DropshipPlatform.BLL.Services
                                     dbPickedProduct.UpdatedBy = 1;
                                     dbPickedProduct.UpdatedDate = DateTime.Now;
                                     datacontext.SaveChanges();
-                                    dbProduct.Inventory = Convert.ToString(Convert.ToInt32(dbProduct.Inventory)- (dbPickedProduct.UpdatedInventory - existingInventory));
+                                    dbProduct.Inventory = Convert.ToString(Convert.ToInt32(dbProduct.Inventory) - (dbPickedProduct.UpdatedInventory - existingInventory));
                                     datacontext.SaveChanges();
                                     result = true;
                                 }
@@ -241,7 +243,7 @@ namespace DropshipPlatform.BLL.Services
                                     datacontext.SaveChanges();
                                 }
                                 result = true;
-                                //string productSKU = SyncWithAliExpress(dbProduct);
+                                string productSKU = SyncWithAliExpress(dbProduct);
                             }
                         }
                     }
@@ -256,7 +258,7 @@ namespace DropshipPlatform.BLL.Services
 
         public string SyncWithAliExpress(Product dbProduct)
         {
-            string ProductID = String.Empty;
+            string result = String.Empty;
             try
             {
                 AliExpressPostProductModel model = new AliExpressPostProductModel();
@@ -275,30 +277,58 @@ namespace DropshipPlatform.BLL.Services
                 model.sku_info_list = new List<SkuInfoList>();
                 SkuInfoList sku_info = new SkuInfoList();
                 sku_info.inventory = Convert.ToInt32(dbProduct.Inventory);
-                sku_info.sku_code =dbProduct.OriginalProductID;
+                sku_info.sku_code = dbProduct.OriginalProductID;
                 sku_info.price = Convert.ToInt32(dbProduct.SellingPrice);
 
+
+                model.category_attributes = new CategoryAttributes();
+
+                model.category_attributes.BrandName = new BrandName();
                 model.category_attributes.BrandName.value = dbProduct.Brand;
+                model.category_attributes.Color = new Color();
                 model.category_attributes.Color.value = dbProduct.Color;
+                model.category_attributes.Size = new Size();
                 model.category_attributes.Size.value = dbProduct.Size;
+                model.category_attributes.ManufacturerName = new ManufacturerName();
                 model.category_attributes.ManufacturerName.value = dbProduct.ManufacturerName;
 
+                string json = JsonConvert.SerializeObject(model);
 
 
-                string json = Newtonsoft.Json.JsonConvert.SerializeObject(model);
+                ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret, "json");
+                AliexpressSolutionFeedSubmitRequest req = new AliexpressSolutionFeedSubmitRequest();
+                req.OperationType = "PRODUCT_CREATE";
+                List<AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain> list2 = new List<AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain>();
+                AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain obj3 = new AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain();
+                list2.Add(obj3);
+                obj3.ItemContent = json;//"{\"category_id\":"+ dbProduct.CategoryID.Value + ",\"title_multi_language_list\":[{\"locale\":\"es_ES\",\"title\":\"test\"}],\"description_multi_language_list\":[{\"locale\":\"es_ES\",\"module_list\":[{\"type\":\"html\",\"html\":{\"content\":\"test\"}}]}],\"locale\":\"es_ES\",\"product_units_type\":\"100000000\",\"image_url_list\":[\"https://ae01.alicdn.com/kf/HTB1TZJRVkvoK1RjSZFwq6AiCFXa0.jpg_350x350.jpg\"],\"category_attributes\":{\"Brand Name\":{\"value\":\"200010868\"},\"Material\":{\"value\":[\"47\",\"49\"]},\"Clothing Length\":{\"value\":\"1876\"}},\"sku_info_list\":[{\"sku_code\":\"234\",\"inventory\":234,\"price\":23,\"discount_price\":12,\"sku_attributes\":{\"Size\":{\"value\":\"200000989\"},\"Color\":{\"alias\":\"32\",\"sku_image_url\":\"https://ae01.alicdn.com/kf/HTB1TZJRVkvoK1RjSZFwq6AiCFXa0.jpg_350x350.jpg\",\"value\":\"771\"}}}],\"inventory_deduction_strategy\":\"place_order_withhold\",\"package_weight\":234,\"package_length\":234,\"package_height\":234,\"package_width\":234,\"shipping_preparation_time\":3,\"shipping_template_id\":\"1000\",\"service_template_id\":\"0\"}";
+                obj3.ItemContentId = Guid.NewGuid().ToString();
+                req.ItemList_ = list2;
 
-                ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret);
-                AliexpressSolutionSchemaProductInstancePostRequest req = new AliexpressSolutionSchemaProductInstancePostRequest();
                 //req.ProductInstanceRequest = "{\"category_id\":348,\"title_multi_language_list\":[{\"locale\":\"es_ES\",\"title\":\"atestproducttesttest001\"}],\"description_multi_language_list\":[{\"locale\":\"es_ES\",\"module_list\":[{\"type\":\"html\",\"html\":{\"content\":\"unotesttestdescription002\"}}]}],\"locale\":\"es_ES\",\"product_units_type\":\"100000015\",\"image_url_list\":[\"https://upload.wikimedia.org/wikipedia/commons/b/ba/E-SENS_architecture.jpg\"],\"category_attributes\":{\"BrandName\":{\"value\":\"200010868\"},\"ShirtsType\":{\"value\":\"200001208\"},\"Material\":{\"value\":[\"567\"]},\"SleeveLength(cm)\":{\"value\":\"200001500\"}},\"sku_info_list\":[{\"sku_code\":\"WEO19293829123\",\"inventory\":3,\"price\":9900,\"discount_price\":9800,\"sku_attributes\":{\"Size\":{\"alias\":\"Uni\",\"value\":\"200003528\"}}}],\"inventory_deduction_strategy\":\"payment_success_deduct\",\"package_weight\":1.5,\"package_length\":10,\"package_height\":20,\"package_width\":30,\"shipping_preparation_time\":3,\"shipping_template_id\":\"714844311\",\"service_template_id\":\"0\"}";
-                req.ProductInstanceRequest = json;
-                AliexpressSolutionSchemaProductInstancePostResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
-                Console.WriteLine(rsp.Body);
+                if (SessionManager.GetAccessToken().access_token != null)
+                {
+                    AliexpressSolutionFeedSubmitResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
+
+                    AliexpressSolutionFeedQueryRequest fqReq = new AliexpressSolutionFeedQueryRequest();
+                    fqReq.JobId = rsp.JobId;
+                    AliexpressSolutionFeedQueryResponse fqRsp = client.Execute(fqReq, SessionManager.GetAccessToken().access_token);
+                    result = JsonConvert.SerializeObject(fqRsp.ResultList);
+                    _aliExpressJobLogService.AddAliExpressJobLog(new AliExpressJobLog()
+                    {
+                        JobId = rsp.JobId,
+                        ContentId = obj3.ItemContentId,
+                        SuccessItemCount = fqRsp.SuccessItemCount,
+                        Result = result
+                    }); ;
+                }
+
             }
             catch (Exception ex)
             {
                 logger.Info(ex.ToString());
             }
-            return ProductID;
+            return result;
         }
     }
 }

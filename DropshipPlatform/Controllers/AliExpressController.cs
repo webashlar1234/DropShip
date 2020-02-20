@@ -23,6 +23,13 @@ namespace DropshipPlatform.Controllers
         public ActionResult Index()
         {
             ViewBag.authorizeUrl = _aliExpressAuthService.getAuthorizeUrl();
+            ViewBag.isAuthorised = false;
+            AliExpressAccessToken aliExpressAccessToken = SessionManager.GetAccessToken();
+            if (!string.IsNullOrEmpty(aliExpressAccessToken.access_token))
+            {
+                ViewBag.isAuthorised = true;
+                ViewBag.AliExpressUserName = aliExpressAccessToken.user_nick;
+            }
             return View();
         }
 
@@ -30,11 +37,11 @@ namespace DropshipPlatform.Controllers
         public ActionResult Authorize(string code)
         {
             AliExpressAccessToken accessToken = _aliExpressAuthService.getAccessToken(code);
-            if(accessToken != null)
+            if (accessToken != null)
             {
                 SessionManager.SetAccessToken(accessToken);
             }
-            return View();
+            return RedirectToAction("Index", "AliExpress");
         }
     }
 }

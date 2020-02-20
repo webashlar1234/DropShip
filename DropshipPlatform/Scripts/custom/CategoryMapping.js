@@ -2,34 +2,14 @@
 var category = {
     init: function () {
         category.initCategoryTable();
-        category.change();
     },
     change: function () {
-
-        $(document).on('change', '.dllAliExpressCat', function () {
-            if ($(this).val() > 0) {
-                var alicategory = $(this).find('option:selected');
-                var categoryObj = $(this).parents('tr').find('.categoryInfo').val();
-
-                $.ajax({
-                    type: "POST",
-                    url: "/Category/MapCategory",
-                    dataType: "json",
-                    async: false,
-                    data: { CategoryID: JSON.parse(categoryObj).CategoryID, AliExpressCategoryName: alicategory.text(), AliExpressCategoryId: $(this).val() },
-                    success: function (data) {
-                        SuccessMessage("Category mapped successfully");
-                        categoryDT.clear().draw();
-                    }
-                });
-            }
-        });
+        
     },
 
     initCategoryTable: function () {
-
         categoryDT = $('#categoryMappingDT').DataTable({
-            "ajax": {
+            ajax: {
                 "url": "/Category/getCategoryDatatable",
                 "type": "POST",
                 "datatype": "json",
@@ -149,14 +129,30 @@ var category = {
                 { "sTitle": 'Map Category', "mData": '', sDefaultContent: "", className: "MapCat" }
             ]
         });
-
     }
 }
 
 $(document).ready(function () {
     category.init();
-    $('#category-filter').on('change', function () {
-        category.init();
+    $('#category-filter').change(function () {
+        category.change();
+    });
+    $(document).on('change', '.dllAliExpressCat', function () {
+        if ($(this).val() > 0) {
+            var alicategory = $(this).find('option:selected');
+            var categoryObj = $(this).parents('tr').find('.categoryInfo').val();
+            $.ajax({
+                type: "POST",
+                url: "/Category/MapCategory",
+                dataType: "json",
+                async: false,
+                data: { CategoryID: JSON.parse(categoryObj).CategoryID, AliExpressCategoryName: alicategory.text(), AliExpressCategoryId: $(this).val() },
+                success: function (data) {
+                    SuccessMessage("Category mapped successfully");
+                    categoryDT.clear().draw();
+                }
+            });
+        }
     });
 });
 

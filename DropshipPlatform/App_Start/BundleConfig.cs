@@ -10,8 +10,8 @@ namespace DropshipPlatform
         {
             bundles.Add(new ScriptBundle("~/layoutBundles/jquery").Include(
                      "~/Scripts/jquery-3.3.1.min.js",
-                     "~/Scripts/bootstrap.bundle.js",
-                     "~/Scripts/popper.min.js",
+                    "~/Scripts/popper.min.js",
+                    "~/Scripts/js/bootstrap.min.js",
                      "~/Scripts/jquery.dataTables.min.js",
                      "~/Scripts/dataTables.buttons.min.js",
                      "~/Scripts/dataTables.select.min.js",
@@ -36,7 +36,7 @@ namespace DropshipPlatform
                    "~/Content/toastr.min.css",
                    "~/Content/custom/custom.css"
                    ));
-            
+
         }
     }
 }

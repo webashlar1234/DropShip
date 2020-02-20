@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace DropshipPlatform.DLL
+namespace DropshipPlatform.Entity
 {
     using System;
     using System.Data.Entity;
@@ -42,5 +42,6 @@ namespace DropshipPlatform.DLL
         public virtual DbSet<Subscription> Subscriptions { get; set; }
         public virtual DbSet<User_Roles> User_Roles { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<AliExpressJobLog> AliExpressJobLogs { get; set; }
     }
 }

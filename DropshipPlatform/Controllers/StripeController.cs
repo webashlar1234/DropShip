@@ -1,5 +1,5 @@
 ﻿using DropshipPlatform.BLL.Services;
-using DropshipPlatform.DLL;
+using DropshipPlatform.Entity;
 using System;
 using System.IO;
 using System.Web;
@@ -67,7 +67,9 @@ namespace DropshipPlatform.Controllers
                 //        break;
                 //}
             }
+#pragma warning disable CS0168 // The variable 'ex' is declared but never used
             catch (Exception ex)
+#pragma warning restore CS0168 // The variable 'ex' is declared but never used
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Unable to parse incoming event");
             }  
@@ -124,6 +126,5 @@ namespace DropshipPlatform.Controllers
             User user = SessionManager.GetUserSession();
             return Json(_stripeService.DeletePaymentMethod(paymentMethodID), JsonRequestBehavior.AllowGet);
         }
-
     }
 }

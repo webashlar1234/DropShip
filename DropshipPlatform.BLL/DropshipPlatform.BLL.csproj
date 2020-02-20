@@ -69,6 +69,7 @@
   <ItemGroup>
     <Compile Include="Models\Authorize.cs" />
     <Compile Include="Models\Category.cs" />
+    <Compile Include="Services\AliExpressJobLogService.cs" />
     <Compile Include="SubscriptionModels\CustomerCreateRequest.cs" />
     <Compile Include="Models\globalModal.cs" />
     <Compile Include="Models\ProductViewModel.cs" />

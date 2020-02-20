@@ -13,14 +13,13 @@
     <script src="~/Scripts/jquery.validate.min.js"></script>
 </head>
 <body>
-
     <section class="header_main">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-lg-2 col-sm-3 col-3 p-0">
                     <div class="logo_container">
                         <div class="logo">
-                            <a href="index.html"><img src="~/Images/logo.png" style="height:50px"></a>
+                            <a href=@Url.Action("Index","Home")><img src="/Images/logo.png" style="height:50px"></a>
                         </div>
                     </div>
                 </div>
@@ -28,8 +27,11 @@
                     <div class="top_bar_content pull-right pt-2">
                         <div class="top_bar_user">
                             <div class="user_icon"><i class="fa fa-user-o pt-1" aria-hidden="true"></i></div>
-                            <div><b><a href="#">Lorem Ipsum</a></b></div>
-                            <div><a href="#">Logout</a></div>
+                            <div><b><a href="#">@Session["UserName"].ToString()</a></b></div>
+                            <div>
+                                <a href="@Url.Action("LogOut","Home")">Log out</a>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -47,34 +49,26 @@
                         <div id="navbarContent" class="collapse navbar-collapse">
                             <ul class="navbar-nav mr-auto">
                                 <!-- End Level one -->
-                                <li class="nav-item"><a href="@Url.Action("Index", "Category")" class="nav-link">Category Mapping</a></li>
-                                <li class="nav-item"><a href="user-management.html" class="nav-link">User Management</a></li>
+                                <li class="nav-item"><a href="/AliExpress" class="nav-link">Connect to AliExpress</a></li>
+                                <li class="nav-item"><a href="/Category" class="nav-link">Category Mapping</a></li>
+                                <li class="nav-item"><a href="@Url.Action("UserManagement","Home")" class="nav-link">User Management</a></li>
                                 <li class="nav-item"><a href="#" class="nav-link">Fulfillment</a></li>
-                                <li class="nav-item"><a href="membership-management.html" class="nav-link">Membership</a></li>
+                                <li class="nav-item"><a href="@Url.Action("Membership","Home")" class="nav-link">Membership</a></li>
                                 <!-- Level one dropdown -->
                                 <li class="nav-item dropdown">
                                     <a id="dropdownMenu1" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">Product</a>
                                     <ul aria-labelledby="dropdownMenu1" class="dropdown-menu border-0 shadow">
-                                        <li><a href="@Url.Action("PickupProduct", "Products")" class="dropdown-item">Pick up Products</a></li>
-                                        <li><a href="store-order-management.html" class="dropdown-item">Store Orders</a></li>
+                                        <li><a href="/Products" class="dropdown-item">Products</a></li>
+                                        <li><a href="/Products/PickupProduct" class="dropdown-item">Pick up Products</a></li>
 
-                                        <li class="dropdown-divider"></li>
+
+
 
                                         <!-- Level two dropdown-->
-                                        <li class="nav-item dropdown">
-                                            <a id="dropdownMenu1" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">Product</a>
-                                            <ul aria-labelledby="dropdownMenu1" class="dropdown-menu border-0 shadow">
-                                                <li><a href="@Url.Action("PickupProduct", "Products")" class="dropdown-item">Pick up Products</a></li>
-                                                <li><a href="store-order-management.html" class="dropdown-item">Store Orders</a></li>
-
-                                                <li class="dropdown-divider"></li>
-
-
-                                            </ul>
-                                        </li>
                                         <!-- End Level two -->
                                     </ul>
                                 </li>
+                                <li class="nav-item"><a href="/MyAccount" class="nav-link">My Account</a></li>
                             </ul>
                         </div>
                     </div>
@@ -83,9 +77,8 @@
         </div>
     </section>
     @RenderBody()
-
-    <section class="footer mt-1">
-        <div class="container-fluid">
+    <section class="footer">
+        <div class="container">
             <div class="row">
                 <div class="col col-lg-12 col-sm-12">
                     <ul class="nav footer-nav justify-content-center">
@@ -117,6 +110,10 @@
             </div>
         </div>
     </section>
-
+    <div class="page-scroll scrollToTop" style="display: block;" data-original-title="" title="">
+        <a href="#">
+            <i class="fa fa-arrow-up" aria-hidden="true"></i>
+        </a>
+    </div>
 </body>
 </html>

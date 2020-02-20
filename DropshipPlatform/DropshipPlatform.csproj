@@ -244,12 +244,14 @@
     <Content Include="Content\bootstrap-reboot.css" />
     <Content Include="Content\bootstrap-reboot.min.css" />
     <Content Include="Content\bootstrap-select.min.css" />
+    <Content Include="Content\bootstrap-toggle.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\buttons.dataTables.min.css" />
     <Content Include="Content\custom\category-mapping.css" />
     <Content Include="Content\custom\CategoryMapping.css" />
     <Content Include="Content\custom\custom.css" />
+    <Content Include="Content\custom\membership-management.css" />
     <Content Include="Content\custom\SubscriptionGlobal.css" />
     <Content Include="Content\custom\subscription.css" />
     <Content Include="Content\editor.dataTables.min.css" />
@@ -298,12 +300,16 @@
     <Content Include="fonts\fontawesome-webfont.woff" />
     <Content Include="fonts\fontawesome-webfont.woff2" />
     <Content Include="fonts\FontAwesome.otf" />
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\bootstrap-select.min.js" />
+    <Content Include="Scripts\bootstrap-toggle.min.js" />
     <Content Include="Scripts\custom\CategoryMapping.js" />
     <Content Include="Scripts\custom\Error.js" />
     <Content Include="Scripts\custom\globalJS.js" />
+    <Content Include="Scripts\custom\home.js" />
     <Content Include="Scripts\custom\Login.js" />
+    <Content Include="Scripts\custom\membership.js" />
     <Content Include="Scripts\custom\PickupProduct.js" />
     <Content Include="Scripts\custom\ProductManagement.js" />
     <Content Include="Scripts\custom\ProductPlan.js" />
@@ -311,6 +317,7 @@
     <Content Include="Scripts\custom\site.js" />
     <Content Include="Scripts\custom\stripe_custom.js" />
     <Content Include="Scripts\custom\SubscriptionPlan.js" />
+    <Content Include="Scripts\custom\userManagement.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
@@ -366,6 +373,8 @@
     <Content Include="Views\Login\Registration.cshtml" />
     <Content Include="Views\Subscriptions\Index.cshtml" />
     <Content Include="Views\Subscriptions\Plan.cshtml" />
+    <Content Include="Views\Home\UserManagement.cshtml" />
+    <Content Include="Views\Home\Membership.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

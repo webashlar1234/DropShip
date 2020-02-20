@@ -163,7 +163,7 @@ var orderComplete = function (subscription) {
         view.classList.remove('hidden');
     });
     document.querySelector('.order-status').textContent = subscription.Status;
-    //document.querySelector('#code').textContent = subscriptionJson;
+    document.querySelector('#code').textContent = JSON.stringify(subscription.LatestInvoice);
     console.log('subscriptionJson', subscriptionJson);
 };
 
