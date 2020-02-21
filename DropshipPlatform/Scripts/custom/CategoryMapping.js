@@ -54,7 +54,7 @@ var category = {
                     sortable: true,
                     width: "25%",
                     "render": function (data, type, full) {
-                        var htmlrow = "<input type='hidden' class='categoryInfo' value='" + JSON.stringify(full) + "'>" + data;
+                        var htmlrow = "<input type='hidden' class='categoryInfo' value='" + escape(JSON.stringify(full)) + "'>" + data;
                         htmlrow += '<div class="fullCategoryPath">(' + full.categoryFullPath + ')</div>'
                         return htmlrow;
                     }
@@ -143,7 +143,7 @@ $(document).ready(function () {
                 url: "/Category/MapCategory",
                 dataType: "json",
                 async: false,
-                data: { CategoryID: JSON.parse(categoryObj).CategoryID, AliExpressCategoryName: alicategory.text(), AliExpressCategoryId: $(this).val() },
+                data: { CategoryID: JSON.parse(unescape(categoryObj)).CategoryID, AliExpressCategoryName: alicategory.text(), AliExpressCategoryId: $(this).val() },
                 success: function (data) {
                     SuccessMessage("Category mapped successfully");
                     categoryDT.clear().draw();

@@ -37,6 +37,7 @@ table.dataTable tbody td, table.dataTable tbody td input, table.dataTable tbody 
     background-color: transparent;
     border-color: lightgrey;
     font-size: 13px;
+    height:100%;
 }
 @keyframes spinner {
     to {
