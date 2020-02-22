@@ -33,14 +33,33 @@ namespace DropshipPlatform.BLL.Services
             }
             return products;
         }
-        public List<Product> GetParentProducts()
+        public List<ProductViewModel> GetParentProducts(int UserID)
         {
-            List<Product> products = new List<Product>();
+            List<ProductViewModel> products = new List<ProductViewModel>();
             try
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    products = datacontext.Products.Where(x => x.ParentProductID == null).ToList();
+
+                    products = (from p in datacontext.Products
+                                join c in datacontext.Categories on p.CategoryID equals c.CategoryID
+                                from sp in datacontext.SellersPickedProducts.Where(x => x.ParentProductID == p.ProductID && x.UserID == UserID).DefaultIfEmpty()
+                                where p.ParentProductID == null
+                                select new ProductViewModel
+                                {
+                                    ProductID = p.ProductID,
+                                    Title = p.Title,
+                                    OriginalProductID = p.OriginalProductID,
+                                    CategoryID = p.CategoryID,
+                                    CategoryName = c.Name,
+                                    Cost = p.Cost,
+                                    Inventory = p.Inventory,
+                                    ShippingWeight = p.ShippingWeight,
+                                    SellerPrice = sp.SellerPrice,
+                                    SellerPickedCount = datacontext.SellersPickedProducts.Where(x => x.ParentProductID == p.ProductID).Count(),
+                                    IsActive = p.IsActive,
+                                    UserID = sp.UserID
+                                }).ToList();
                 }
             }
             catch (Exception ex)
@@ -50,21 +69,22 @@ namespace DropshipPlatform.BLL.Services
             return products;
         }
 
-        public bool AddSellersPickedProducts(int[] products, int UserID)
+        public bool AddSellersPickedProducts(List<simpleModel> products, int UserID)
         {
             bool result = true;
             try
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    foreach (int product in products)
+                    foreach (simpleModel product in products)
                     {
-                        SellersPickedProduct obj = datacontext.SellersPickedProducts.Where(x => x.UserID == UserID && x.ParentProductID == product).FirstOrDefault();
+                        SellersPickedProduct obj = datacontext.SellersPickedProducts.Where(x => x.UserID == UserID && x.ParentProductID == product.key).FirstOrDefault();
                         if (obj == null)
                         {
                             obj = new SellersPickedProduct();
                             obj.UserID = UserID;
-                            obj.ParentProductID = product;
+                            obj.ParentProductID = product.key;
+                            obj.SellerPrice = product.value;
                             obj.ItemCreatedBy = UserID;
                             obj.ItemCreatedWhen = DateTime.UtcNow;
                             datacontext.SellersPickedProducts.Add(obj);
@@ -113,10 +133,10 @@ namespace DropshipPlatform.BLL.Services
                                         childProductModel = AddUpdatedValues(childProductModel);
                                         productGroup.ChildProductList.Add(childProductModel);
                                         parentInvetoryTotal = parentInvetoryTotal + Convert.ToInt32(childProductModel.Inventory);
-                                        parentPriceTotal = parentPriceTotal + Convert.ToInt32(childProductModel.SellingPrice);
+                                        parentPriceTotal = parentPriceTotal + Convert.ToInt32(childProductModel.Cost);
                                     }
                                     productGroup.ParentProduct.Inventory = parentInvetoryTotal.ToString();
-                                    productGroup.ParentProduct.SellingPrice = parentPriceTotal;
+                                    productGroup.ParentProduct.Cost = parentPriceTotal;
                                     productGroupList.Add(productGroup);
                                 }
                             }
@@ -162,7 +182,7 @@ namespace DropshipPlatform.BLL.Services
             productModel.ProductID = dbChildProduct.ProductID;
             productModel.Title = dbChildProduct.Title;
             productModel.CategoryID = dbChildProduct.CategoryID;
-            productModel.SellingPrice = dbChildProduct.SellingPrice;
+            productModel.Cost = dbChildProduct.Cost;
             productModel.SellingPriceCurrency = dbChildProduct.SellingPriceCurrency;
             productModel.OriginalProductID = dbChildProduct.OriginalProductID;
             productModel.Brand = dbChildProduct.Brand;
@@ -226,7 +246,7 @@ namespace DropshipPlatform.BLL.Services
                                 }
                                 else
                                 {
-                                    PickedProduct dbPickProduct = new PickedProduct();
+                                    dbPickedProduct = new PickedProduct();
                                     dbPickedProduct.ProductId = dbProduct.ProductID;
                                     dbPickedProduct.SKU = dbProduct.OriginalProductID;
                                     dbPickedProduct.UpdatedPrice = Convert.ToInt16(item.UpdatedPrice);
@@ -249,7 +269,7 @@ namespace DropshipPlatform.BLL.Services
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 result = false;
             }
@@ -278,7 +298,7 @@ namespace DropshipPlatform.BLL.Services
                 SkuInfoList sku_info = new SkuInfoList();
                 sku_info.inventory = Convert.ToInt32(dbProduct.Inventory);
                 sku_info.sku_code = dbProduct.OriginalProductID;
-                sku_info.price = Convert.ToInt32(dbProduct.SellingPrice);
+                sku_info.price = Convert.ToInt32(dbProduct.Cost);
 
 
                 model.category_attributes = new CategoryAttributes();

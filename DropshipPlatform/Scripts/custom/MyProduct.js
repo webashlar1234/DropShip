@@ -24,7 +24,7 @@ $(document).ready(function () {
             var productGroup = {
                 "Title": json[i].ParentProduct.Title,
                 "category": json[i].ParentProduct.CategoryName,
-                "cost": json[i].ParentProduct.SellingPrice,
+                "cost": json[i].ParentProduct.Cost,
                 "inventory": json[i].ParentProduct.Inventory,
                 "shippingweight": json[i].ParentProduct.ShippingWeight,
                 "color": json[i].ParentProduct.Color,
@@ -56,7 +56,7 @@ $(document).ready(function () {
                 '</td><td>' + value.Color +
                 '</td><td>' + value.Size +
                 '</td><td>' + value.Inventory +
-                '</td><td>' + "$" + value.SellingPrice +
+                '</td><td>' + "$" + value.Cost +
                 '</td><td>' + "<input name='pickedInvetory' onkeypress='return IsNumeric(event);' disabled dataInvetory=" + value.Inventory + " dataSKU='" + value.OriginalProductID + "' type='text' value=" + value.UpdatedInvetory + " class='pickedInvetory txtEdit_" + value.ParentProductID + " '>" +
                 '</td><td>' + "<input name='updatedPrice' onkeypress='return IsNumeric(event);' disabled dataSKU='" + value.OriginalProductID + "' type='text' value=" + value.UpdatedPrice + " class='updatedPrice txtEdit_" + value.ParentProductID + "'>" +
                 //'</td><td>' + value.Description +

@@ -8,7 +8,13 @@ namespace DropshipPlatform.BLL.Models
 {
     public class globalModal
     {
+        
+    }
 
+    public class simpleModel
+    {
+        public int key { get; set; }
+        public int value { get; set; }
     }
 
     public class multiLanguage

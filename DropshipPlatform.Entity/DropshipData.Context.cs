@@ -31,17 +31,17 @@ namespace DropshipPlatform.Entity
         public virtual DbSet<ApplicationLog> ApplicationLogs { get; set; }
         public virtual DbSet<Category> Categories { get; set; }
         public virtual DbSet<Country> Countries { get; set; }
-        public virtual DbSet<MembershipType> MembershipTypes { get; set; }
         public virtual DbSet<Order> Orders { get; set; }
         public virtual DbSet<PaymentProfile> PaymentProfiles { get; set; }
         public virtual DbSet<PickedProduct> PickedProducts { get; set; }
         public virtual DbSet<ProductMedia> ProductMedias { get; set; }
-        public virtual DbSet<Product> Products { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<SellersPickedProduct> SellersPickedProducts { get; set; }
         public virtual DbSet<Subscription> Subscriptions { get; set; }
         public virtual DbSet<User_Roles> User_Roles { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<AliExpressJobLog> AliExpressJobLogs { get; set; }
+        public virtual DbSet<Product> Products { get; set; }
+        public virtual DbSet<MembershipType> MembershipTypes { get; set; }
     }
 }

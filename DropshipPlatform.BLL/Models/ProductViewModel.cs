@@ -12,7 +12,8 @@ namespace DropshipPlatform.BLL.Models
         public Nullable<int> CategoryID { get; set; }
         public string CategoryName { get; set; }
 
-        public Nullable<double> SellingPrice { get; set; }
+        public Nullable<double> Cost { get; set; }
+        public Nullable<double> SellerPrice { get; set; }
         public string SellingPriceCurrency { get; set; }
         public string OriginalProductID { get; set; }
         public string Brand { get; set; }
@@ -33,6 +34,9 @@ namespace DropshipPlatform.BLL.Models
         public Nullable<bool> IsActive { get; set; }
         public long UpdatedPrice { get; set; }
         public long UpdatedInvetory { get; set; }
+
+        public int SellerPickedCount { get; set; }
+        public int? UserID { get; set; }
     }
 
     public class ProductGroupModel

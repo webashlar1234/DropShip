@@ -17,7 +17,7 @@ namespace DropshipPlatform.Entity
         public int ProductID { get; set; }
         public string Title { get; set; }
         public Nullable<int> CategoryID { get; set; }
-        public Nullable<double> SellingPrice { get; set; }
+        public Nullable<double> Cost { get; set; }
         public string SellingPriceCurrency { get; set; }
         public string OriginalProductID { get; set; }
         public string Brand { get; set; }

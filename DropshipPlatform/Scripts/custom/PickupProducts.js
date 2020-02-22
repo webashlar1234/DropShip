@@ -7,25 +7,32 @@ var product = {
         product.initProductDT();
     },
     change: function () {
-        $(document).on('change', '#ddlProductCat', function () {
+        $(document).on('change', '#ddlProductCat, #ddlPickupFilter', function () {
             product.initProductDT();
         });
         $(document).on('change', '#ddlProductBulkAction', function () {
-            if ($(this).val() === 1) {
+            if (Number($(this).val()) === 1) {
                 product.AddPickedProducts();
             }
         });
     },
     AddPickedProducts: function () {
         var selectedItems = global.getSelectedCheckboxList('.chkProducts', 'productid');
+        var pickedProducts = [];
+        $.each(selectedItems, function (index, item) {
+            pickedProducts.push({ key: item, value: $('.chkProducts[productid=' + item + ']').parents('tr').find('.SellerPriceInp').val() })
+        });
         $.ajax({
             type: "POST",
             url: "/Products/pickSellerProducts",
             dataType: "json",
             async: false,
-            data: { products: selectedItems },
+            data: { products: pickedProducts },
             success: function (data) {
+                //$('#ddlProductBulkAction').val(0);
+                //$('#ddlProductBulkAction').selectpicker('refresh');
                 SuccessMessage("Picked successfully");
+                window.location.href = "/Products/MyProduct";
             }
         });
     },
@@ -46,7 +53,7 @@ var product = {
                 "url": "/Products/getProductManagementDT",
                 "type": "POST",
                 "datatype": "json",
-                "data": function (d) { d.category = $('#ddlProductCat').val() }
+                "data": function (d) { d.category = $('#ddlProductCat').val(), d.filterOptions = $('#ddlPickupFilter').val() }
                 //"data": { category: $('#ddlProductCat').val() }
             },
             //processing: true,
@@ -75,13 +82,20 @@ var product = {
                     sortable: false,
                     width: "10%",
                     "render": function (data, type, full) {
-                        return '<label class="mt-checkbox mt-checkbox-outline"><input type="checkbox" productid=' + full.ProductID + ' id="chk_prod_' + full.ProductID + '" class="chkProducts"><span></span></label>';
+                        var rawHTML = "";
+                        if (full.SellerPrice > 0) {
+                            rawHTML = "Picked";
+                        }
+                        else {
+                            rawHTML = '<label class="mt-checkbox mt-checkbox-outline"><input type="checkbox" productid=' + full.ProductID + ' id="chk_prod_' + full.ProductID + '" class="chkProducts"><span></span></label>';
+                        }
+                        return rawHTML;
                     }
                 },
                 {
                     targets: 1,
                     sortable: true,
-                    width: "15%",
+                    width: "25%",
                     "render": function (data, type, full) {
                         return data;
                     }
@@ -89,7 +103,7 @@ var product = {
                 {
                     targets: 2,
                     sortable: true,
-                    width: "20%",
+                    width: "10%",
                     "render": function (data, type, full) {
                         return data;
                     }
@@ -97,7 +111,7 @@ var product = {
                 {
                     targets: 3,
                     sortable: true,
-                    width: "20%",
+                    width: "10%",
                     "render": function (data, type, full) {
                         return data;
                     }
@@ -122,19 +136,28 @@ var product = {
                     targets: 6,
                     sortable: false,
                     width: "10%",
-                    "render": function (data, type, full, meta) {
-                        return data === true ? 'Start' : 'Stop';
+                    "render": function (data, type, full) {
+                        return '<input class="SellerPriceInp" ' + (full.SellerPrice > 0 ? 'Disabled' : '') + ' placeholder="Your Price" value="' + (full.SellerPrice > 0 ? full.SellerPrice : '') + '" >';
                     }
-                }
+                },
+                 {
+                     targets: 7,
+                     sortable: false,
+                     width: "15%",
+                     "render": function (data, type, full) {
+                         return full.SellerPickedCount > 0 ? ("Picked by " + full.SellerPickedCount + " sellers") : (full.IsActive ? "Online" : "Offline");
+                     }
+                 }
             ],
             columns: [
                 { "title": '<label class="mt-checkbox mt-checkbox-outline"><input type="checkbox" id="chk_prod_All" class="chkAllProducts"><span></span></label>Check All', "mData": '', sDefaultContent: "", className: "checkAll" },
-                { "title": 'Original Product Id', "mData": 'OriginalProductID', sDefaultContent: "", className: "OriginalProductID" },
                 { "title": 'Product Title', "mData": 'Title', sDefaultContent: "", className: "Title" },
-                { "title": 'Source Product Link', "mData": 'SourceWebsite', sDefaultContent: "", className: "SourceWebsite" },
-                { "title": 'Total Sales', "mData": '', sDefaultContent: "", className: "TotalSales" },
-                { "title": '# Saller Picked', "mData": '', sDefaultContent: "", className: "SallerPicked" },
-                { "title": 'Service Status', "mData": 'IsActive', sDefaultContent: "", className: "IsActive" }
+                { "title": 'Category', "mData": 'CategoryName', sDefaultContent: "", className: "CategoryName" },
+                { "title": 'Cost(USD)', "mData": 'Cost', sDefaultContent: "", className: "Cost" },
+                { "title": 'Inventory', "mData": 'Inventory', sDefaultContent: "", className: "Inventory" },
+                { "title": 'Shipping Weight(KG)', "mData": 'ShippingWeight', sDefaultContent: "", className: "ShippingWeight" },
+                { "title": 'Your Price', "mData": '', sDefaultContent: "", className: "YourPrice" },
+                { "title": 'Product Status', "mData": '', sDefaultContent: "", className: "" }
             ]
         });
     }

@@ -109,6 +109,7 @@ namespace DropshipPlatform.BLL.Services
 
         public List<Category> getCategories()
         {
+            logger.Info("Hi");
             List<Category> list = new List<Category>();
 
             try

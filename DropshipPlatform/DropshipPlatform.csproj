@@ -262,7 +262,7 @@
     <Content Include="Content\custom\my-account.css" />
     <Content Include="Content\custom\myproduct-product-management.css" />
     <Content Include="Content\custom\order-management.css" />
-    <Content Include="Content\custom\pickup-product-management.css" />
+    <Content Include="Content\custom\my-product.css" />
     <Content Include="Content\custom\product-management.css" />
     <Content Include="Content\custom\registration-style.css" />
     <Content Include="Content\responsive.css" />
@@ -310,8 +310,8 @@
     <Content Include="Scripts\custom\home.js" />
     <Content Include="Scripts\custom\Login.js" />
     <Content Include="Scripts\custom\membership.js" />
-    <Content Include="Scripts\custom\PickupProduct.js" />
-    <Content Include="Scripts\custom\ProductManagement.js" />
+    <Content Include="Scripts\custom\MyProduct.js" />
+    <Content Include="Scripts\custom\PickupProducts.js" />
     <Content Include="Scripts\custom\ProductPlan.js" />
     <Content Include="Scripts\custom\Subscription.js" />
     <Content Include="Scripts\custom\site.js" />
@@ -365,8 +365,8 @@
     <Content Include="Scripts\bootstrap.js.map" />
     <Content Include="Scripts\bootstrap.min.js.map" />
     <Content Include="Views\Category\Index.cshtml" />
-    <Content Include="Views\Products\Index.cshtml" />
-    <Content Include="Views\Products\PickupProduct.cshtml" />
+    <Content Include="Views\Products\PickupProducts.cshtml" />
+    <Content Include="Views\Products\MyProduct.cshtml" />
     <Content Include="Views\MyAccount\Index.cshtml" />
     <Content Include="Views\Shared\_LoginLayout.cshtml" />
     <Content Include="Views\Login\Index.cshtml" />

@@ -15,17 +15,29 @@ namespace DropshipPlatform.Controllers
         // GET: Products
         public ActionResult Index()
         {
+            return View();
+        }
+        public ActionResult PickupProducts()
+        {
             ViewBag.AliCategory = new CategoryService().getCategories();
             return View();
         }
 
-        public JsonResult getProductManagementDT(int? category)
+        public JsonResult getProductManagementDT(int? category, int? filterOptions)
         {
-
-            List<Product> list = _productService.GetParentProducts();
+            User user = SessionManager.GetUserSession();
+            List<ProductViewModel> list = _productService.GetParentProducts(user.UserID);
             if (category > 0)
             {
                 list = list.Where(x => x.CategoryID == category).ToList();
+            }
+            if (filterOptions == 1)
+            {
+                list = list.Where(x => x.UserID == user.UserID).ToList();
+            }
+            else if(filterOptions == 2)
+            {
+                list = list.Where(x => x.UserID != user.UserID).ToList();
             }
             return Json(new
             {
@@ -33,15 +45,14 @@ namespace DropshipPlatform.Controllers
             }, JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult pickSellerProducts(int[] products)
+        public JsonResult pickSellerProducts(List<simpleModel> products)
         {
-
-            int UserID = 1;
-            bool result = _productService.AddSellersPickedProducts(products, UserID);
+            User user = SessionManager.GetUserSession();
+            bool result = _productService.AddSellersPickedProducts(products, user.UserID);
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult PickupProduct()
+        public ActionResult MyProduct()
         {
             //if (SessionManager.GetAccessToken().access_token == null)
             //{

@@ -15,8 +15,10 @@ namespace DropshipPlatform.Entity
     public partial class MembershipType
     {
         public int MembershipID { get; set; }
+        public string Name { get; set; }
+        public string StripePlanID { get; set; }
         public string Type { get; set; }
-        public Nullable<int> Price { get; set; }
+        public Nullable<double> Price { get; set; }
         public Nullable<int> PickLimit { get; set; }
         public string Description { get; set; }
         public Nullable<int> CycleType { get; set; }
@@ -25,7 +27,5 @@ namespace DropshipPlatform.Entity
         public Nullable<int> ItemModifyBy { get; set; }
         public Nullable<System.DateTime> ItemModifyWhen { get; set; }
         public Nullable<int> OrderLimit { get; set; }
-        public string StripePlanID { get; set; }
-        public string Name { get; set; }
     }
 }
