@@ -22,7 +22,7 @@ namespace DropshipPlatform.BLL.Models
         public string ManufacturerName { get; set; }
         public string ExternalCode { get; set; }
         public string ExternalCodeType { get; set; }
-        public Nullable<int> ParentProductID { get; set; }
+        public string ParentProductID { get; set; }
         public Nullable<int> NoOfCustomerReviews { get; set; }
         public Nullable<int> CustomerReviewRating { get; set; }
         public string NetWeight { get; set; }

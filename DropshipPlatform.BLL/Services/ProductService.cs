@@ -88,9 +88,21 @@ namespace DropshipPlatform.BLL.Services
                             obj.ItemCreatedBy = UserID;
                             obj.ItemCreatedWhen = DateTime.UtcNow;
                             datacontext.SellersPickedProducts.Add(obj);
+                            datacontext.SaveChanges();
+
+                            Product ParentProduct = datacontext.Products.Where(m => m.ProductID == product.key).FirstOrDefault();
+                            List<Product> ProductList = datacontext.Products.Where(m => m.ParentProductID == ParentProduct.OriginalProductID).ToList();
+                            foreach(var dbProduct in ProductList)
+                            {
+                                Category category = datacontext.Categories.Where(x => x.CategoryID == dbProduct.CategoryID).FirstOrDefault();
+                                if (category != null)
+                                {
+                                    int Alicategory = (int)category.AliExpressCategoryId;
+                                    string productSKU = SyncWithAliExpress(dbProduct, Alicategory);
+                                }
+                            }
                         }
                     }
-                    datacontext.SaveChanges();
                 }
             }
             catch (Exception ex)
@@ -263,7 +275,7 @@ namespace DropshipPlatform.BLL.Services
                                     datacontext.SaveChanges();
                                 }
                                 result = true;
-                                string productSKU = SyncWithAliExpress(dbProduct);
+                                //string productSKU = SyncWithAliExpress(dbProduct);
                             }
                         }
                     }
@@ -276,13 +288,19 @@ namespace DropshipPlatform.BLL.Services
             return result;
         }
 
-        public string SyncWithAliExpress(Product dbProduct)
+        public string SyncWithAliExpress(Product dbProduct, int AliCategoryID)
         {
             string result = String.Empty;
             try
             {
+                //ITopClient client1 = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret, "json");
+                //AliexpressSolutionProductSchemaGetRequest req1 = new AliexpressSolutionProductSchemaGetRequest();
+                //req1.AliexpressCategoryId = 348L;
+                //AliexpressSolutionProductSchemaGetResponse rsp1 = client1.Execute(req1, SessionManager.GetAccessToken().access_token);
+                //Console.WriteLine(rsp1.Body);
+
                 AliExpressPostProductModel model = new AliExpressPostProductModel();
-                model.category_id = dbProduct.CategoryID.Value;
+                model.category_id = AliCategoryID;
                 model.locale = "es_EN";
                 model.product_units_type = "100000015";
                 model.image_url_list = new List<string>() { "https://upload.wikimedia.org/wikipedia/commons/b/ba/E-SENS_architecture.jpg" };
@@ -294,12 +312,24 @@ namespace DropshipPlatform.BLL.Services
                 _titleMultiLanguageList.title = dbProduct.Title;
                 model.title_multi_language_list.Add(_titleMultiLanguageList);
 
+                model.description_multi_language_list = new List<DescriptionMultiLanguageList>();
+                DescriptionMultiLanguageList _description_multi_language_list = new DescriptionMultiLanguageList();
+                _description_multi_language_list.locale = "es_EN";
+                _description_multi_language_list.module_list = new List<ModuleList>();
+                ModuleList _moduleList = new ModuleList();
+                _moduleList.type = "html";
+                _moduleList.html = new Html();
+                _moduleList.html.content = "test";
+
+                _description_multi_language_list.module_list.Add(_moduleList);
+                model.description_multi_language_list.Add(_description_multi_language_list);
+
                 model.sku_info_list = new List<SkuInfoList>();
                 SkuInfoList sku_info = new SkuInfoList();
                 sku_info.inventory = Convert.ToInt32(dbProduct.Inventory);
                 sku_info.sku_code = dbProduct.OriginalProductID;
                 sku_info.price = Convert.ToInt32(dbProduct.Cost);
-
+                model.sku_info_list.Add(sku_info);
 
                 model.category_attributes = new CategoryAttributes();
 
@@ -311,6 +341,10 @@ namespace DropshipPlatform.BLL.Services
                 model.category_attributes.Size.value = dbProduct.Size;
                 model.category_attributes.ManufacturerName = new ManufacturerName();
                 model.category_attributes.ManufacturerName.value = dbProduct.ManufacturerName;
+
+                model.service_template_id = "0";
+                model.shipping_template_id = "1000";
+                model.locale = "es_EN";
 
                 string json = JsonConvert.SerializeObject(model);
 
@@ -341,9 +375,10 @@ namespace DropshipPlatform.BLL.Services
                         ContentId = obj3.ItemContentId,
                         SuccessItemCount = fqRsp.SuccessItemCount,
                         Result = result
-                    }); ;
+                    });
                 }
 
+               
             }
             catch (Exception ex)
             {

@@ -200,7 +200,7 @@
           <Property Name="ManufacturerName" Type="nvarchar" MaxLength="150" />
           <Property Name="ExternalCode" Type="nvarchar" MaxLength="50" />
           <Property Name="ExternalCodeType" Type="nvarchar" MaxLength="50" />
-          <Property Name="ParentProductID" Type="int" />
+          <Property Name="ParentProductID" Type="nvarchar" MaxLength="50" />
           <Property Name="NoOfCustomerReviews" Type="int" />
           <Property Name="CustomerReviewRating" Type="int" />
           <Property Name="NetWeight" Type="nvarchar" MaxLength="50" />
@@ -329,8 +329,8 @@
           <EntitySet Name="User_Roles" EntityType="DropshipDataModel.User_Roles" />
           <EntitySet Name="Users" EntityType="DropshipDataModel.User" />
           <EntitySet Name="AliExpressJobLogs" EntityType="DropshipDataModel.AliExpressJobLog" />
-          <EntitySet Name="Products" EntityType="DropshipDataModel.Product" />
           <EntitySet Name="MembershipTypes" EntityType="DropshipDataModel.MembershipType" />
+          <EntitySet Name="Products" EntityType="DropshipDataModel.Product" />
         </EntityContainer>
         <EntityType Name="AliExpressCategory">
           <Key>
@@ -566,37 +566,6 @@
           <Property Name="CreatedOn" Type="DateTime" Precision="3" />
           <Property Name="CreatedBy" Type="Int32" />
         </EntityType>
-        <EntityType Name="Product">
-          <Key>
-            <PropertyRef Name="ProductID" />
-          </Key>
-          <Property Name="ProductID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Title" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
-          <Property Name="CategoryID" Type="Int32" />
-          <Property Name="Cost" Type="Double" />
-          <Property Name="SellingPriceCurrency" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="OriginalProductID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Brand" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="Inventory" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="ManufacturerName" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="ExternalCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="ExternalCodeType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="ParentProductID" Type="Int32" />
-          <Property Name="NoOfCustomerReviews" Type="Int32" />
-          <Property Name="CustomerReviewRating" Type="Int32" />
-          <Property Name="NetWeight" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="ShippingWeight" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="CountryOfOrigin" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Size" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Color" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="SourceWebsite" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="IsActive" Type="Boolean" />
-          <Property Name="ItemCreatedBy" Type="Int32" />
-          <Property Name="ItemCreatedWhen" Type="DateTime" Precision="3" />
-          <Property Name="ItemModifyBy" Type="Int32" />
-          <Property Name="ItemModifyWhen" Type="DateTime" Precision="3" />
-        </EntityType>
         <EntityType Name="MembershipType">
           <Key>
             <PropertyRef Name="MembershipID" />
@@ -614,6 +583,37 @@
           <Property Name="ItemModifyBy" Type="Int32" />
           <Property Name="ItemModifyWhen" Type="DateTime" Precision="3" />
           <Property Name="OrderLimit" Type="Int32" />
+        </EntityType>
+        <EntityType Name="Product">
+          <Key>
+            <PropertyRef Name="ProductID" />
+          </Key>
+          <Property Name="ProductID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Title" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="CategoryID" Type="Int32" />
+          <Property Name="Cost" Type="Double" />
+          <Property Name="SellingPriceCurrency" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="OriginalProductID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Brand" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Inventory" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ManufacturerName" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="ExternalCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ExternalCodeType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ParentProductID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="NoOfCustomerReviews" Type="Int32" />
+          <Property Name="CustomerReviewRating" Type="Int32" />
+          <Property Name="NetWeight" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ShippingWeight" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CountryOfOrigin" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Size" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Color" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="SourceWebsite" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="IsActive" Type="Boolean" />
+          <Property Name="ItemCreatedBy" Type="Int32" />
+          <Property Name="ItemCreatedWhen" Type="DateTime" Precision="3" />
+          <Property Name="ItemModifyBy" Type="Int32" />
+          <Property Name="ItemModifyWhen" Type="DateTime" Precision="3" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -871,6 +871,25 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="MembershipTypes">
+            <EntityTypeMapping TypeName="DropshipDataModel.MembershipType">
+              <MappingFragment StoreEntitySet="MembershipTypes">
+                <ScalarProperty Name="OrderLimit" ColumnName="OrderLimit" />
+                <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
+                <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
+                <ScalarProperty Name="ItemCreatedWhen" ColumnName="ItemCreatedWhen" />
+                <ScalarProperty Name="ItemCreatedBy" ColumnName="ItemCreatedBy" />
+                <ScalarProperty Name="CycleType" ColumnName="CycleType" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="PickLimit" ColumnName="PickLimit" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="StripePlanID" ColumnName="StripePlanID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="MembershipID" ColumnName="MembershipID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Products">
             <EntityTypeMapping TypeName="DropshipDataModel.Product">
               <MappingFragment StoreEntitySet="Products">
@@ -900,25 +919,6 @@
                 <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
                 <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="ProductID" ColumnName="ProductID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="MembershipTypes">
-            <EntityTypeMapping TypeName="DropshipDataModel.MembershipType">
-              <MappingFragment StoreEntitySet="MembershipTypes">
-                <ScalarProperty Name="OrderLimit" ColumnName="OrderLimit" />
-                <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
-                <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
-                <ScalarProperty Name="ItemCreatedWhen" ColumnName="ItemCreatedWhen" />
-                <ScalarProperty Name="ItemCreatedBy" ColumnName="ItemCreatedBy" />
-                <ScalarProperty Name="CycleType" ColumnName="CycleType" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="PickLimit" ColumnName="PickLimit" />
-                <ScalarProperty Name="Price" ColumnName="Price" />
-                <ScalarProperty Name="Type" ColumnName="Type" />
-                <ScalarProperty Name="StripePlanID" ColumnName="StripePlanID" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="MembershipID" ColumnName="MembershipID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
