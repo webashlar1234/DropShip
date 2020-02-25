@@ -308,6 +308,7 @@
     <Content Include="Scripts\custom\Error.js" />
     <Content Include="Scripts\custom\globalJS.js" />
     <Content Include="Scripts\custom\home.js" />
+    <Content Include="Scripts\custom\jobLog.js" />
     <Content Include="Scripts\custom\Login.js" />
     <Content Include="Scripts\custom\membership.js" />
     <Content Include="Scripts\custom\MyProduct.js" />
@@ -375,6 +376,7 @@
     <Content Include="Views\Subscriptions\Plan.cshtml" />
     <Content Include="Views\Home\UserManagement.cshtml" />
     <Content Include="Views\Home\Membership.cshtml" />
+    <Content Include="Views\AliExpress\jobLog.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -69,6 +69,8 @@
   <ItemGroup>
     <Compile Include="Models\Authorize.cs" />
     <Compile Include="Models\Category.cs" />
+    <Compile Include="Models\CategorySchemaModelcs.cs" />
+    <Compile Include="Models\JobLog.cs" />
     <Compile Include="Models\SubscriptionModel.cs" />
     <Compile Include="Services\AliExpressJobLogService.cs" />
     <Compile Include="Services\MemberShipService.cs" />

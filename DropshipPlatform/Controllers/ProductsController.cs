@@ -1,6 +1,7 @@
 ﻿using DropshipPlatform.BLL.Models;
 using DropshipPlatform.BLL.Services;
 using DropshipPlatform.Entity;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +39,7 @@ namespace DropshipPlatform.Controllers
             else if(filterOptions == 2)
             {
                 list = list.Where(x => x.UserID != user.UserID).ToList();
-            }
+            }          
             return Json(new
             {
                 data = list.ToArray(),
@@ -74,6 +75,13 @@ namespace DropshipPlatform.Controllers
             bool result = false;
             result = _productService.UpdatePickedProduct(UpdatedModels);
             //string pId = _productService.SyncWithAliExpress();
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult checkResultByJobId(long id)
+        {
+            ProductService _productService = new ProductService();
+            string result = _productService.checkResultByJobId(id);
             return Json(result, JsonRequestBehavior.AllowGet);
         }
     }

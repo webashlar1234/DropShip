@@ -49,10 +49,34 @@ $(document).ready(function () {
         console.log(d.ChildProductList);
         var trs = '';
         $.each($(d.ChildProductList), function (key, value) {
+
+            brandOptions = "";
+            var schemabrands = value.schemaProprtiesModel.ProductBrands;
+            if (schemabrands && schemabrands.length > 0) {
+                for (var i = 0; i < schemabrands.length; i++) {
+                    if (schemabrands[i]) {
+                        brandOptions = brandOptions + "<option value=" + schemabrands[i].PropertyID + ">" + schemabrands[i].PropertyName + "</option>";
+                    }
+                }
+            }
+            var brandsHTML = "<select>" + brandOptions + "</select>";
+
+            //colorOptionHTML = "";
+            //var schemaColors = value.schemaProprtiesModel.ProductColors;
+            //if (schemaColors && schemaColors.length>0) {
+            //    for (var j = 0; j < schemaColors.length; i++) {
+            //        if (schemaColors[i]) {
+            //            colorOptionHTML = colorOptionHTML + "<option value=" + schemaColors[i].PropertyID + ">" + schemaColors[i].PropertyName + "</option>";
+            //        }
+            //    }
+            //}
+            //var colorHTML = "<select>" + colorOptionHTML + "</select>";
+
+
             trs +=
                 '<tr><td>' + value.Title +
                 '</td> <td>' + value.Brand +
-                '</td><td>' + value.NetWeight +
+                '</td><td>' + value.NetWeight + brandsHTML +
                 '</td><td>' + value.Color +
                 '</td><td>' + value.Size +
                 '</td><td>' + value.Inventory +
@@ -85,6 +109,10 @@ $(document).ready(function () {
     function BindData(jsonProducts) {
         table = $('#TblPickedProduct').DataTable({
             "data": jsonProducts,
+            "language": {
+                loadingRecords: '&nbsp;',
+                processing: '<div class="spinner"></div>'
+            },
             "columns": [{
                 "class": 'details-control',
                 "orderable": false,
@@ -98,7 +126,7 @@ $(document).ready(function () {
             { "data": "shippingweight" },
             { "data": "manufacturerName" },
             { "data": "origin" },
-            { "data": "check" },
+            { "data": "check" }
 
             ]
         });
