@@ -55,6 +55,7 @@ namespace DropshipPlatform.BLL.Models
         public IntegrationErrorCode integrationErrorCode { get; set; }
         public bool success { get; set; }
         public string traceId { get; set; }
+        public long productId { get; set; }
     }
     #endregion
 

@@ -6,13 +6,13 @@
     <script src="~/Scripts/custom/jobLog.js"></script>
 
     <style>
-        .innertable {
-            margin-left: 2%;
-            width: 98%;
-            border: 1px lightgray solid;
-        }
         .modal {
             z-index: 9999;
+        }
+        #jsonResult {
+            white-space: pre-wrap;
+            word-break: break-word;
+            height: 350px;
         }
     </style>
 }
@@ -48,7 +48,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
             </div>
             <div class="modal-body">
-                <pre id="json"></pre>
+                <pre id="jsonResult"></pre>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>

@@ -57,3 +57,9 @@ $(window).scroll(function () {
 });
 
 
+function ShowLoader() {
+    $('#PageLoading').show();
+}
+function HideLoader() {
+    $('#PageLoading').hide();
+}

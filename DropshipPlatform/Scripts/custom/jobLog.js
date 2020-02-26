@@ -28,7 +28,7 @@ var jobLog = {
                 {
                     targets: 0,
                     sortable: true,
-                    width: "10%",
+                    width: "5%",
                     "render": function (data, type, full) {
                         return data;
                     }
@@ -47,7 +47,10 @@ var jobLog = {
                     width: "10%",
                     "render": function (data, type, row) {
                         if (data != "null") {
-                            return '<a class="btn btn-info btn-sm" href="#" onclick=openResultModal("' + row.JobId + '")>' + 'Show Result' + '</a>';
+                            if (type === 'display') {
+                                data = strtrunc(data, 50);
+                            }
+                            return data;
                         }
                         else {
                             return data;
@@ -57,7 +60,7 @@ var jobLog = {
                 {
                     targets: 3,
                     sortable: true,
-                    width: "10%",
+                    width: "5%",
                     "render": function (data, type, full) {
                         if (data == null) {
                             return "";
@@ -76,7 +79,13 @@ var jobLog = {
                     sortable: true,
                     width: "10%",
                     "render": function (data, type, row) {
-                        return '<a class="btn btn-info btn-sm" href="#" onclick=updateResult("' + row.JobId + '")>' + 'Update Result' + '</a>';
+                        if (row.Result != "null") {
+                            return '<a class="btn btn-info btn-sm btnAction" href="#" onclick=openResultModal("' + row.JobId + '")>' + 'Show Result' + '</a>' + 
+                             ' <a class="btn btn-info btn-sm btnAction" href="#" onclick=updateResult("' + row.JobId + '")>' + 'Update Result' + '</a>';
+                        }
+                        else {
+                            return '<a class="btn btn-info btn-sm" href="#" onclick=updateResult("' + row.JobId + '")>' + 'Update Result' + '</a>';
+                        }
                     }
                 },
             ],
@@ -104,7 +113,8 @@ function openResultModal(jobId) {
             if (res != null) {
                 $('#jobLogModal').modal("show");
                 $('#jobLogModal').on("shown.bs.modal", function () {
-                    $('.modal-body #json').html(JSON.stringify(res, undefined, 2));
+                    var jsonobj = JSON.parse(res);
+                    $('.modal-body #jsonResult').html(JSON.stringify(jsonobj, undefined, 2));
                 });
             }
         },
@@ -130,7 +140,7 @@ function updateResult(jobId) {
                     data: { JobId: jobId, Result: res },
                     success: function (data) {
                         SuccessMessage("Job Result Updated successfully");
-                        jobLogDT.clear().draw();
+                        jobLogDT.clear().draw(false);
                         $('.spinner').hide();
                     }
                 });
@@ -140,3 +150,10 @@ function updateResult(jobId) {
         }
     });
 }
+
+
+// Truncate a string
+function strtrunc(str, max, add) {
+    add = add || '...';
+    return (typeof str === 'string' && str.length > max ? str.substring(0, max) + add : str);
+};

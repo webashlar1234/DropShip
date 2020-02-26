@@ -54,6 +54,11 @@ namespace DropshipPlatform.BLL.Models
         public string ParentSKU { get; set; }
         public int PickedInventory { get; set; }
         public int UpdatedPrice { get; set; }
+
+        public string UpdatedSize { get; set; }
+        public string UpdatedUnit { get; set; }
+        public string UpdatedColor { get; set; }
+        public string UpdatedBrand { get; set; }
     }
 
     public class SchemaProprtiesModel

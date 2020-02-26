@@ -100,7 +100,8 @@ namespace DropshipPlatform.BLL.Services
                                 if (category != null)
                                 {
                                     int Alicategory = (int)category.AliExpressCategoryId;
-                                    string productSKU = SyncWithAliExpress(dbProduct, Alicategory);
+                                    //UpdateProductModel updateProductModel = new UpdateProductModel();
+                                    //string productSKU = SyncWithAliExpress(dbProduct, updateProductModel, Alicategory);
                                 }
                             }
                         }
@@ -142,6 +143,7 @@ namespace DropshipPlatform.BLL.Services
                                     if (schemaProprtiesModel == null)
                                     {
                                         schemaProprtiesModel = GenerateSchemaPropertyModel(productGroup.ParentProduct.AliExpressCategoryID);
+                                        schemaProprtiesModelList.Add(schemaProprtiesModel);
                                     }
 
                                     productGroup.ChildProductList = new List<ProductViewModel>();
@@ -286,7 +288,7 @@ namespace DropshipPlatform.BLL.Services
                                     datacontext.SaveChanges();
                                 }
                                 result = true;
-                                string productSKU = SyncWithAliExpress(dbProduct, 348);
+                                string productSKU = SyncWithAliExpress(dbProduct, item, 348);
                             }
                         }
                     }
@@ -299,30 +301,40 @@ namespace DropshipPlatform.BLL.Services
             return result;
         }
 
-        public string SyncWithAliExpress(Product dbProduct, int AliCategoryID)
+        public string SyncWithAliExpress(Product dbProduct, UpdateProductModel updatedModel, int AliCategoryID)
         {
             string result = String.Empty;
             try
             {
                 String Schema = GetSchemaByCategory(AliCategoryID);
                 string json = String.Empty;
+                try
+                {
+                    updatedModel.UpdatedUnit = !string.IsNullOrEmpty(updatedModel.UpdatedUnit) ? updatedModel.UpdatedUnit : "100000006";
+                    updatedModel.UpdatedBrand = !string.IsNullOrEmpty(updatedModel.UpdatedBrand) ? updatedModel.UpdatedBrand : dbProduct.Brand;
+                    updatedModel.UpdatedColor = !string.IsNullOrEmpty(updatedModel.UpdatedColor) ? updatedModel.UpdatedColor : "Beige";
+                    updatedModel.UpdatedSize = !string.IsNullOrEmpty(updatedModel.UpdatedSize) ? updatedModel.UpdatedSize : dbProduct.Size;
+                    updatedModel.UpdatedPrice = updatedModel.UpdatedPrice > 0 ? updatedModel.UpdatedPrice : Convert.ToInt16(dbProduct.Cost);
+                }
+                catch (Exception ex)
+                {
+                    logger.Error(ex.ToString());
+                }
 
-                //AliExpressPostProductModel model = SetSyncProductModel(dbProduct, AliCategoryID);
-                //json = JsonConvert.SerializeObject(model);
                 ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret, "json");
                 AliexpressSolutionFeedSubmitRequest req = new AliexpressSolutionFeedSubmitRequest();
                 req.OperationType = "PRODUCT_CREATE";
                 List<AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain> list2 = new List<AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain>();
                 AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain obj3 = new AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain();
 
-                obj3.ItemContent = "{\"category_id\":348,\"title_multi_language_list\":[{\"locale\":\"en_US\",\"title\":\"Test Shirt\"}]," +
-                    "\"description_multi_language_list\":[{\"locale\":\"en_US\",\"module_list\":[{\"type\":\"html\",\"html\":{\"content\":\"This is a test shirt\"}}]}],\"locale\":\"en_US\"," +
-                    "\"product_units_type\":\"100000006\"," +
+                obj3.ItemContent = "{\"category_id\":" + 348 + ",\"title_multi_language_list\":[{\"locale\":\"en_US\",\"title\":\"" + dbProduct.Title + "\"}]," +
+                    "\"description_multi_language_list\":[{\"locale\":\"en_US\",\"module_list\":[{\"type\":\"html\",\"html\":{\"content\":\"" + dbProduct.Description + "\"}}]}],\"locale\":\"en_US\"," +
+                    "\"product_units_type\":\"" + updatedModel.UpdatedUnit + "\"," +
                     "\"image_url_list\":[\"https://www.begorgeousstylesandbeauty.com/wp-content/uploads/2016/01/2015-100-High-Quality-Mens-Dress-Shirts-Blue-Shirt-Men-Causal-Striped-Shirt-Men-Camisa-Social.jpg\"]," +
-                    "\"category_attributes\":{\"Brand Name\":{\"value\":\"201470514\"},\"Material\":{\"value\":[\"47\",\"49\"]}}," +
-                    "\"sku_info_list\":[{\"sku_code\":\"400818375\",\"inventory\":11,\"price\":11,\"discount_price\":1,\"sku_attributes\":{\"Size\":{\"value\":\"4181\"},\"Color\":{\"alias\":\"32\"," +
+                    "\"category_attributes\":{\"Brand Name\":{\"value\":\"" + updatedModel.UpdatedBrand + "\"},\"Material\":{\"value\":[\"47\",\"49\"]}}," +
+                    "\"sku_info_list\":[{\"sku_code\":\"" + dbProduct.OriginalProductID + "\",\"inventory\":" + dbProduct.Inventory + ",\"price\":" + updatedModel.UpdatedPrice + ",\"discount_price\":" + updatedModel.UpdatedPrice * .9 + ",\"sku_attributes\":{\"Size\":{\"value\":\"" + updatedModel.UpdatedSize + "\"},\"Color\":{\"alias\":\"" + updatedModel.UpdatedColor + "\"," +
                     "\"sku_image_url\":\"https://www.begorgeousstylesandbeauty.com/wp-content/uploads/2016/01/2015-100-High-Quality-Mens-Dress-Shirts-Blue-Shirt-Men-Causal-Striped-Shirt-Men-Camisa-Social.jpg\",\"value\":\"771\"}}}]," +
-                    "\"inventory_deduction_strategy\":\"place_order_withhold\",\"package_weight\":234.00,\"package_length\":234,\"package_height\":234,\"package_width\":234," +
+                    "\"inventory_deduction_strategy\":\"place_order_withhold\",\"package_weight\":23.00,\"package_length\":23,\"package_height\":23,\"package_width\":30," +
                     "\"shipping_preparation_time\":20,\"shipping_template_id\":\"1013213014\",\"service_template_id\":\"0\"}";
 
 
@@ -337,8 +349,8 @@ namespace DropshipPlatform.BLL.Services
                 {
                     AliexpressSolutionFeedSubmitResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
                     AliexpressSolutionFeedQueryRequest fqReq = new AliexpressSolutionFeedQueryRequest();
-                    //fqReq.JobId = rsp.JobId;
-                    fqReq.JobId = 200000021479604453;
+                    fqReq.JobId = rsp.JobId;
+                    //fqReq.JobId = 200000021289874453;
                     AliexpressSolutionFeedQueryResponse fqRsp = client.Execute(fqReq, SessionManager.GetAccessToken().access_token);
                     result = JsonConvert.SerializeObject(fqRsp.ResultList);
                     _aliExpressJobLogService.AddAliExpressJobLog(new AliExpressJobLog()
@@ -469,8 +481,18 @@ namespace DropshipPlatform.BLL.Services
                         {
                             schemaProprtiesModel.AliExpressID = AliExpCatID;
 
-                            List<PropertyModel> brands = new List<PropertyModel>();
+                            List<PropertyModel> units = new List<PropertyModel>();
                             foreach (OneOf6 item in categorySchemaModel.properties.product_units_type.oneOf)
+                            {
+                                PropertyModel propertyModel = new PropertyModel();
+                                propertyModel.PropertyID = item.@const;
+                                propertyModel.PropertyName = item.title;
+                                units.Add(propertyModel);
+                            }
+                            schemaProprtiesModel.ProductUnits = units;
+
+                            List<PropertyModel> brands = new List<PropertyModel>();
+                            foreach (OneOf7 item in categorySchemaModel.properties.category_attributes.properties.BrandName.properties.value.oneOf)
                             {
                                 PropertyModel propertyModel = new PropertyModel();
                                 propertyModel.PropertyID = item.@const;
@@ -488,6 +510,16 @@ namespace DropshipPlatform.BLL.Services
                                 colors.Add(propertyModel);
                             }
                             schemaProprtiesModel.ProductColors = colors;
+
+                            List<PropertyModel> sizes = new List<PropertyModel>();
+                            foreach (OneOf18 item in categorySchemaModel.properties.sku_info_list.items.properties.sku_attributes.properties.Size.properties.value.oneOf)
+                            {
+                                PropertyModel propertyModel = new PropertyModel();
+                                propertyModel.PropertyID = item.@const;
+                                propertyModel.PropertyName = item.title;
+                                sizes.Add(propertyModel);
+                            }
+                            schemaProprtiesModel.ProductSizes = sizes;
                         }
                     }
                 }

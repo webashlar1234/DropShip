@@ -60,3 +60,9 @@ table.dataTable tbody td, table.dataTable tbody td input, table.dataTable tbody 
     border-top-color: #333;
     animation: spinner .6s linear infinite;
 }
+
+.btnAction{
+    min-width:120px;
+    max-width:150px;
+    margin-top:5px;
+}
