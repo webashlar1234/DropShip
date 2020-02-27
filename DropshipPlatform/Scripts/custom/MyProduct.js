@@ -54,10 +54,17 @@ $(document).ready(function () {
         var trs = '';
         $.each($(d.ChildProductList), function (key, value) {
 
-            var brandsHTML = GeneratePropertyList(value.schemaProprtiesModel.ProductBrands, "ddlBrand", value.OriginalProductID);
-            var colorHTML = GeneratePropertyList(value.schemaProprtiesModel.ProductColors, "ddlColor", value.OriginalProductID);
-            var unitHTML = GeneratePropertyList(value.schemaProprtiesModel.ProductUnits, "ddlUnit", value.OriginalProductID);
-            var sizeHTML = GeneratePropertyList(value.schemaProprtiesModel.ProductSizes, "ddlSize", value.OriginalProductID);
+            var brandsHTML = "";
+            var colorHTML = "";
+            var unitHTML = "";
+            var sizeHTML = "";
+
+            if (value.schemaProprtiesModel) {
+                brandsHTML = GeneratePropertyList(value.schemaProprtiesModel.ProductBrands, "ddlBrand", value.OriginalProductID);
+                colorHTML = GeneratePropertyList(value.schemaProprtiesModel.ProductColors, "ddlColor", value.OriginalProductID);
+                unitHTML = GeneratePropertyList(value.schemaProprtiesModel.ProductUnits, "ddlUnit", value.OriginalProductID);
+                sizeHTML = GeneratePropertyList(value.schemaProprtiesModel.ProductSizes, "ddlSize", value.OriginalProductID);
+            }
 
             trs +=
                 '<tr><td>' + value.Title +

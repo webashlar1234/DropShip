@@ -1,6 +1,15 @@
 ﻿
-<link href="~/Content/custom/product-management.css" rel="stylesheet" />
-<script src="~/Scripts/custom/PickupProducts.js"></script>
+
+@{
+    ViewBag.Title = "Pickup Product";
+    <link href="~/Content/custom/my-product.css" rel="stylesheet" />
+    <link href="~/Content/custom/product-management.css" rel="stylesheet" />
+
+    <script src="~/Scripts/custom/PickupProducts.js"></script>
+}
+
+
+
 <section class="mt-4">
     <div class="container-fluid">
         <div class="row">
@@ -32,11 +41,33 @@
         </div>
     </div>
 </section>
+
 <section class="mt-3">
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12 table-responsive  mb-5">
-                <table id="ProductsDt" class="display" style="width:100%"></table>
+                <table id="ProductsDt" class="display" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th scope="col">Product Title</th>
+                            <th scope="col">Category</th>
+                            <th scope="col">Cost (USD)</th>
+                            <th scope="col">Inventory</th>
+                            <th scope="col">Shipping Weight (KG)</th>
+                            <th scope="col">Your Price</th>
+                            <th scope="col">
+                                <label class="rememberme mt-checkbox">
+                                    <input type="checkbox" id="chkAllProduct" name="remember" value="0">
+                                    <span></span>&nbsp;Check All
+                                </label>
+                            </th>
+                            <th scope="col">Pick All</th>
+                            <th scope="col">Product Status</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div>
         </div>
     </div>

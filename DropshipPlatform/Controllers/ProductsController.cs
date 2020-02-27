@@ -27,18 +27,18 @@ namespace DropshipPlatform.Controllers
         public JsonResult getProductManagementDT(int? category, int? filterOptions)
         {
             User user = SessionManager.GetUserSession();
-            List<ProductViewModel> list = _productService.GetParentProducts(user.UserID);
+            List<ProductGroupModel> list = _productService.GetParentProducts(user.UserID);
             if (category > 0)
             {
-                list = list.Where(x => x.CategoryID == category).ToList();
+                list = list.Where(x => x.ParentProduct.CategoryID == category).ToList();
             }
             if (filterOptions == 1)
             {
-                list = list.Where(x => x.UserID == user.UserID).ToList();
+                list = list.Where(x => x.ParentProduct.UserID == user.UserID).ToList();
             }
             else if(filterOptions == 2)
             {
-                list = list.Where(x => x.UserID != user.UserID).ToList();
+                list = list.Where(x => x.ParentProduct.UserID != user.UserID).ToList();
             }          
             return Json(new
             {

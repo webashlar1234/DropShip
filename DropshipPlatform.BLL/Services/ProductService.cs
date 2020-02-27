@@ -33,8 +33,10 @@ namespace DropshipPlatform.BLL.Services
             }
             return products;
         }
-        public List<ProductViewModel> GetParentProducts(int UserID)
+
+        public List<ProductGroupModel> GetParentProducts(int UserID)
         {
+            List<ProductGroupModel> productGroupList = new List<ProductGroupModel>();
             List<ProductViewModel> products = new List<ProductViewModel>();
             try
             {
@@ -61,13 +63,40 @@ namespace DropshipPlatform.BLL.Services
                                     UserID = sp.UserID,
                                     AliExpressCategoryID = c.AliExpressCategoryId.Value
                                 }).ToList();
+
+                    if (products.Count > 0)
+                    {
+                        foreach (ProductViewModel productViewModel in products)
+                        {
+                            ProductGroupModel productGroup = new ProductGroupModel();
+
+                            List<Product> childProducts = datacontext.Products.Where(x => x.ParentProductID.ToString() == productViewModel.OriginalProductID).ToList();
+                            productGroup.ParentProduct = productViewModel;
+                            productGroup.ChildProductList = new List<ProductViewModel>();
+                            long parentInvetoryTotal = 0;
+                            long parentPriceTotal = 0;
+
+                            foreach (Product dbChildProduct in childProducts)
+                            {
+                                ProductViewModel childProductModel = GenerateProductViewModel(dbChildProduct);
+                                childProductModel = AddUpdatedValues(childProductModel);
+                                productGroup.ChildProductList.Add(childProductModel);
+                                parentInvetoryTotal = parentInvetoryTotal + Convert.ToInt32(childProductModel.Inventory);
+                                parentPriceTotal = parentPriceTotal + Convert.ToInt32(childProductModel.Cost);
+                            }
+                            productGroup.ParentProduct.Inventory = parentInvetoryTotal.ToString();
+                            productGroup.ParentProduct.Cost = parentPriceTotal;
+                            productGroupList.Add(productGroup);
+                        }
+                    }
+
                 }
             }
             catch (Exception ex)
             {
                 logger.Error(ex.ToString());
             }
-            return products;
+            return productGroupList;
         }
 
         public bool AddSellersPickedProducts(List<simpleModel> products, int UserID)
@@ -139,12 +168,13 @@ namespace DropshipPlatform.BLL.Services
                                     List<Product> childProducts = datacontext.Products.Where(x => x.ParentProductID.ToString() == dbParentProduct.OriginalProductID).ToList();
                                     productGroup.ParentProduct = GenerateProductViewModel(dbParentProduct);
 
-                                    SchemaProprtiesModel schemaProprtiesModel = schemaProprtiesModelList.Where(sp => sp.AliExpressID == productGroup.ParentProduct.AliExpressCategoryID).FirstOrDefault();
-                                    if (schemaProprtiesModel == null)
-                                    {
-                                        schemaProprtiesModel = GenerateSchemaPropertyModel(productGroup.ParentProduct.AliExpressCategoryID);
-                                        schemaProprtiesModelList.Add(schemaProprtiesModel);
-                                    }
+                                    ////--------------Schema Model Properties--------------------------------------
+                                    //SchemaProprtiesModel schemaProprtiesModel = schemaProprtiesModelList.Where(sp => sp.AliExpressID == productGroup.ParentProduct.AliExpressCategoryID).FirstOrDefault();
+                                    //if (schemaProprtiesModel == null)
+                                    //{
+                                    //    schemaProprtiesModel = GenerateSchemaPropertyModel(productGroup.ParentProduct.AliExpressCategoryID);
+                                    //    schemaProprtiesModelList.Add(schemaProprtiesModel);
+                                    //}
 
                                     productGroup.ChildProductList = new List<ProductViewModel>();
                                     long parentInvetoryTotal = 0;
@@ -153,7 +183,7 @@ namespace DropshipPlatform.BLL.Services
                                     foreach (Product dbChildProduct in childProducts)
                                     {
                                         ProductViewModel childProductModel = GenerateProductViewModel(dbChildProduct);
-                                        childProductModel.schemaProprtiesModel = schemaProprtiesModel;
+                                        //childProductModel.schemaProprtiesModel = schemaProprtiesModel;
                                         childProductModel = AddUpdatedValues(childProductModel);
                                         productGroup.ChildProductList.Add(childProductModel);
                                         parentInvetoryTotal = parentInvetoryTotal + Convert.ToInt32(childProductModel.Inventory);
@@ -359,6 +389,58 @@ namespace DropshipPlatform.BLL.Services
                         ContentId = obj3.ItemContentId,
                         SuccessItemCount = fqRsp.SuccessItemCount,
                         Result = result
+                    });
+
+                    List<AliexpressSolutionFeedResponseModel> solutionResponse = JsonConvert.DeserializeObject<List<AliexpressSolutionFeedResponseModel>>(result);
+                    if (solutionResponse != null && solutionResponse.Count > 0)
+                    {
+                        ItemExecutionResultModel itemModel = JsonConvert.DeserializeObject<ItemExecutionResultModel>(solutionResponse[0].ItemExecutionResult);
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Info(ex.ToString());
+            }
+            return result;
+        }
+
+        public string UpdatePriceOnAliExpress(List<Product> dbProduct, List<int> AliExpressProdutIds)
+        {
+            string result = String.Empty;
+            try
+            {
+
+                ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret, "json");
+                AliexpressSolutionFeedSubmitRequest req = new AliexpressSolutionFeedSubmitRequest();
+                req.OperationType = "PRODUCT_PRICES_UPDATE";
+                List<AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain> list2 = new List<AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain>();
+                AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain obj3 = new AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain();
+
+                obj3.ItemContent = "[{\"item_content_id\": \"A00000000Y1\",\"item_content\": {\"aliexpress_product_id\": " + AliExpressProdutIds[0] + ",\"multiple_sku_update_list\":" +
+                    "[{\"sku_code\": \"" + dbProduct[0].OriginalProductID + "\",\"price\": " + dbProduct[0].Cost + "}]}}," +
+                    "{\"item_content_id\": \"A00000000Y2\",\"item_content\": {\"aliexpress_product_id\": " + AliExpressProdutIds[0] + "," +
+                    "\"multiple_sku_update_list\": [{\"sku_code\": \"" + dbProduct[1].OriginalProductID + "\",\"price\": " + dbProduct[1].Cost + "}]}}]";
+
+                obj3.ItemContentId = Guid.NewGuid().ToString();
+                list2.Add(obj3);
+                req.ItemList_ = list2;
+
+                if (SessionManager.GetAccessToken().access_token != null)
+                {
+                    AliexpressSolutionFeedSubmitResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
+                    AliexpressSolutionFeedQueryRequest fqReq = new AliexpressSolutionFeedQueryRequest();
+                    fqReq.JobId = rsp.JobId;
+                    //fqReq.JobId = 200000021289874453;
+                    AliexpressSolutionFeedQueryResponse fqRsp = client.Execute(fqReq, SessionManager.GetAccessToken().access_token);
+                    result = JsonConvert.SerializeObject(fqRsp.ResultList);
+                    _aliExpressJobLogService.AddAliExpressJobLog(new AliExpressJobLog()
+                    {
+                        JobId = rsp.JobId,
+                        ContentId = obj3.ItemContentId,
+                        SuccessItemCount = fqRsp.SuccessItemCount,
+                        Result = result,
                     });
 
                     List<AliexpressSolutionFeedResponseModel> solutionResponse = JsonConvert.DeserializeObject<List<AliexpressSolutionFeedResponseModel>>(result);
