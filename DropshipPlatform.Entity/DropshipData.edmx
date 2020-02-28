@@ -168,7 +168,6 @@
           <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="ProductId" Type="bigint" Nullable="false" />
           <Property Name="SKU" Type="nchar" MaxLength="10" Nullable="false" />
-          <Property Name="UpdatedInventory" Type="bigint" />
           <Property Name="UpdatedPrice" Type="bigint" />
           <Property Name="CreatedBy" Type="int" />
           <Property Name="CreatedDate" Type="datetime" />
@@ -296,6 +295,7 @@
           <Property Name="CountryID" Type="int" />
           <Property Name="Password" Type="nvarchar" MaxLength="150" />
           <Property Name="AliExpressSellerID" Type="nvarchar" MaxLength="150" />
+          <Property Name="AliExpressAccessToken" Type="nvarchar(max)" />
           <Property Name="StripeCustomerID" Type="nvarchar" MaxLength="150" />
           <Property Name="IsActive" Type="bit" />
           <Property Name="ItemCreatedBy" Type="int" />
@@ -354,15 +354,15 @@
           <EntitySet Name="Countries" EntityType="DropshipDataModel.Country" />
           <EntitySet Name="Orders" EntityType="DropshipDataModel.Order" />
           <EntitySet Name="PaymentProfiles" EntityType="DropshipDataModel.PaymentProfile" />
-          <EntitySet Name="PickedProducts" EntityType="DropshipDataModel.PickedProduct" />
           <EntitySet Name="ProductMedias" EntityType="DropshipDataModel.ProductMedia" />
           <EntitySet Name="Roles" EntityType="DropshipDataModel.Role" />
-          <EntitySet Name="SellersPickedProducts" EntityType="DropshipDataModel.SellersPickedProduct" />
           <EntitySet Name="Subscriptions" EntityType="DropshipDataModel.Subscription" />
           <EntitySet Name="User_Roles" EntityType="DropshipDataModel.User_Roles" />
           <EntitySet Name="Users" EntityType="DropshipDataModel.User" />
           <EntitySet Name="MembershipTypes" EntityType="DropshipDataModel.MembershipType" />
           <EntitySet Name="Products" EntityType="DropshipDataModel.Product" />
+          <EntitySet Name="PickedProducts" EntityType="DropshipDataModel.PickedProduct" />
+          <EntitySet Name="SellersPickedProducts" EntityType="DropshipDataModel.SellersPickedProduct" />
           <EntitySet Name="AliExpressJobLogs" EntityType="DropshipDataModel.AliExpressJobLog" />
           <EntitySet Name="SellerPickedProductSKUs" EntityType="DropshipDataModel.SellerPickedProductSKU" />
           <AssociationSet Name="FK_SellerPickedProductSKU_SellersPickedProducts" Association="DropshipDataModel.FK_SellerPickedProductSKU_SellersPickedProducts">
@@ -500,7 +500,6 @@
           <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="ProductId" Type="Int64" Nullable="false" />
           <Property Name="SKU" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="true" />
-          <Property Name="UpdatedInventory" Type="Int64" />
           <Property Name="UpdatedPrice" Type="Int64" />
           <Property Name="CreatedBy" Type="Int32" />
           <Property Name="CreatedDate" Type="DateTime" Precision="3" />
@@ -593,6 +592,7 @@
           <Property Name="ItemModifyWhen" Type="DateTime" Precision="3" />
           <Property Name="IsPolicyAccepted" Type="Boolean" />
           <Property Name="StripeCustomerID" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="AliExpressAccessToken" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="MembershipType">
           <Key>
@@ -828,13 +828,13 @@
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="UpdatedPrice" ColumnName="UpdatedPrice" />
-                <ScalarProperty Name="UpdatedInventory" ColumnName="UpdatedInventory" />
                 <ScalarProperty Name="SKU" ColumnName="SKU" />
                 <ScalarProperty Name="ProductId" ColumnName="ProductId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          
           <EntitySetMapping Name="ProductMedias">
             <EntityTypeMapping TypeName="DropshipDataModel.ProductMedia">
               <MappingFragment StoreEntitySet="ProductMedia">
@@ -864,12 +864,12 @@
           <EntitySetMapping Name="SellersPickedProducts">
             <EntityTypeMapping TypeName="DropshipDataModel.SellersPickedProduct">
               <MappingFragment StoreEntitySet="SellersPickedProducts">
-                <ScalarProperty Name="SellerPrice" ColumnName="SellerPrice" />
                 <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
                 <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
                 <ScalarProperty Name="ItemCreatedWhen" ColumnName="ItemCreatedWhen" />
                 <ScalarProperty Name="ItemCreatedBy" ColumnName="ItemCreatedBy" />
                 <ScalarProperty Name="AliExpressProductID" ColumnName="AliExpressProductID" />
+                <ScalarProperty Name="SellerPrice" ColumnName="SellerPrice" />
                 <ScalarProperty Name="ParentProductID" ColumnName="ParentProductID" />
                 <ScalarProperty Name="UserID" ColumnName="UserID" />
                 <ScalarProperty Name="SellersPickedID" ColumnName="SellersPickedID" />
@@ -910,6 +910,7 @@
           <EntitySetMapping Name="Users">
             <EntityTypeMapping TypeName="DropshipDataModel.User">
               <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="AliExpressAccessToken" ColumnName="AliExpressAccessToken" />
                 <ScalarProperty Name="StripeCustomerID" ColumnName="StripeCustomerID" />
                 <ScalarProperty Name="IsPolicyAccepted" ColumnName="IsPolicyAccepted" />
                 <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
@@ -979,6 +980,7 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          
           <EntitySetMapping Name="AliExpressJobLogs">
             <EntityTypeMapping TypeName="DropshipDataModel.AliExpressJobLog">
               <MappingFragment StoreEntitySet="AliExpressJobLog">

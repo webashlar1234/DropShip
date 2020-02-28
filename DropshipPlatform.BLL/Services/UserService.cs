@@ -2,6 +2,7 @@
 using DropshipPlatform.Entity;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -90,6 +91,31 @@ namespace DropshipPlatform.BLL.Services
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
                     dbUser = datacontext.Users.Where(m => m.UserID == UserID).FirstOrDefault();
+                }
+            }
+            catch (Exception ex)
+            {
+                dbUser = null;
+                logger.Error(ex.ToString());
+            }
+            return dbUser;
+        }
+
+        public User UpdateUserForAliExpress(int UserID, AliExpressAccessToken AccessToken)
+        {
+            User dbUser = new User();
+            try
+            {
+                using (DropshipDataEntities datacontext = new DropshipDataEntities())
+                {
+                    User Obj = datacontext.Users.Where(x => x.UserID == UserID).FirstOrDefault();
+                    if (Obj != null)
+                    {
+                        Obj.AliExpressSellerID = AccessToken.user_id;
+                        Obj.AliExpressAccessToken = Newtonsoft.Json.JsonConvert.SerializeObject(AccessToken);
+                        datacontext.Entry(Obj).State = EntityState.Modified;
+                        datacontext.SaveChanges();
+                    }
                 }
             }
             catch (Exception ex)

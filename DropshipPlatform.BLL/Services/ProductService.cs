@@ -120,7 +120,7 @@ namespace DropshipPlatform.BLL.Services
                                 obj = new SellersPickedProduct();
                                 obj.UserID = UserID;
                                 obj.ParentProductID = ParentProduct.ProductID;
-                                obj.SellerPrice = product.price;
+                                obj.SellerPrice = Convert.ToDouble(product.price);
                                 obj.ItemCreatedBy = UserID;
                                 obj.ItemCreatedWhen = DateTime.UtcNow;
                                 foreach (ProductSKUModel productSKUModel in product.SKUModels)
@@ -227,7 +227,7 @@ namespace DropshipPlatform.BLL.Services
                     PickedProduct dbPickedProduct = datacontext.PickedProducts.Where(m => m.SKU == productModel.OriginalProductID).FirstOrDefault();
                     if (dbPickedProduct != null)
                     {
-                        productModel.UpdatedInvetory = dbPickedProduct.UpdatedInventory.Value;
+                        //productModel.UpdatedInvetory = dbPickedProduct.UpdatedInventory.Value;
                         productModel.UpdatedPrice = dbPickedProduct.UpdatedPrice.Value;
                     }
                     else
@@ -301,14 +301,14 @@ namespace DropshipPlatform.BLL.Services
                                 PickedProduct dbPickedProduct = datacontext.PickedProducts.Where(p => p.SKU == item.SKU).FirstOrDefault();
                                 if (dbPickedProduct != null)
                                 {
-                                    long existingInventory = dbPickedProduct.UpdatedInventory.Value > 0 ? dbPickedProduct.UpdatedInventory.Value : 0;
+                                    //long existingInventory = dbPickedProduct.UpdatedInventory.Value > 0 ? dbPickedProduct.UpdatedInventory.Value : 0;
 
-                                    dbPickedProduct.UpdatedInventory = Convert.ToInt32(item.PickedInventory);
+                                    //dbPickedProduct.UpdatedInventory = Convert.ToInt32(item.PickedInventory);
                                     dbPickedProduct.UpdatedPrice = Convert.ToInt32(item.UpdatedPrice);
                                     dbPickedProduct.UpdatedBy = 1;
                                     dbPickedProduct.UpdatedDate = DateTime.Now;
                                     datacontext.SaveChanges();
-                                    dbProduct.Inventory = Convert.ToString(Convert.ToInt32(dbProduct.Inventory) - (dbPickedProduct.UpdatedInventory - existingInventory));
+                                    //dbProduct.Inventory = Convert.ToString(Convert.ToInt32(dbProduct.Inventory) - (dbPickedProduct.UpdatedInventory - existingInventory));
                                     datacontext.SaveChanges();
                                     result = true;
                                 }
@@ -318,16 +318,16 @@ namespace DropshipPlatform.BLL.Services
                                     dbPickedProduct.ProductId = dbProduct.ProductID;
                                     dbPickedProduct.SKU = dbProduct.OriginalProductID;
                                     dbPickedProduct.UpdatedPrice = Convert.ToInt16(item.UpdatedPrice);
-                                    dbPickedProduct.UpdatedInventory = Convert.ToInt16(item.PickedInventory);
+                                    //dbPickedProduct.UpdatedInventory = Convert.ToInt16(item.PickedInventory);
                                     dbPickedProduct.CreatedBy = 1;
                                     dbPickedProduct.CreatedDate = DateTime.Now;
                                     datacontext.PickedProducts.Add(dbPickedProduct);
                                     datacontext.SaveChanges();
-                                    long remainInventory = Convert.ToInt32(dbProduct.Inventory) - dbPickedProduct.UpdatedInventory.Value;
-                                    if (remainInventory > 0)
-                                    {
-                                        dbProduct.Inventory = Convert.ToString(remainInventory);
-                                    }
+                                    //long remainInventory = Convert.ToInt32(dbProduct.Inventory) - dbPickedProduct.UpdatedInventory.Value;
+                                    //if (remainInventory > 0)
+                                    //{
+                                    //    dbProduct.Inventory = Convert.ToString(remainInventory);
+                                    //}
                                     datacontext.SaveChanges();
                                 }
                                 result = true;

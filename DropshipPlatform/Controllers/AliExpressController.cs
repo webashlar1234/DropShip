@@ -41,6 +41,11 @@ namespace DropshipPlatform.Controllers
             AliExpressAccessToken accessToken = _aliExpressAuthService.getAccessToken(code);
             if (accessToken != null)
             {
+                ////get expired date
+                //TimeSpan timespan = TimeSpan.FromMilliseconds(float.Parse(accessToken.expire_time));
+                //DateTime dt = DateTime.Now.Add(timespan);
+
+                new UserService().UpdateUserForAliExpress(SessionManager.GetUserSession().UserID, accessToken);
                 SessionManager.SetAccessToken(accessToken);
             }
             return RedirectToAction("Index", "AliExpress");
