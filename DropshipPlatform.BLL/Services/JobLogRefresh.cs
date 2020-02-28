@@ -60,11 +60,15 @@ namespace DropshipPlatform.BLL.Services
                                 if (fqRsp.ResultList.Count > 0)
                                 {
                                     var result = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(fqRsp.ResultList.FirstOrDefault().ItemExecutionResult);
+                                    SellersPickedProduct obj = datacontext.SellersPickedProducts.Where(x => x.UserID == userid && x.ParentProductID == item.ProductID).FirstOrDefault();
                                     if (result.success == true)
                                     {
-                                        SellersPickedProduct obj = datacontext.SellersPickedProducts.Where(x => x.UserID == userid && x.ParentProductID == item.ProductID).FirstOrDefault();
                                         obj.AliExpressProductID = result.productId;
                                         datacontext.Entry(obj).State = System.Data.Entity.EntityState.Modified;
+                                    }
+                                    else
+                                    {
+                                        datacontext.SellersPickedProducts.Remove(obj);
                                     }
                                 }
                             }
