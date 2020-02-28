@@ -40,7 +40,7 @@ namespace DropshipPlatform.BLL.Services
                     int userid = SessionManager.GetUserSession().UserID;
                     using (DropshipDataEntities datacontext = new DropshipDataEntities())
                     {
-                        jobLogList = datacontext.AliExpressJobLogs.Where(x => x.UserID == userid && x.Result == "null" || x.Result == null || x.Result == string.Empty).ToList();
+                        jobLogList = datacontext.AliExpressJobLogs.Where(x => x.UserId == userid && x.Result == "null" || x.Result == null || x.Result == string.Empty).ToList();
 
                         foreach (AliExpressJobLog item in jobLogList)
                         {
@@ -60,7 +60,8 @@ namespace DropshipPlatform.BLL.Services
                                 if (fqRsp.ResultList.Count > 0)
                                 {
                                     var result = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(fqRsp.ResultList.FirstOrDefault().ItemExecutionResult);
-                                    SellersPickedProduct obj = datacontext.SellersPickedProducts.Where(x => x.UserID == userid && x.ParentProductID == item.ProductID).FirstOrDefault();
+                                    SellersPickedProduct obj = datacontext.SellersPickedProducts.Where(x => x.UserID == userid && x.ParentProductID == item.ProductId).FirstOrDefault();
+                                    if(obj != null) { 
                                     if (result.success == true)
                                     {
                                         obj.AliExpressProductID = result.productId;
@@ -69,6 +70,7 @@ namespace DropshipPlatform.BLL.Services
                                     else
                                     {
                                         datacontext.SellersPickedProducts.Remove(obj);
+                                    }
                                     }
                                 }
                             }

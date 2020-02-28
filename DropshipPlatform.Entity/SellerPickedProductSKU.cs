@@ -12,17 +12,15 @@ namespace DropshipPlatform.Entity
     using System;
     using System.Collections.Generic;
     
-    public partial class AliExpressJobLog
+    public partial class SellerPickedProductSKU
     {
         public int Id { get; set; }
-        public Nullable<long> JobId { get; set; }
-        public Nullable<long> SuccessItemCount { get; set; }
-        public string ContentId { get; set; }
-        public string Result { get; set; }
-        public Nullable<System.DateTime> CreatedOn { get; set; }
-        public Nullable<int> CreatedBy { get; set; }
         public Nullable<int> ProductId { get; set; }
+        public string SKUCode { get; set; }
+        public Nullable<decimal> UpdatedPrice { get; set; }
+        public int SellerPickedId { get; set; }
         public Nullable<int> UserId { get; set; }
-        public string ProductDetails { get; set; }
+    
+        public virtual SellersPickedProduct SellersPickedProduct { get; set; }
     }
 }

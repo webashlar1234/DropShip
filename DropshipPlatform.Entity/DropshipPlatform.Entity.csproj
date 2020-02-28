@@ -108,6 +108,9 @@
     <Compile Include="Role.cs">
       <DependentUpon>DropshipData.tt</DependentUpon>
     </Compile>
+    <Compile Include="SellerPickedProductSKU.cs">
+      <DependentUpon>DropshipData.tt</DependentUpon>
+    </Compile>
     <Compile Include="SellersPickedProduct.cs">
       <DependentUpon>DropshipData.tt</DependentUpon>
     </Compile>
