@@ -1,4 +1,5 @@
-﻿using DropshipPlatform.BLL.Models;
+﻿using DropshipPlatform.BLL;
+using DropshipPlatform.BLL.Models;
 using DropshipPlatform.BLL.Services;
 using DropshipPlatform.Entity;
 using System;
@@ -32,6 +33,10 @@ namespace DropshipPlatform.Controllers
                 {
                     User user = (User)response.Data;
                     SessionManager.SetUserSession(user);
+                    if (!string.IsNullOrEmpty(user.AliExpressAccessToken))
+                    {
+                        SessionManager.SetAccessToken(Newtonsoft.Json.JsonConvert.DeserializeObject<AliExpressAccessToken>(user.AliExpressAccessToken));
+                    }
                     Session["UserName"] = user.Name;
                     Session["UserID"] = user.UserID;
                     return RedirectToAction("Index", "AliExpress");

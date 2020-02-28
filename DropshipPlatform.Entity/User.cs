@@ -28,5 +28,6 @@ namespace DropshipPlatform.Entity
         public Nullable<System.DateTime> ItemModifyWhen { get; set; }
         public Nullable<bool> IsPolicyAccepted { get; set; }
         public string StripeCustomerID { get; set; }
+        public string AliExpressAccessToken { get; set; }
     }
 }

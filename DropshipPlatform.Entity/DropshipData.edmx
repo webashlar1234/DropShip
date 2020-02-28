@@ -238,6 +238,7 @@
           <Property Name="UserID" Type="int" />
           <Property Name="ParentProductID" Type="int" />
           <Property Name="SellerPrice" Type="float" />
+          <Property Name="Inventory" Type="nvarchar" MaxLength="50" />
           <Property Name="AliExpressProductID" Type="nvarchar" MaxLength="50" />
           <Property Name="ItemCreatedBy" Type="int" />
           <Property Name="ItemCreatedWhen" Type="datetime" />
@@ -284,6 +285,7 @@
           <Property Name="CountryID" Type="int" />
           <Property Name="Password" Type="nvarchar" MaxLength="150" />
           <Property Name="AliExpressSellerID" Type="nvarchar" MaxLength="150" />
+          <Property Name="AliExpressAccessToken" Type="nvarchar(max)" />
           <Property Name="StripeCustomerID" Type="nvarchar" MaxLength="150" />
           <Property Name="IsActive" Type="bit" />
           <Property Name="ItemCreatedBy" Type="int" />
@@ -509,6 +511,7 @@
           <Property Name="ItemModifyBy" Type="Int32" />
           <Property Name="ItemModifyWhen" Type="DateTime" Precision="3" />
           <Property Name="SellerPrice" Type="Double" />
+          <Property Name="Inventory" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Subscription">
           <Key>
@@ -557,6 +560,7 @@
           <Property Name="ItemModifyWhen" Type="DateTime" Precision="3" />
           <Property Name="IsPolicyAccepted" Type="Boolean" />
           <Property Name="StripeCustomerID" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="AliExpressAccessToken" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="AliExpressJobLog">
           <Key>
@@ -803,6 +807,7 @@
           <EntitySetMapping Name="SellersPickedProducts">
             <EntityTypeMapping TypeName="DropshipDataModel.SellersPickedProduct">
               <MappingFragment StoreEntitySet="SellersPickedProducts">
+                <ScalarProperty Name="Inventory" ColumnName="Inventory" />
                 <ScalarProperty Name="SellerPrice" ColumnName="SellerPrice" />
                 <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
                 <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
@@ -849,6 +854,7 @@
           <EntitySetMapping Name="Users">
             <EntityTypeMapping TypeName="DropshipDataModel.User">
               <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="AliExpressAccessToken" ColumnName="AliExpressAccessToken" />
                 <ScalarProperty Name="StripeCustomerID" ColumnName="StripeCustomerID" />
                 <ScalarProperty Name="IsPolicyAccepted" ColumnName="IsPolicyAccepted" />
                 <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
