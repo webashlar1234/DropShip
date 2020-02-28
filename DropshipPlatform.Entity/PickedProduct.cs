@@ -17,7 +17,6 @@ namespace DropshipPlatform.Entity
         public long Id { get; set; }
         public long ProductId { get; set; }
         public string SKU { get; set; }
-        public Nullable<long> UpdatedInventory { get; set; }
         public Nullable<long> UpdatedPrice { get; set; }
         public Nullable<int> CreatedBy { get; set; }
         public Nullable<System.DateTime> CreatedDate { get; set; }
