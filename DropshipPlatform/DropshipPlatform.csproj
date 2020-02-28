@@ -221,6 +221,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AliExpressController.cs" />
+    <Compile Include="Controllers\BackendServiceController.cs" />
     <Compile Include="Controllers\CategoryController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
@@ -309,6 +310,7 @@
     <Content Include="Scripts\custom\globalJS.js" />
     <Content Include="Scripts\custom\home.js" />
     <Content Include="Scripts\custom\jobLog.js" />
+    <Content Include="Scripts\custom\KeepAlive.js" />
     <Content Include="Scripts\custom\Login.js" />
     <Content Include="Scripts\custom\membership.js" />
     <Content Include="Scripts\custom\MyProduct.js" />
@@ -380,6 +382,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Backend\" />
     <Folder Include="Views\Stripe\" />
     <Folder Include="Views\User\" />
   </ItemGroup>
