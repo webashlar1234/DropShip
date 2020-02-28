@@ -20,7 +20,7 @@ var product = {
         var selectedItems = global.getSelectedCheckboxList('.chkProducts', 'productid');
         var pickedProducts = [];
         $.each(selectedItems, function (index, item) {
-            pickedProducts.push({ key: item, value: $('.chkProducts[productid=' + item + ']').parents('tr').find('.SellerPriceInp').val() })
+            pickedProducts.push({ key: item, value: $('.chkProducts[productid=' + item + ']').parents('tr').find('.SellerPriceInp').val() });
         });
         $.ajax({
             type: "POST",
@@ -182,10 +182,10 @@ $(document).ready(function () {
         }
     });
 
-    $('#ProductsDt').change(function () {
+    $('#chkAllProduct').change(function () {
         var parentCheckboxes = $('.parentChk');
-        ProductFormValidate();
-        if (this.checked) {
+        //ProductFormValidate();
+        if (event.target.checked) {
             parentCheckboxes.prop('checked', true);
             $('#btnSave').prop('disabled', false);
         }
@@ -198,8 +198,8 @@ $(document).ready(function () {
     $("#ProductsDt tbody").on("change", ".parentChk", function () {
         //ProductFormValidate();
         console.log($(this).text());
-        var parentProductID = $(this).attr('data-SKU');
-        if (this.checked) {
+        var parentProductID = $(this).attr('productid');
+        if (event.target.checked) {
             var parentCheckboxes = $('.parentChk');
             var allchecked = true;
             if (parentCheckboxes && parentCheckboxes.length > 0) {
@@ -215,20 +215,25 @@ $(document).ready(function () {
             }
 
             $('.txtEdit_' + parentProductID + '').prop("disabled", false);
+            $('.txtParent_' + parentProductID + '').prop("disabled", false);
             $('#btnSave').prop('disabled', false);
 
         }
         else {
             $('#chkAllProduct').prop('checked', false);
             $('.txtEdit_' + parentProductID + '').prop("disabled", true);
+            $('.txtParent_' + parentProductID + '').prop("disabled", true);
         }
     });
 
     $("#ProductsDt tbody").on("change", ".pickedInvetory", function () {
         $("#frmPickedProduct").valid();
     });
-    $("#ProductsDt tbody").on("change", ".updatedPrice", function () {
-        $("#frmPickedProduct").valid();
+    $("#ProductsDt tbody").on("change", ".updatedParentPrice", function () {
+        var parentPrice = this.value;
+        var parentID = $(this).attr("datasku");
+        $(".txtEdit_" + parentID).val(parentPrice);
+        //$("#frmPickedProduct").valid();
     });
 });
 
@@ -348,7 +353,7 @@ function BindData(jsonProducts) {
         {
             "data": "UpdatedPrice", "render": function (data, type, full) {
                 full.cost > 0 ? full.cost : 0;
-                return "<input name='updatedPrice' onkeypress='return IsNumeric(event);' dataSKU='" + full.OriginalProductID + "' type='text' value=" + full.cost + " class='updatedPrice txtEdit_" + full.ParentProductID + "'>"
+                return "<input name='updatedPrice' disabled onkeypress='return IsNumeric(event);' dataSKU='" + full.OriginalProductID + "' type='text' value=" + full.cost + " class='updatedParentPrice txtParent_" + full.OriginalProductID + "'>";
             }
         },
         {
@@ -358,11 +363,12 @@ function BindData(jsonProducts) {
                     rawHTML = "Picked";
                 }
                 else {
-                    rawHTML = '<label class="mt-checkbox mt-checkbox-outline"><input type="checkbox" productid=' + full.ProductID + ' id="chk_prod_' + full.ProductID + '" class="chkProducts"><span></span></label>';
+                    rawHTML = '<label class="mt-checkbox mt-checkbox-outline"><input type="checkbox" productid=' + full.OriginalProductID + ' id="chk_prod_' + full.OriginalProductID + '" class="chkProducts parentChk"><span></span></label>';
                 }
                 return rawHTML;
             }
         },
+
         {
             "data": "check", "render": function (data, type, full) {
                 return full.SellerPickedCount > 0 ? ("Picked by " + full.SellerPickedCount + " sellers") : (full.IsActive ? "Online" : "Offline");

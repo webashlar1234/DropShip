@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="aaae3e8bd9d643f09a913579d48cc812" Name="Diagram1" ZoomLevel="64">
+      <Diagram DiagramId="aaae3e8bd9d643f09a913579d48cc812" Name="Diagram1" ZoomLevel="83">
         <EntityTypeShape EntityType="DropshipDataModel.AliExpressCategory" Width="1.5" PointX="0.75" PointY="0.75" />
         <EntityTypeShape EntityType="DropshipDataModel.AliExpressOrderItem" Width="1.5" PointX="2.75" PointY="0.75" />
         <EntityTypeShape EntityType="DropshipDataModel.AliExpressOrder" Width="1.5" PointX="4.75" PointY="0.75" />

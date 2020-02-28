@@ -73,19 +73,19 @@ namespace DropshipPlatform.BLL.Services
                             List<Product> childProducts = datacontext.Products.Where(x => x.ParentProductID.ToString() == productViewModel.OriginalProductID).ToList();
                             productGroup.ParentProduct = productViewModel;
                             productGroup.ChildProductList = new List<ProductViewModel>();
-                            long parentInvetoryTotal = 0;
-                            long parentPriceTotal = 0;
+                            //long parentInvetoryTotal = 0;
+                            //long parentPriceTotal = 0;
 
                             foreach (Product dbChildProduct in childProducts)
                             {
                                 ProductViewModel childProductModel = GenerateProductViewModel(dbChildProduct);
                                 childProductModel = AddUpdatedValues(childProductModel);
                                 productGroup.ChildProductList.Add(childProductModel);
-                                parentInvetoryTotal = parentInvetoryTotal + Convert.ToInt32(childProductModel.Inventory);
-                                parentPriceTotal = parentPriceTotal + Convert.ToInt32(childProductModel.Cost);
+                                //parentInvetoryTotal = parentInvetoryTotal + Convert.ToInt32(childProductModel.Inventory);
+                                //parentPriceTotal = parentPriceTotal + Convert.ToInt32(childProductModel.Cost);
                             }
-                            productGroup.ParentProduct.Inventory = parentInvetoryTotal.ToString();
-                            productGroup.ParentProduct.Cost = parentPriceTotal;
+                            //productGroup.ParentProduct.Inventory = parentInvetoryTotal.ToString();
+                            //productGroup.ParentProduct.Cost = parentPriceTotal;
                             productGroupList.Add(productGroup);
                         }
                     }
@@ -318,7 +318,7 @@ namespace DropshipPlatform.BLL.Services
                                     datacontext.SaveChanges();
                                 }
                                 result = true;
-                                string productSKU = SyncWithAliExpress(dbProduct, item, 348);
+                                string productSKU = SyncWithAliExpress(dbProduct, 348);
                             }
                         }
                     }
@@ -331,26 +331,13 @@ namespace DropshipPlatform.BLL.Services
             return result;
         }
 
-        public string SyncWithAliExpress(Product dbProduct, UpdateProductModel updatedModel, int AliCategoryID)
+        public string SyncWithAliExpress(Product dbProduct, int AliCategoryID)
         {
             string result = String.Empty;
             try
             {
-                String Schema = GetSchemaByCategory(AliCategoryID);
+                //String Schema = GetSchemaByCategory(AliCategoryID);
                 string json = String.Empty;
-                try
-                {
-                    updatedModel.UpdatedUnit = !string.IsNullOrEmpty(updatedModel.UpdatedUnit) ? updatedModel.UpdatedUnit : "100000006";
-                    updatedModel.UpdatedBrand = !string.IsNullOrEmpty(updatedModel.UpdatedBrand) ? updatedModel.UpdatedBrand : dbProduct.Brand;
-                    updatedModel.UpdatedColor = !string.IsNullOrEmpty(updatedModel.UpdatedColor) ? updatedModel.UpdatedColor : "Beige";
-                    updatedModel.UpdatedSize = !string.IsNullOrEmpty(updatedModel.UpdatedSize) ? updatedModel.UpdatedSize : dbProduct.Size;
-                    updatedModel.UpdatedPrice = updatedModel.UpdatedPrice > 0 ? updatedModel.UpdatedPrice : Convert.ToInt16(dbProduct.Cost);
-                }
-                catch (Exception ex)
-                {
-                    logger.Error(ex.ToString());
-                }
-
                 ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret, "json");
                 AliexpressSolutionFeedSubmitRequest req = new AliexpressSolutionFeedSubmitRequest();
                 req.OperationType = "PRODUCT_CREATE";
@@ -358,12 +345,17 @@ namespace DropshipPlatform.BLL.Services
                 AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain obj3 = new AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain();
 
                 obj3.ItemContent = "{\"category_id\":" + 348 + ",\"title_multi_language_list\":[{\"locale\":\"en_US\",\"title\":\"" + dbProduct.Title + "\"}]," +
-                    "\"description_multi_language_list\":[{\"locale\":\"en_US\",\"module_list\":[{\"type\":\"html\",\"html\":{\"content\":\"" + dbProduct.Description + "\"}}]}],\"locale\":\"en_US\"," +
-                    "\"product_units_type\":\"" + updatedModel.UpdatedUnit + "\"," +
-                    "\"image_url_list\":[\"https://www.begorgeousstylesandbeauty.com/wp-content/uploads/2016/01/2015-100-High-Quality-Mens-Dress-Shirts-Blue-Shirt-Men-Causal-Striped-Shirt-Men-Camisa-Social.jpg\"]," +
-                    "\"category_attributes\":{\"Brand Name\":{\"value\":\"" + updatedModel.UpdatedBrand + "\"},\"Material\":{\"value\":[\"47\",\"49\"]}}," +
-                    "\"sku_info_list\":[{\"sku_code\":\"" + dbProduct.OriginalProductID + "\",\"inventory\":" + dbProduct.Inventory + ",\"price\":" + updatedModel.UpdatedPrice + ",\"discount_price\":" + updatedModel.UpdatedPrice * .9 + ",\"sku_attributes\":{\"Size\":{\"value\":\"" + updatedModel.UpdatedSize + "\"},\"Color\":{\"alias\":\"" + updatedModel.UpdatedColor + "\"," +
-                    "\"sku_image_url\":\"https://www.begorgeousstylesandbeauty.com/wp-content/uploads/2016/01/2015-100-High-Quality-Mens-Dress-Shirts-Blue-Shirt-Men-Causal-Striped-Shirt-Men-Camisa-Social.jpg\",\"value\":\"771\"}}}]," +
+                    "\"description_multi_language_list\":[{\"locale\":\"en_US\"," +
+                    "\"module_list\":[{\"type\":\"html\",\"html\":{\"content\":\"" + dbProduct.Description + "\"}}]}],\"locale\":\"en_US\"," +
+                    "\"product_units_type\":\"" + dbProduct.Unit + "\"," +
+                    "\"image_url_list\":[\"" + StaticValues.sampleImage + "\"]," +
+                    "\"category_attributes\":{\"Brand Name\":{\"value\":\"" + dbProduct.Brand + "\"},\"Material\":{\"value\":[\"47\",\"49\"]}}," +
+                    "\"sku_info_list\":[" +
+                    "{\"sku_code\":\"" + dbProduct.OriginalProductID + "\",\"inventory\":" + dbProduct.Inventory + ",\"price\":" + dbProduct.Cost + "," +
+                    "\"discount_price\":" + dbProduct.Cost * .9 + ",\"sku_attributes\":{\"Size\":{\"value\":\"" + dbProduct.Size + "\"}," +
+                    "\"Color\":{\"alias\":\"" + dbProduct.Color + "\"," +
+                    "\"sku_image_url\":\"" + StaticValues.sampleImage + "\",\"value\":\"771\"}}}" +
+                    "]," +
                     "\"inventory_deduction_strategy\":\"place_order_withhold\",\"package_weight\":23.00,\"package_length\":23,\"package_height\":23,\"package_width\":30," +
                     "\"shipping_preparation_time\":20,\"shipping_template_id\":\"1013213014\",\"service_template_id\":\"0\"}";
 

@@ -40,5 +40,6 @@ namespace DropshipPlatform.Entity
         public Nullable<System.DateTime> ItemCreatedWhen { get; set; }
         public Nullable<int> ItemModifyBy { get; set; }
         public Nullable<System.DateTime> ItemModifyWhen { get; set; }
+        public string Unit { get; set; }
     }
 }
