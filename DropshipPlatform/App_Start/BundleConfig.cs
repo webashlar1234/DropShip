@@ -20,6 +20,7 @@ namespace DropshipPlatform
                      "~/Scripts/toastr.min.js",
                      "~/Scripts/custom/site.js",
                      "~/Scripts/custom/globalJS.js",
+                     "~/Scripts/custom/KeepAlive.js",
                      "~/Scripts/custom/Error.js"));
 
             bundles.Add(new StyleBundle("~/layoutContent/css").Include(

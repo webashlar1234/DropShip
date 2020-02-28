@@ -26,6 +26,9 @@
           <Property Name="SuccessItemCount" Type="bigint" />
           <Property Name="ContentId" Type="nvarchar(max)" />
           <Property Name="Result" Type="nvarchar(max)" />
+          <Property Name="ProductID" Type="int" />
+          <Property Name="UserID" Type="int" />
+          <Property Name="ProductDetails" Type="nvarchar(max)" />
           <Property Name="CreatedOn" Type="datetime" />
           <Property Name="CreatedBy" Type="int" />
         </EntityType>
@@ -565,6 +568,9 @@
           <Property Name="Result" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="CreatedOn" Type="DateTime" Precision="3" />
           <Property Name="CreatedBy" Type="Int32" />
+          <Property Name="ProductID" Type="Int32" />
+          <Property Name="UserID" Type="Int32" />
+          <Property Name="ProductDetails" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="MembershipType">
           <Key>
@@ -861,6 +867,9 @@
           <EntitySetMapping Name="AliExpressJobLogs">
             <EntityTypeMapping TypeName="DropshipDataModel.AliExpressJobLog">
               <MappingFragment StoreEntitySet="AliExpressJobLog">
+                <ScalarProperty Name="ProductDetails" ColumnName="ProductDetails" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="ProductID" ColumnName="ProductID" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
                 <ScalarProperty Name="Result" ColumnName="Result" />

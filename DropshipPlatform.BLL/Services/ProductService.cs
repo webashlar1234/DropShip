@@ -241,7 +241,7 @@ namespace DropshipPlatform.BLL.Services
             return productModel;
         }
 
-        public bool UpdatePickedProduct(List<UpdateProductModel> model)
+        public bool UpdatePickedProduct(List<UpdateProductModel> model, User user)
         {
             bool result = false;
             try
@@ -288,7 +288,7 @@ namespace DropshipPlatform.BLL.Services
                                     datacontext.SaveChanges();
                                 }
                                 result = true;
-                                string productSKU = SyncWithAliExpress(dbProduct, item, 348);
+                                string productSKU = SyncWithAliExpress(dbProduct, item, 348, user);
                             }
                         }
                     }
@@ -301,7 +301,7 @@ namespace DropshipPlatform.BLL.Services
             return result;
         }
 
-        public string SyncWithAliExpress(Product dbProduct, UpdateProductModel updatedModel, int AliCategoryID)
+        public string SyncWithAliExpress(Product dbProduct, UpdateProductModel updatedModel, int AliCategoryID, User user)
         {
             string result = String.Empty;
             try
@@ -358,6 +358,9 @@ namespace DropshipPlatform.BLL.Services
                         JobId = rsp.JobId,
                         ContentId = obj3.ItemContentId,
                         SuccessItemCount = fqRsp.SuccessItemCount,
+                        UserID = user.UserID,
+                        ProductID = dbProduct.ProductID,
+                        ProductDetails = obj3.ItemContent,
                         Result = result
                     });
 
