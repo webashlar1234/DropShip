@@ -40,6 +40,7 @@ namespace DropshipPlatform.BLL.Models
         public int? UserID { get; set; }
         public long AliExpressCategoryID { get; set; }
         public SchemaProprtiesModel schemaProprtiesModel { get; set; }
+        public  bool hasProductSkuSync { get; set; } 
     }
 
     public class ProductGroupModel
@@ -77,86 +78,89 @@ namespace DropshipPlatform.BLL.Models
     }
 
 
-    //public class TitleMultiLanguageList
-    //{
-    //    public string locale { get; set; }
-    //    public string title { get; set; }
-    //}
+    public class AliExpressPostProductModel
+    {
+        public int category_id { get; set; }
+        public List<TitleMultiLanguageList> title_multi_language_list { get; set; }
+        public List<DescriptionMultiLanguageList> description_multi_language_list { get; set; }
+        public string locale { get; set; }
+        public string product_units_type { get; set; }
+        public List<string> image_url_list { get; set; }
+        public CategoryAttributes category_attributes { get; set; }
+        public List<SkuInfoList> sku_info_list { get; set; }
+        public string inventory_deduction_strategy { get; set; }
+        public double package_weight { get; set; }
+        public int package_length { get; set; }
+        public int package_height { get; set; }
+        public int package_width { get; set; }
+        public int shipping_preparation_time { get; set; }
+        public long shipping_template_id { get; set; }
+        public long service_template_id { get; set; }
+    }
+    public class TitleMultiLanguageList
+    {
+        public string locale { get; set; }
+        public string title { get; set; }
+    }
 
-    //public class Html
-    //{
-    //    public string content { get; set; }
-    //}
+    public class Html
+    {
+        public string content { get; set; }
+    }
 
-    //public class ModuleList
-    //{
-    //    public string type { get; set; }
-    //    public Html html { get; set; }
-    //}
+    public class ModuleList
+    {
+        public string type { get; set; }
+        public Html html { get; set; }
+    }
 
-    //public class DescriptionMultiLanguageList
-    //{
-    //    public string locale { get; set; }
-    //    public List<ModuleList> module_list { get; set; }
-    //}
-    //public class CategoryAttributes
-    //{
-    //    public BrandName BrandName { get; set; }
-    //    public ManufacturerName ManufacturerName { get; set; }
-    //    public Size Size { get; set; }
-    //    public Color Color { get; set; }
-    //}
-    //public class BrandName
-    //{
-    //    public string value { get; set; }
-    //}
+    public class DescriptionMultiLanguageList
+    {
+        public string locale { get; set; }
+        public List<ModuleList> module_list { get; set; }
+    }
+    public class CategoryAttributes
+    {
+        public BrandName BrandName { get; set; }
+        public ManufacturerName ManufacturerName { get; set; }
+        public Size Size { get; set; }
+        public Color Color { get; set; }
+    }
+    public class BrandName
+    {
+        public string value { get; set; }
+    }
 
-    //public class ManufacturerName
-    //{
-    //    public string value { get; set; }
-    //}
+    public class ManufacturerName
+    {
+        public string value { get; set; }
+    }
 
-    //public class Size
-    //{
-    //    public string value { get; set; }
-    //}
+    public class Size
+    {
+        public string value { get; set; }
+    }
 
-    //public class Color
-    //{
-    //    public string value { get; set; }
-    //}
+    public class Color
+    {
+        public string value { get; set; }
+    }
 
-    //public class SkuAttributes
-    //{
-    //    public Size Size { get; set; }
-    //}
+    public class SkuAttributes
+    {
+        public Size Size { get; set; }
+        public Color color { get; set; }
 
-    //public class SkuInfoList
-    //{
-    //    public string sku_code { get; set; }
-    //    public int inventory { get; set; }
-    //    public int price { get; set; }
-    //    public int discount_price { get; set; }
-    //    public SkuAttributes sku_attributes { get; set; }
-    //}
+    }
 
-    //public class AliExpressPostProductModel
-    //{
-    //    public int category_id { get; set; }
-    //    public List<TitleMultiLanguageList> title_multi_language_list { get; set; }
-    //    public List<DescriptionMultiLanguageList> description_multi_language_list { get; set; }
-    //    public string locale { get; set; }
-    //    public string product_units_type { get; set; }
-    //    public List<string> image_url_list { get; set; }
-    //    public CategoryAttributes category_attributes { get; set; }
-    //    public List<SkuInfoList> sku_info_list { get; set; }
-    //    public string inventory_deduction_strategy { get; set; }
-    //    public double package_weight { get; set; }
-    //    public int package_length { get; set; }
-    //    public int package_height { get; set; }
-    //    public int package_width { get; set; }
-    //    public int shipping_preparation_time { get; set; }
-    //    public long shipping_template_id { get; set; }
-    //    public long service_template_id { get; set; }
-    //}
+    public class SkuInfoList
+    {
+        public string sku_code { get; set; }
+        public int inventory { get; set; }
+        public int price { get; set; }
+        public int discount_price { get; set; }
+        public SkuAttributes sku_attributes { get; set; }
+    }
+
+    
 }

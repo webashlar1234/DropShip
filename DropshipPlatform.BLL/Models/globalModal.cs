@@ -8,7 +8,7 @@ namespace DropshipPlatform.BLL.Models
 {
     public class globalModal
     {
-        
+
     }
 
     public class simpleModel
@@ -29,4 +29,22 @@ namespace DropshipPlatform.BLL.Models
         public string tr { get; set; }
         public string nl { get; set; }
     }
+
+    public class scproductModel
+    {
+        public int productId { get; set; }
+        public List<ProductSKUModel> SKUModels { get; set; }
+        public double price { get; set; }
+    }
+
+    public class ProductSKUModel
+    {
+        public string skuCode { get; set; }
+        public int inventory { get; set; }
+        public double price { get; set; }
+        public double discount_price { get; set; }
+
+
+    }
+
 }

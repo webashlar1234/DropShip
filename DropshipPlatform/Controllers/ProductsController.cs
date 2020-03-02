@@ -46,10 +46,12 @@ namespace DropshipPlatform.Controllers
             }, JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult pickSellerProducts(List<simpleModel> products)
+        public JsonResult pickSellerProducts(List<scproductModel> products)
         {
             User user = SessionManager.GetUserSession();
-            bool result = _productService.AddSellersPickedProducts(products, user.UserID);
+            
+                bool result = _productService.AddSellersPickedProducts(products, user.UserID);
+            
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
