@@ -396,8 +396,8 @@ namespace DropshipPlatform.BLL.Services
                             JobId = rsp.JobId,
                             ContentId = obj3.ItemContentId,
                             SuccessItemCount = fqRsp.SuccessItemCount,
-                            UserId = user.UserID,
-                            ProductId = scProduct.productId,
+                            UserID = user.UserID,
+                            ProductID = scProduct.productId,
                             ProductDetails = obj3.ItemContent,
                             Result = result
                         });
