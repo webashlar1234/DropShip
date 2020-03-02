@@ -22,5 +22,6 @@ namespace DropshipPlatform.Entity
         public Nullable<System.DateTime> CreatedDate { get; set; }
         public Nullable<int> UpdatedBy { get; set; }
         public Nullable<System.DateTime> UpdatedDate { get; set; }
+        public Nullable<int> SellersPickedID { get; set; }
     }
 }

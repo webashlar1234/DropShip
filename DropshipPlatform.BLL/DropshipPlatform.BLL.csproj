@@ -73,7 +73,7 @@
     <Compile Include="Models\JobLog.cs" />
     <Compile Include="Models\SubscriptionModel.cs" />
     <Compile Include="Services\AliExpressJobLogService.cs" />
-    <Compile Include="Services\JobLogRefresh.cs" />
+    <Compile Include="Services\BackendHelper.cs" />
     <Compile Include="Services\MemberShipService.cs" />
     <Compile Include="SubscriptionModels\CustomerCreateRequest.cs" />
     <Compile Include="Models\globalModal.cs" />

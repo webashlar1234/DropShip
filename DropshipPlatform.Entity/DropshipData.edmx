@@ -165,6 +165,7 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SellersPickedID" Type="int" />
           <Property Name="ProductId" Type="bigint" Nullable="false" />
           <Property Name="SKU" Type="nchar" MaxLength="10" Nullable="false" />
           <Property Name="UpdatedPrice" Type="bigint" />
@@ -608,6 +609,7 @@
           <Property Name="CreatedDate" Type="DateTime" Precision="3" />
           <Property Name="UpdatedBy" Type="Int32" />
           <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
+          <Property Name="SellersPickedID" Type="Int32" />
         </EntityType>
         <EntityType Name="SellersPickedProduct">
           <Key>
@@ -908,6 +910,7 @@
           <EntitySetMapping Name="PickedProducts">
             <EntityTypeMapping TypeName="DropshipDataModel.PickedProduct">
               <MappingFragment StoreEntitySet="PickedProduct">
+                <ScalarProperty Name="SellersPickedID" ColumnName="SellersPickedID" />
                 <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
                 <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
