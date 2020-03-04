@@ -879,5 +879,65 @@ namespace DropshipPlatform.BLL.Services
             }
             return result;
         }
+
+
+        public bool updateProductStatuts(string id, bool status)
+        {
+            bool result = false;
+            bool isStatusSync = false;
+            try
+            {
+                if (status)
+                {
+                    isStatusSync = false;
+                    ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret);
+                    AliexpressPostproductRedefiningOfflineaeproductRequest req = new AliexpressPostproductRedefiningOfflineaeproductRequest();
+                    req.ProductIds = id;
+                    AliexpressPostproductRedefiningOfflineaeproductResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
+                    if(rsp.Result.Success)
+                    {
+                        isStatusSync = true;
+                    }
+                }
+                else
+                {
+                    isStatusSync = false;
+                    ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret);
+                    AliexpressPostproductRedefiningOnlineaeproductRequest req = new AliexpressPostproductRedefiningOnlineaeproductRequest();
+                    req.ProductIds = id;
+                    AliexpressPostproductRedefiningOnlineaeproductResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
+                    if (rsp.Result.Success)
+                    {
+                        isStatusSync = true;
+                    }
+                }
+                if (isStatusSync)
+                {
+                    using (DropshipDataEntities datacontext = new DropshipDataEntities())
+                    {
+                        SellersPickedProduct obj = datacontext.SellersPickedProducts.Where(x => x.AliExpressProductID == id).FirstOrDefault();
+                        if (obj != null)
+                        {
+                            int productId = Convert.ToInt32(obj.ParentProductID);
+                            Product product = datacontext.Products.Where(x => x.ProductID == productId).FirstOrDefault();
+                            if (product != null)
+                            {
+                                product.IsActive = !status;
+                            }
+                            datacontext.Entry(product).State = System.Data.Entity.EntityState.Modified;
+                            datacontext.SaveChanges();
+                            result = true;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                logger.Info(ex.ToString());
+            }
+
+            return result;
+        }
     }
 }

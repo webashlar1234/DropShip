@@ -96,5 +96,13 @@ namespace DropshipPlatform.Controllers
             string result = _productService.checkResultByJobId(id);
             return Json(result, JsonRequestBehavior.AllowGet);
         }
+
+
+        [HttpPost]
+        public JsonResult updateProductStatuts(string id,bool status)
+        {
+            ProductService _productService = new ProductService();
+            return Json(_productService.updateProductStatuts(id, status), JsonRequestBehavior.AllowGet);
+        }
     }
 }

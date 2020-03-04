@@ -3,7 +3,7 @@ var jsonProducts;
 $(document).ready(function () {
     GetData();
     ProductFormValidate();
-    
+
     // Add event listener for opening and closing details
     $('#TblPickedProduct tbody').on('click', 'td.details-control', function () {
         var tr = $(this).closest('tr');
@@ -106,6 +106,7 @@ function FormatData(json) {
             "OriginalProductID": json[i].ParentProduct.OriginalProductID,
             "ParentProductID": json[i].ParentProduct.ParentProductID,
             "check": "<label class='mt-checkbox'><input type='checkbox' class='parentChk' aliexpressproductid=" + json[i].ParentProduct.AliExpressProductID + " data-SKU=" + json[i].ParentProduct.OriginalProductID + " value='1'><span></span></label>",
+            "IsActive": json[i].ParentProduct.IsActive ? '<a class="btn btn-info btn-sm" href="#" onclick=updateStatus("' + json[i].ParentProduct.AliExpressProductID + '","' + json[i].ParentProduct.IsActive + '")>' + 'Online' + '</a>' : '<a class="btn btn-info btn-sm" href="#" onclick=updateStatus("' + json[i].ParentProduct.AliExpressProductID + '","' + json[i].ParentProduct.IsActive + '")>' + 'Offline' + '</a>',
             "ChildProductList": json[i].ChildProductList,
             "AliExpressProductID": json[i].ParentProduct.AliExpressProductID
         };
@@ -202,7 +203,8 @@ function BindData(jsonProducts) {
         { "data": "shippingweight" },
         { "data": "manufacturerName" },
         { "data": "origin" },
-        { "data": "check" }
+        { "data": "check" },
+        { "data": "IsActive" }
 
         ]
     });
@@ -404,3 +406,25 @@ $.validator.addMethod('lessThanEqual', function (value, element, param) {
     var preInvetory = element.attributes.datainvetory.value;
     return this.optional(element) || parseInt(value) <= parseInt(preInvetory);
 }, "value must be less than stock inventory");
+
+
+function updateStatus(AliExpressProductID, Status) {
+    debugger
+    ShowLoader();
+    $.ajax({
+        type: "POST",
+        url: "/Products/updateProductStatuts",
+        dataType: "json",
+        async: false,
+        data: { id: AliExpressProductID, status: Status },
+        success: function (data) {
+            if (data) {
+                SuccessMessage("Product Status Updated successfully");
+            }
+            GetData();
+            HideLoader();
+        },
+        error: function (err) {
+        }
+    });
+}
