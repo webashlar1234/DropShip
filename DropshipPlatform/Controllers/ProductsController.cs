@@ -71,12 +71,22 @@ namespace DropshipPlatform.Controllers
             return Json(new { data = list.ToArray(), }, JsonRequestBehavior.AllowGet);
         }
 
+        //[HttpPost]
+        //public JsonResult UpdatePickedProduct(List<UpdateProductModel> UpdatedModels)
+        //{          
+        //    bool result = false;
+        //    result = _productService.UpdatePickedProduct(UpdatedModels, SessionManager.GetUserSession());
+        //    //string pId = _productService.SyncWithAliExpress();
+        //    return Json(result, JsonRequestBehavior.AllowGet);
+        //}
         [HttpPost]
-        public JsonResult UpdatePickedProduct(List<UpdateProductModel> UpdatedModels)
-        {          
-            bool result = false;
-            result = _productService.UpdatePickedProduct(UpdatedModels, SessionManager.GetUserSession());
-            //string pId = _productService.SyncWithAliExpress();
+        //public JsonResult Up
+        public JsonResult UpdatePickedProduct(List<scproductModel> products)
+        {
+            User user = SessionManager.GetUserSession();
+
+            bool result = _productService.UpdatePickedProduct(products, user.UserID);
+
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 

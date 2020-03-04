@@ -95,9 +95,6 @@
     <Compile Include="PaymentProfile.cs">
       <DependentUpon>DropshipData.tt</DependentUpon>
     </Compile>
-    <Compile Include="PickedProduct.cs">
-      <DependentUpon>DropshipData.tt</DependentUpon>
-    </Compile>
     <Compile Include="Product.cs">
       <DependentUpon>DropshipData.tt</DependentUpon>
     </Compile>

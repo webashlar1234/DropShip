@@ -1,0 +1,33 @@
+﻿
+@{
+    ViewBag.Title = "Orders";
+    //Layout = "~/Views/Shared/_Layout.cshtml";
+    <link href="~/Content/bootstrap-toggle.min.css" rel="stylesheet" />
+    <script src="~/Scripts/bootstrap-toggle.min.js"></script>
+    <script src="~/Scripts/custom/Order.js"></script>
+}
+
+<h2>Orders</h2>
+
+<section class="row">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <p class="tbl-title">
+                    Order Management
+                </p>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<section class="row">
+    <div class="container-fluid">
+        <div class="col-lg-12 table-responsive  mb-5">
+            <table id="orderDT" class="display" style="width:100%"></table>
+        </div>
+    </div>
+
+    <div class="spinner" style="display:none"></div>
+</section>

@@ -20,6 +20,10 @@ namespace DropshipPlatform.Entity
         public Nullable<decimal> UpdatedPrice { get; set; }
         public int SellerPickedId { get; set; }
         public Nullable<int> UserId { get; set; }
+        public Nullable<int> UpdatedBy { get; set; }
+        public Nullable<System.DateTime> UpdatedDate { get; set; }
+        public Nullable<int> CreatedBy { get; set; }
+        public Nullable<System.DateTime> CreatedDate { get; set; }
     
         public virtual SellersPickedProduct SellersPickedProduct { get; set; }
     }

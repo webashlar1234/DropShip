@@ -33,7 +33,7 @@ namespace DropshipPlatform.BLL.Models
         public string Color { get; set; }
         public string SourceWebsite { get; set; }
         public Nullable<bool> IsActive { get; set; }
-        public long UpdatedPrice { get; set; }
+        public double UpdatedPrice { get; set; }
         public long UpdatedInvetory { get; set; }
 
         public int SellerPickedCount { get; set; }
@@ -41,6 +41,9 @@ namespace DropshipPlatform.BLL.Models
         public long AliExpressCategoryID { get; set; }
         public SchemaProprtiesModel schemaProprtiesModel { get; set; }
         public  bool hasProductSkuSync { get; set; } 
+        public bool isProductPicked { get; set; }
+        public string AliExpressProductID { get; set; }
+
     }
 
     public class ProductGroupModel

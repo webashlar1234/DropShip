@@ -226,6 +226,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\MyAccountController.cs" />
+    <Compile Include="Controllers\OrderController.cs" />
     <Compile Include="Controllers\ProductsController.cs" />
     <Compile Include="Controllers\StripeController.cs" />
     <Compile Include="Controllers\SubscriptionsController.cs" />
@@ -314,6 +315,7 @@
     <Content Include="Scripts\custom\Login.js" />
     <Content Include="Scripts\custom\membership.js" />
     <Content Include="Scripts\custom\MyProduct.js" />
+    <Content Include="Scripts\custom\Order.js" />
     <Content Include="Scripts\custom\PickupProducts.js" />
     <Content Include="Scripts\custom\ProductPlan.js" />
     <Content Include="Scripts\custom\Subscription.js" />
@@ -379,6 +381,8 @@
     <Content Include="Views\Home\UserManagement.cshtml" />
     <Content Include="Views\Home\Membership.cshtml" />
     <Content Include="Views\AliExpress\jobLog.cshtml" />
+    <Content Include="Views\Order\getOrders.cshtml" />
+    <Content Include="Views\Order\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

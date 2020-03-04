@@ -45,9 +45,9 @@ namespace DropshipPlatform.BLL.Services
 
                     products = (from p in datacontext.Products
                                 join c in datacontext.Categories on p.CategoryID equals c.CategoryID
-                                from sp in datacontext.SellersPickedProducts.Where(x => x.ParentProductID == p.ProductID && x.UserID == UserID).DefaultIfEmpty()
-                                from spsku in datacontext.SellerPickedProductSKUs.Where(x => x.ProductId == p.ProductID && x.UserId == UserID).DefaultIfEmpty()
-                                where p.ParentProductID == null
+                                //from sp in datacontext.SellersPickedProducts.Where(x => x.ParentProductID == p.ProductID && x.UserID == UserID).DefaultIfEmpty()
+                                //from spsku in datacontext.SellerPickedProductSKUs.Where(x => x.ProductId == p.ProductID && x.UserId == UserID).DefaultIfEmpty()
+                                where p.ParentProductID == null || p.ParentProductID == ""
                                 select new ProductViewModel
                                 {
                                     ProductID = p.ProductID,
@@ -58,11 +58,9 @@ namespace DropshipPlatform.BLL.Services
                                     Cost = p.Cost,
                                     Inventory = p.Inventory,
                                     ShippingWeight = p.ShippingWeight,
-                                    SellerPrice = sp.SellerPrice,
-                                    hasProductSkuSync = spsku != null ? true : false,
                                     SellerPickedCount = datacontext.SellersPickedProducts.Where(x => x.ParentProductID == p.ProductID).Count(),
                                     IsActive = p.IsActive,
-                                    UserID = sp.UserID,
+                                    UserID = UserID,
                                     AliExpressCategoryID = c.AliExpressCategoryId.Value
                                 }).ToList();
 
@@ -71,7 +69,16 @@ namespace DropshipPlatform.BLL.Services
                         foreach (ProductViewModel productViewModel in products)
                         {
                             ProductGroupModel productGroup = new ProductGroupModel();
-
+                            SellersPickedProduct sellersPickedProduct = datacontext.SellersPickedProducts.Where(x => x.ParentProductID == productViewModel.ProductID && x.UserID == UserID).FirstOrDefault();
+                            if (sellersPickedProduct != null)
+                            {
+                                productViewModel.hasProductSkuSync = true;
+                                if (!string.IsNullOrEmpty(sellersPickedProduct.AliExpressProductID))
+                                {
+                                    productViewModel.SellerPrice = sellersPickedProduct.SellerPrice;
+                                    productViewModel.isProductPicked = true;
+                                }
+                            }
                             List<Product> childProducts = datacontext.Products.Where(x => x.ParentProductID.ToString() == productViewModel.OriginalProductID).ToList();
                             productGroup.ParentProduct = productViewModel;
                             productGroup.ChildProductList = new List<ProductViewModel>();
@@ -157,6 +164,72 @@ namespace DropshipPlatform.BLL.Services
             return result;
         }
 
+        //public List<ProductGroupModel> GetPickedProducts(int UserID)
+        //{
+        //    List<ProductGroupModel> productGroupList = new List<ProductGroupModel>();
+        //    List<SchemaProprtiesModel> schemaProprtiesModelList = new List<SchemaProprtiesModel>();
+        //    try
+        //    {
+        //        using (DropshipDataEntities datacontext = new DropshipDataEntities())
+        //        {
+        //            List<SellersPickedProduct> dbSellerPickedProducts = datacontext.SellersPickedProducts.Where(x => x.UserID == UserID && x.AliExpressProductID != null).GroupBy(x => x.ParentProductID).Select(x => x.FirstOrDefault()).ToList();
+        //            if (dbSellerPickedProducts.Count > 0)
+        //            {
+        //                foreach (SellersPickedProduct item in dbSellerPickedProducts)
+        //                {
+
+        //                    List<Product> dbParentProducts = datacontext.Products.Where(x => x.ProductID == item.ParentProductID).ToList();
+
+        //                    if (dbParentProducts.Count > 0)
+        //                    {
+        //                        foreach (Product dbParentProduct in dbParentProducts)
+        //                        {
+        //                            ProductGroupModel productGroup = new ProductGroupModel();
+
+        //                            List<Product> childProducts = datacontext.Products.Where(x => x.ParentProductID.ToString() == dbParentProduct.OriginalProductID).ToList();
+
+        //                            productGroup.ParentProduct = GenerateProductViewModel(dbParentProduct);
+        //                            string productid = dbParentProduct.ProductID.ToString();
+        //                            if (productGroup.ParentProduct != null)
+        //                            {
+        //                                productGroup.ParentProduct.AliExpressProductID = item.AliExpressProductID; //datacontext.SellersPickedProducts.Where(x => x.ParentProductID == dbParentProduct.ProductID).Select(x => x.AliExpressProductID).FirstOrDefault();
+        //                            }
+        //                            ////--------------Schema Model Properties--------------------------------------
+        //                            //SchemaProprtiesModel schemaProprtiesModel = schemaProprtiesModelList.Where(sp => sp.AliExpressID == productGroup.ParentProduct.AliExpressCategoryID).FirstOrDefault();
+        //                            //if (schemaProprtiesModel == null)
+        //                            //{
+        //                            //    schemaProprtiesModel = GenerateSchemaPropertyModel(productGroup.ParentProduct.AliExpressCategoryID);
+        //                            //    schemaProprtiesModelList.Add(schemaProprtiesModel);
+        //                            //}
+        //                            List<SellerPickedProductSKU> sellerPickedProductSKUs = datacontext.SellerPickedProductSKUs.Where(x => x.ProductId == dbParentProduct.ProductID && x.UserId == UserID).ToList();
+        //                            productGroup.ChildProductList = new List<ProductViewModel>();
+        //                            long parentInvetoryTotal = 0;
+        //                            long parentPriceTotal = 0;
+
+        //                            foreach (Product dbChildProduct in childProducts)
+        //                            {
+        //                                ProductViewModel childProductModel = GenerateProductViewModel(dbChildProduct);
+        //                                //childProductModel.schemaProprtiesModel = schemaProprtiesModel;
+        //                                childProductModel = AddUpdatedValues(childProductModel);
+        //                                productGroup.ChildProductList.Add(childProductModel);
+        //                                parentInvetoryTotal = parentInvetoryTotal + Convert.ToInt32(childProductModel.Inventory);
+        //                                parentPriceTotal = parentPriceTotal + Convert.ToInt32(childProductModel.Cost);
+        //                            }
+        //                            productGroup.ParentProduct.Inventory = parentInvetoryTotal.ToString();
+        //                            productGroup.ParentProduct.Cost = parentPriceTotal;
+        //                            productGroupList.Add(productGroup);
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logger.Error(ex.ToString());
+        //    }
+        //    return productGroupList;
+        //}
 
         public List<ProductGroupModel> GetPickedProducts(int UserID)
         {
@@ -179,8 +252,12 @@ namespace DropshipPlatform.BLL.Services
                                     ProductGroupModel productGroup = new ProductGroupModel();
 
                                     List<Product> childProducts = datacontext.Products.Where(x => x.ParentProductID.ToString() == dbParentProduct.OriginalProductID).ToList();
-                                    productGroup.ParentProduct = GenerateProductViewModel(dbParentProduct);
 
+                                    productGroup.ParentProduct = GenerateProductViewModel(dbParentProduct);
+                                    if (productGroup.ParentProduct != null)
+                                    {
+                                        productGroup.ParentProduct.AliExpressProductID = item.AliExpressProductID; //datacontext.SellersPickedProducts.Where(x => x.ParentProductID == dbParentProduct.ProductID).Select(x => x.AliExpressProductID).FirstOrDefault();
+                                    }
                                     ////--------------Schema Model Properties--------------------------------------
                                     //SchemaProprtiesModel schemaProprtiesModel = schemaProprtiesModelList.Where(sp => sp.AliExpressID == productGroup.ParentProduct.AliExpressCategoryID).FirstOrDefault();
                                     //if (schemaProprtiesModel == null)
@@ -188,7 +265,7 @@ namespace DropshipPlatform.BLL.Services
                                     //    schemaProprtiesModel = GenerateSchemaPropertyModel(productGroup.ParentProduct.AliExpressCategoryID);
                                     //    schemaProprtiesModelList.Add(schemaProprtiesModel);
                                     //}
-
+                                    List<SellerPickedProductSKU> sellerPickedProductSKUs = datacontext.SellerPickedProductSKUs.Where(x => x.ProductId == dbParentProduct.ProductID && x.UserId == UserID).ToList();
                                     productGroup.ChildProductList = new List<ProductViewModel>();
                                     long parentInvetoryTotal = 0;
                                     long parentPriceTotal = 0;
@@ -224,11 +301,11 @@ namespace DropshipPlatform.BLL.Services
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    PickedProduct dbPickedProduct = datacontext.PickedProducts.Where(m => m.SKU == productModel.OriginalProductID).FirstOrDefault();
-                    if (dbPickedProduct != null)
+                    SellerPickedProductSKU dbPickedProductSKU = datacontext.SellerPickedProductSKUs.Where(m => m.SKUCode == productModel.OriginalProductID).FirstOrDefault();
+                    if (dbPickedProductSKU != null)
                     {
                         //productModel.UpdatedInvetory = dbPickedProduct.UpdatedInventory.Value;
-                        productModel.UpdatedPrice = dbPickedProduct.UpdatedPrice.Value;
+                        productModel.UpdatedPrice = Convert.ToDouble(dbPickedProductSKU.UpdatedPrice.Value);
                     }
                     else
                     {
@@ -284,57 +361,40 @@ namespace DropshipPlatform.BLL.Services
             return productModel;
         }
 
-        public bool UpdatePickedProduct(List<UpdateProductModel> model, User user)
+        public bool UpdatePickedProduct(List<scproductModel> products, int userId)
         {
             bool result = false;
             try
             {
-                if (model.Count > 0)
+                if (products.Count > 0)
                 {
-                    using (DropshipDataEntities datacontext = new DropshipDataEntities())
+                    foreach (scproductModel productModel in products)
                     {
-                        foreach (UpdateProductModel item in model)
+
+                        using (DropshipDataEntities datacontext = new DropshipDataEntities())
                         {
-                            Product dbProduct = datacontext.Products.Where(m => m.OriginalProductID == item.SKU).FirstOrDefault();
-                            if (dbProduct != null)
+                            foreach (ProductSKUModel productSKUModel in productModel.SKUModels)
                             {
-                                PickedProduct dbPickedProduct = datacontext.PickedProducts.Where(p => p.SKU == item.SKU).FirstOrDefault();
+                                SellerPickedProductSKU dbPickedProduct = datacontext.SellerPickedProductSKUs.Where(p => p.SKUCode == productSKUModel.skuCode).FirstOrDefault();
                                 if (dbPickedProduct != null)
                                 {
                                     //long existingInventory = dbPickedProduct.UpdatedInventory.Value > 0 ? dbPickedProduct.UpdatedInventory.Value : 0;
 
                                     //dbPickedProduct.UpdatedInventory = Convert.ToInt32(item.PickedInventory);
-                                    dbPickedProduct.UpdatedPrice = Convert.ToInt32(item.UpdatedPrice);
-                                    dbPickedProduct.UpdatedBy = 1;
+                                    dbPickedProduct.UpdatedPrice = Convert.ToInt32(productSKUModel.price);
+                                    dbPickedProduct.UpdatedBy = userId;
                                     dbPickedProduct.UpdatedDate = DateTime.Now;
+                                    datacontext.Entry(dbPickedProduct).State = System.Data.Entity.EntityState.Modified;
                                     datacontext.SaveChanges();
                                     //dbProduct.Inventory = Convert.ToString(Convert.ToInt32(dbProduct.Inventory) - (dbPickedProduct.UpdatedInventory - existingInventory));
-                                    datacontext.SaveChanges();
                                     result = true;
                                 }
-                                else
-                                {
-                                    dbPickedProduct = new PickedProduct();
-                                    dbPickedProduct.ProductId = dbProduct.ProductID;
-                                    dbPickedProduct.SKU = dbProduct.OriginalProductID;
-                                    dbPickedProduct.UpdatedPrice = Convert.ToInt16(item.UpdatedPrice);
-                                    //dbPickedProduct.UpdatedInventory = Convert.ToInt16(item.PickedInventory);
-                                    dbPickedProduct.CreatedBy = 1;
-                                    dbPickedProduct.CreatedDate = DateTime.Now;
-                                    datacontext.PickedProducts.Add(dbPickedProduct);
-                                    datacontext.SaveChanges();
-                                    //long remainInventory = Convert.ToInt32(dbProduct.Inventory) - dbPickedProduct.UpdatedInventory.Value;
-                                    //if (remainInventory > 0)
-                                    //{
-                                    //    dbProduct.Inventory = Convert.ToString(remainInventory);
-                                    //}
-                                    datacontext.SaveChanges();
-                                }
-                                result = true;
-                                //string productSKU = SyncWithAliExpress(dbProduct, 348, user);
+                                string productSKU = UpdatePriceOnAliExpressJson(products, userId);
                             }
                         }
                     }
+
+
                 }
             }
             catch (Exception ex)
@@ -418,54 +478,121 @@ namespace DropshipPlatform.BLL.Services
             return result;
         }
 
-        public string UpdatePriceOnAliExpress(List<Product> dbProduct, List<int> AliExpressProdutIds)
+
+        public string UpdatePriceOnAliExpress(List<scproductModel> scProducts, int userId)
         {
             string result = String.Empty;
             try
             {
+                foreach (scproductModel scproductModel in scProducts)
+                {
+
+
+                    ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret, "json");
 
 
 
+                    AliexpressSolutionBatchProductPriceUpdateRequest req = new AliexpressSolutionBatchProductPriceUpdateRequest();
+                    List<AliexpressSolutionBatchProductPriceUpdateRequest.SynchronizeProductRequestDtoDomain> list2 = new List<AliexpressSolutionBatchProductPriceUpdateRequest.SynchronizeProductRequestDtoDomain>();
+                    AliexpressSolutionBatchProductPriceUpdateRequest.SynchronizeProductRequestDtoDomain obj3 = new AliexpressSolutionBatchProductPriceUpdateRequest.SynchronizeProductRequestDtoDomain();
+
+                    obj3.ProductId = scproductModel.productId;
+                    List<AliexpressSolutionBatchProductPriceUpdateRequest.SynchronizeSkuRequestDtoDomain> list5 = new List<AliexpressSolutionBatchProductPriceUpdateRequest.SynchronizeSkuRequestDtoDomain>();
+
+                    foreach (ProductSKUModel productSKUModel in scproductModel.SKUModels)
+                    {
+                        AliexpressSolutionBatchProductPriceUpdateRequest.SynchronizeSkuRequestDtoDomain obj6 = new AliexpressSolutionBatchProductPriceUpdateRequest.SynchronizeSkuRequestDtoDomain();
+                        obj6.Price = productSKUModel.price.ToString();
+                        obj6.DiscountPrice = productSKUModel.discount_price.ToString();
+                        obj6.SkuCode = productSKUModel.skuCode;
+                        list5.Add(obj6);
+                    }
+
+                    obj3.MultipleSkuUpdateList = list5;
+                    AliexpressSolutionBatchProductPriceUpdateRequest.MultiCountryPriceConfigurationDtoDomain obj7 = new AliexpressSolutionBatchProductPriceUpdateRequest.MultiCountryPriceConfigurationDtoDomain();
+                    obj7.PriceType = "absolute";
+                    List<AliexpressSolutionBatchProductPriceUpdateRequest.SingleCountryPriceDtoDomain> list9 = new List<AliexpressSolutionBatchProductPriceUpdateRequest.SingleCountryPriceDtoDomain>();
+                    AliexpressSolutionBatchProductPriceUpdateRequest.SingleCountryPriceDtoDomain obj10 = new AliexpressSolutionBatchProductPriceUpdateRequest.SingleCountryPriceDtoDomain();
+
+                    obj10.ShipToCountry = "";
+                    list9.Add(obj10);
+
+                    obj7.CountryPriceList = list9;
+                    obj3.MultiCountryPriceConfiguration = obj7;
 
 
+                    list2.Add(obj3);
+                    req.MutipleProductUpdateList_ = list2;
+                    AliexpressSolutionBatchProductPriceUpdateResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
+
+                    _aliExpressJobLogService.AddAliExpressJobLog(new AliExpressJobLog()
+                    {
+                        JobId = null,
+                        ContentId = obj3.ProductId.ToString(),
+                        SuccessItemCount = rsp.UpdateSuccessfulList.Count(),
+                        UserID = userId,
+                        ProductID = 0,
+                        ProductDetails = obj3.ProductId.ToString(),
+                        Result = rsp.Body
+                    });
+                    Console.WriteLine(rsp.Body);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                logger.Info(ex.ToString());
+            }
+            return result;
+        }
+
+        public string UpdatePriceOnAliExpressJson(List<scproductModel> scProducts, int userId)
+        {
+            string result = String.Empty;
+            try
+            {
                 ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret, "json");
                 AliexpressSolutionFeedSubmitRequest req = new AliexpressSolutionFeedSubmitRequest();
                 req.OperationType = "PRODUCT_PRICES_UPDATE";
                 List<AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain> list2 = new List<AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain>();
                 AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain obj3 = new AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain();
-
-
-                obj3.ItemContent = "[{\"item_content_id\": \"A00000000Y1\",\"item_content\": {\"aliexpress_product_id\": " + AliExpressProdutIds[0] + ",\"multiple_sku_update_list\":" +
-                    "[{\"sku_code\": \"" + dbProduct[0].OriginalProductID + "\",\"price\": " + dbProduct[0].Cost + "}]}}," +
-                    "{\"item_content_id\": \"A00000000Y2\",\"item_content\": {\"aliexpress_product_id\": " + AliExpressProdutIds[0] + "," +
-                    "\"multiple_sku_update_list\": [{\"sku_code\": \"" + dbProduct[1].OriginalProductID + "\",\"price\": " + dbProduct[1].Cost + "}]}}]";
-
-                obj3.ItemContentId = Guid.NewGuid().ToString();
-                list2.Add(obj3);
-                req.ItemList_ = list2;
-
-                if (SessionManager.GetAccessToken().access_token != null)
+                List<string> skus = new List<string>();//"[{\"sku_code\": \"" + dbProduct[0].OriginalProductID + "\",\"price\": " + dbProduct[0].Cost + "}]";
+                foreach (scproductModel scproductModel in scProducts)
                 {
-                    AliexpressSolutionFeedSubmitResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
-                    AliexpressSolutionFeedQueryRequest fqReq = new AliexpressSolutionFeedQueryRequest();
-                    fqReq.JobId = rsp.JobId;
-                    //fqReq.JobId = 200000021289874453;
-                    AliexpressSolutionFeedQueryResponse fqRsp = client.Execute(fqReq, SessionManager.GetAccessToken().access_token);
-                    result = JsonConvert.SerializeObject(fqRsp.ResultList);
-                    _aliExpressJobLogService.AddAliExpressJobLog(new AliExpressJobLog()
+                    foreach (ProductSKUModel productSKUModel in scproductModel.SKUModels)
                     {
-                        JobId = rsp.JobId,
-                        ContentId = obj3.ItemContentId,
-                        SuccessItemCount = fqRsp.SuccessItemCount,
-                        Result = result,
-                    });
-
-                    List<AliexpressSolutionFeedResponseModel> solutionResponse = JsonConvert.DeserializeObject<List<AliexpressSolutionFeedResponseModel>>(result);
-                    if (solutionResponse != null && solutionResponse.Count > 0)
-                    {
-                        ItemExecutionResultModel itemModel = JsonConvert.DeserializeObject<ItemExecutionResultModel>(solutionResponse[0].ItemExecutionResult);
+                        skus.Add("{\"sku_code\": \"" + productSKUModel.skuCode + "\",\"price\": " + productSKUModel.price + "}");
                     }
+                    obj3.ItemContentId = Guid.NewGuid().ToString();
+                    obj3.ItemContent = "[{\"item_content_id\": \"" + obj3.ItemContentId + "\",\"item_content\": {\"aliexpress_product_id\": " + scproductModel.aliExpressProductId + ",\"multiple_sku_update_list\":" +
+                                       "[" + string.Join(",", skus.ToArray()) + "]}}" +
+                                       "]";
+                    list2.Add(obj3);
+                    req.ItemList_ = list2;
 
+                    if (SessionManager.GetAccessToken().access_token != null)
+                    {
+                        AliexpressSolutionFeedSubmitResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
+                        AliexpressSolutionFeedQueryRequest fqReq = new AliexpressSolutionFeedQueryRequest();
+                        fqReq.JobId = rsp.JobId;
+                        //fqReq.JobId = 200000021289874453;
+                        AliexpressSolutionFeedQueryResponse fqRsp = client.Execute(fqReq, SessionManager.GetAccessToken().access_token);
+                        result = JsonConvert.SerializeObject(fqRsp.ResultList);
+                        _aliExpressJobLogService.AddAliExpressJobLog(new AliExpressJobLog()
+                        {
+                            JobId = rsp.JobId,
+                            ContentId = obj3.ItemContentId,
+                            SuccessItemCount = fqRsp.SuccessItemCount,
+                            Result = result,
+                        });
+
+                        List<AliexpressSolutionFeedResponseModel> solutionResponse = JsonConvert.DeserializeObject<List<AliexpressSolutionFeedResponseModel>>(result);
+                        if (solutionResponse != null && solutionResponse.Count > 0)
+                        {
+                            ItemExecutionResultModel itemModel = JsonConvert.DeserializeObject<ItemExecutionResultModel>(solutionResponse[0].ItemExecutionResult);
+                        }
+
+                    }
                 }
             }
             catch (Exception ex)

@@ -1,6 +1,5 @@
 ﻿var ProductsDt = null;
 var table = '#ProductsDt';
-
 var product = {
     init: function () {
         product.initCheckSelection();
@@ -12,7 +11,6 @@ var product = {
             product.initProductDT();
         });
         $(document).on('change', '#ddlProductBulkAction', function () {
-            //$('.spinner').show();
             if (Number($(this).val()) === 1) {
                 var selectedItems = global.getSelectedCheckboxList('.chkProducts', 'productid');
                 var pickedProducts = [];
@@ -23,57 +21,38 @@ var product = {
                     product.AddPickedProducts();
                 }
                 else {
-                    $("#ddlProductBulkAction").val("");
-                    ErrorMessage("Please select atleast one product");
+                    ErrorMessage("Please Selecte Atleast one Product");
                 }
             }
         });
     },
     AddPickedProducts: function () {
-
         var selectedItems = global.getSelectedCheckboxList('.chkProducts', 'productid');
         var pickedProducts = [];
-        var update_price = true;
         $.each(selectedItems, function (index, item) {
             pickedProducts.push({ productId: item, price: $('.chkProducts[productid=' + item + ']').parents('tr').find('.SellerPriceInp').val(), SKUModels: [] });
             if ($(".innertable").find("tr.skuRow[data-for='" + item + "']")) {
                 $.each($(".innertable").find("tr.skuRow[data-for='" + item + "']"), function (i, data) {
                     pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: $(data).data("sku"), inventory: $(data).data("inventory"), price: $(data).find(".updatedPrice").val(), discount_price: 1 })
-                });
+                })
             }
 
             //pickedProducts.push({ key: item, value: $('.chkProducts[productid=' + item + ']').parents('tr').find('.SellerPriceInp').val() });
         });
-
-        $.each(pickedProducts, function (j, result) {
-            $(result.SKUModels).filter(function (index, updatedData) {
-                if (!(updatedData.price > 0)) {
-                    return update_price = false;
-                }
-
-            })
+        debugger;
+        $.ajax({
+            type: "POST",
+            url: "/Products/pickSellerProducts",
+            dataType: "json",
+            async: false,
+            data: { products: pickedProducts },
+            success: function (data) {
+                //$('#ddlProductBulkAction').val(0);
+                //$('#ddlProductBulkAction').selectpicker('refresh');
+                SuccessMessage("Picked successfully");
+                window.location.href = "/Products/MyProduct";
+            }
         });
-        if (update_price) {
-            $('.spinner').show();
-            $.ajax({
-                type: "POST",
-                url: "/Products/pickSellerProducts",
-                dataType: "json",
-                async: false,
-                data: { products: pickedProducts },
-                success: function (data) {
-                    SuccessMessage("Submitted to aliExpress for pickup process");
-                    GetData();
-                    $('.spinner').hide();
-                }
-            });
-        }
-        else {
-            $("#ddlProductBulkAction").val("");
-            ErrorMessage("Please enter the price you want to sell");
-            $('.spinner').hide();
-        }
-
     },
     initCheckSelection: function () {
         $(document).on('change', '#chk_prod_All', function () {
@@ -276,6 +255,7 @@ $(document).ready(function () {
     });
 });
 
+
 function GetData() {
     ShowLoader();
     $.ajax("/Products/getProductManagementDT", {
@@ -313,7 +293,6 @@ function FormatData(json) {
             "ParentProductID": json[i].ParentProduct.ParentProductID,
             "SellerPrice": json[i].ParentProduct.SellerPrice,
             "hasProductSkuSync": json[i].ParentProduct.hasProductSkuSync,
-            "isProductPicked": json[i].ParentProduct.isProductPicked,
             "check": "<label class='mt-checkbox'><input type='checkbox' class='parentChk' data-SKU=" + json[i].ParentProduct.OriginalProductID + " value='1'><span></span></label>",
             "ChildProductList": json[i].ChildProductList,
         };
@@ -375,7 +354,6 @@ function GeneratePropertyList(propertyList, elementName, Id) {
 }
 
 function BindData(jsonProducts) {
-    debugger
     if (ProductsDt) {
         ProductsDt.destroy();
     }
@@ -406,7 +384,7 @@ function BindData(jsonProducts) {
         {
             "data": "pick", "render": function (data, type, full) {
                 var rawHTML = "";
-                if (full.isProductPicked) {
+                if (full.SellerPrice > 0 || full.hasProductSkuSync) {
                     rawHTML = "Picked";
                 }
                 else if (full.hasProductSkuSync) {

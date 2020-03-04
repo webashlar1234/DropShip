@@ -58,15 +58,24 @@ namespace DropshipPlatform.BLL.Services
                             if (fqRsp.ResultList.Count > 0)
                             {
                                 var result = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(fqRsp.ResultList.FirstOrDefault().ItemExecutionResult);
-                                SellersPickedProduct obj = datacontext.SellersPickedProducts.Where(x => x.UserID == userid && x.ParentProductID == item.ProductID).FirstOrDefault();
-                                if (result.success == true)
+
+                                string productOriginalId = item.ProductID.ToString();
+                                Product prodObj = datacontext.Products.Where(x => x.OriginalProductID == productOriginalId).FirstOrDefault();
+                                if (prodObj != null)
                                 {
-                                    obj.AliExpressProductID = result.productId;
-                                    datacontext.Entry(obj).State = System.Data.Entity.EntityState.Modified;
-                                }
-                                else
-                                {
-                                    datacontext.SellersPickedProducts.Remove(obj);
+                                    SellersPickedProduct obj = datacontext.SellersPickedProducts.Where(x => x.UserID == userid && x.ParentProductID == prodObj.ProductID).FirstOrDefault();
+                                    if (obj != null)
+                                    {
+                                        if (result.success == true)
+                                        {
+                                            obj.AliExpressProductID = result.productId;
+                                            datacontext.Entry(obj).State = System.Data.Entity.EntityState.Modified;
+                                        }
+                                        else
+                                        {
+                                            datacontext.SellersPickedProducts.Remove(obj);
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -86,12 +95,12 @@ namespace DropshipPlatform.BLL.Services
             {
                 ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret, "json");
                 AliexpressSolutionBatchProductInventoryUpdateRequest req = new AliexpressSolutionBatchProductInventoryUpdateRequest();
-                
+
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
                     List<User> users = datacontext.Users.Where(x => x.IsActive == true && x.AliExpressSellerID != null).ToList();
 
-                    foreach(User user in users)
+                    foreach (User user in users)
                     {
                         List<AliexpressSolutionBatchProductInventoryUpdateRequest.SynchronizeProductRequestDtoDomain> productList = new List<AliexpressSolutionBatchProductInventoryUpdateRequest.SynchronizeProductRequestDtoDomain>();
                         List<SellersPickedProduct> sellerProducts = datacontext.SellersPickedProducts.Where(x => x.UserID == user.UserID && x.AliExpressProductID != null).ToList();
@@ -101,8 +110,8 @@ namespace DropshipPlatform.BLL.Services
                         {
                             AliexpressSolutionBatchProductInventoryUpdateRequest.SynchronizeProductRequestDtoDomain productObj = new AliexpressSolutionBatchProductInventoryUpdateRequest.SynchronizeProductRequestDtoDomain();
                             productObj.ProductId = Int64.Parse(item.AliExpressProductID);
-                            productObj.MultipleSkuUpdateList = (from pp in datacontext.PickedProducts.Where(x => x.SellersPickedID == item.SellersPickedID)
-                                                                from p in datacontext.Products.Where(x => x.OriginalProductID == pp.SKU)
+                            productObj.MultipleSkuUpdateList = (from pp in datacontext.SellerPickedProductSKUs.Where(x => x.SellerPickedId == item.SellersPickedID)
+                                                                from p in datacontext.Products.Where(x => x.OriginalProductID == pp.SKUCode)
                                                                 select new { OriginalProductID = p.OriginalProductID, Inventory = p.Inventory }
                                                                 ).ToList().Select(x => new AliexpressSolutionBatchProductInventoryUpdateRequest.SynchronizeSkuRequestDtoDomain
                                                                 {
@@ -112,7 +121,7 @@ namespace DropshipPlatform.BLL.Services
 
                             productList.Add(productObj);
                         }
-                        
+
                         req.MutipleProductUpdateList_ = productList;
                         AliexpressSolutionBatchProductInventoryUpdateResponse rsp = client.Execute(req, token.access_token);
                         Console.WriteLine(rsp.Body);

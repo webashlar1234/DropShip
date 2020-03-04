@@ -12,7 +12,7 @@ namespace DropshipPlatform.Controllers
         [HttpPost]
         public JsonResult Index()
         {
-            if(SessionManager.GetAccessToken().access_token != null && SessionManager.GetUserSession() != null)
+              if(SessionManager.GetAccessToken().access_token != null && SessionManager.GetUserSession() != null)
             {
                 new BackendHelper().RefreshAliExpressJobLog();
                 new BackendHelper().RefreshAliExpressInventory();
