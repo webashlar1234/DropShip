@@ -130,15 +130,18 @@ namespace DropshipPlatform.BLL.Services
                                 obj.SellerPrice = Convert.ToDouble(product.price);
                                 obj.ItemCreatedBy = UserID;
                                 obj.ItemCreatedWhen = DateTime.UtcNow;
-                                foreach (ProductSKUModel productSKUModel in product.SKUModels)
+                                if (product.SKUModels != null)
                                 {
-                                    obj.SellerPickedProductSKUs.Add(new SellerPickedProductSKU()
+                                    foreach (ProductSKUModel productSKUModel in product.SKUModels)
                                     {
-                                        ProductId = ParentProduct.ProductID,
-                                        SKUCode = productSKUModel.skuCode,
-                                        UpdatedPrice = Convert.ToDecimal(productSKUModel.price),
-                                        UserId = UserID
-                                    });
+                                        obj.SellerPickedProductSKUs.Add(new SellerPickedProductSKU()
+                                        {
+                                            ProductId = ParentProduct.ProductID,
+                                            SKUCode = productSKUModel.skuCode,
+                                            UpdatedPrice = Convert.ToDecimal(productSKUModel.price),
+                                            UserId = UserID
+                                        });
+                                    }
                                 }
                                 datacontext.SellersPickedProducts.Add(obj);
                                 datacontext.SaveChanges();
@@ -709,11 +712,13 @@ namespace DropshipPlatform.BLL.Services
                 if (dbProduct != null)
                 {
                     List<string> skuStr = new List<string>();
-                    foreach (ProductSKUModel productSKU in scproduct.SKUModels)
+                    if (scproduct.SKUModels != null)
                     {
-                        skuStr.Add("{\"discount_price\":" + productSKU.discount_price + ",\"inventory\":" + productSKU.inventory + ",\"price\":" + productSKU.price + ",\"sku_attributes\":{\"Size\":{\"value\":\"4181\"},\"Color\":{\"alias\":\"32\",\"sku_image_url\":\"" + StaticValues.sampleImage + "\",\"value\":\"771\"}},\"sku_code\":\"" + productSKU.skuCode + "\"}");
+                        foreach (ProductSKUModel productSKU in scproduct.SKUModels)
+                        {
+                            skuStr.Add("{\"discount_price\":" + productSKU.discount_price + ",\"inventory\":" + productSKU.inventory + ",\"price\":" + productSKU.price + ",\"sku_attributes\":{\"Size\":{\"value\":\"4181\"},\"Color\":{\"alias\":\"32\",\"sku_image_url\":\"" + StaticValues.sampleImage + "\",\"value\":\"771\"}},\"sku_code\":\"" + productSKU.skuCode + "\"}");
+                        }
                     }
-
                     result = "{\"category_attributes\":{\"Brand Name\":{\"value\":\"201470514\"},\"Material\":{\"value\":[\"47\",\"49\"]}},\"category_id\":" + AliCategoryID + ",\"description_multi_language_list\":[{\"locale\":\"en_US\",\"module_list\":[{\"html\":{\"content\":\"" + dbProduct.Description + "\"},\"type\":\"html\"}]}],\"image_url_list\":[\"" + StaticValues.sampleImage + "\"],\"inventory_deduction_strategy\":\"place_order_withhold\",\"locale\":\"en_US\",\"package_height\":234,\"package_length\":234,\"package_weight\":234.00,\"package_width\":234,\"product_units_type\":\"100000015\",\"service_template_id\":\"0\",\"shipping_preparation_time\":20,\"shipping_template_id\":\"1013213014\",\"sku_info_list\":[" + string.Join(",", skuStr) + "],\"title_multi_language_list\":[{\"locale\":\"en_US\",\"title\":\"" + dbProduct.Title + "\"}]}";
                 }
             }

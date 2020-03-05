@@ -25,19 +25,20 @@ namespace DropshipPlatform.BLL.Services
                 AliexpressSolutionOrderGetRequest req = new AliexpressSolutionOrderGetRequest();
 
                 AliexpressSolutionOrderGetRequest.OrderQueryDomain obj1 = new AliexpressSolutionOrderGetRequest.OrderQueryDomain();
-                obj1.CreateDateEnd = "2020-03-03 12:12:12";
+                obj1.CreateDateEnd = "2020-03-05 12:12:12";
                 obj1.CreateDateStart = "2020-03-01 12:12:12";
                 obj1.ModifiedDateStart = "2020-03-01 12:12:12";
-                obj1.OrderStatusList = new List<string> { "SELLER_PART_SEND_GOODS", "PLACE_ORDER_SUCCESS", "IN_CANCEL", "WAIT_SELLER_SEND_GOODS", "WAIT_BUYER_ACCEPT_GOODS", "FUND_PROCESSING" };
+                obj1.OrderStatusList = new List<string> { "SELLER_PART_SEND_GOODS", "PLACE_ORDER_SUCCESS", "IN_CANCEL", "WAIT_SELLER_SEND_GOODS", "WAIT_BUYER_ACCEPT_GOODS", "FUND_PROCESSING" , "IN_ISSUE", "IN_FROZEN", "WAIT_SELLER_EXAMINE_MONEY", "RISK_CONTROL", "FINISH" };
                 obj1.BuyerLoginId = "edacan0107@aol.com";
                 obj1.PageSize = 20L;
-                obj1.ModifiedDateEnd = "2020-03-03 12:12:12"; 
+                obj1.ModifiedDateEnd = "2020-03-05 12:12:12"; 
                 obj1.CurrentPage = 1L;
                 obj1.OrderStatus = "SELLER_PART_SEND_GOODS";
                 req.Param0_ = obj1;
                 Top.Api.Response.AliexpressSolutionOrderGetResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
                 result = JsonConvert.SerializeObject(rsp.Result);
                 orders = JsonConvert.DeserializeObject<ResultData>(result);
+
             }
             catch (Exception ex)
             {
@@ -50,14 +51,11 @@ namespace DropshipPlatform.BLL.Services
         public List<Product> GetProductById(string Id)
         {
             List<Product> products = new List<Product>();
-            int productId = 0;
             try
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    var item = datacontext.SellersPickedProducts.Where(x => x.AliExpressProductID == Id).ToList();
-                    productId = Convert.ToInt32(item[0].ParentProductID);
-                    products = datacontext.Products.Where(x=>x.ProductID == productId).ToList();
+                    products = datacontext.Products.Where(x=>x.OriginalProductID == Id).ToList();
                 }
             }
             catch (Exception ex)

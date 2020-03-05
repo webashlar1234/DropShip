@@ -61,7 +61,7 @@ var order = {
                     sortable: true,
                     width: "5%",
                     "render": function (data, type, full) {
-                        return data;
+                        return data + '<label>$</label>';
                     }
                 },
                 {
@@ -93,6 +93,7 @@ var order = {
                     sortable: true,
                     width: "10%",
                     "render": function (data, type, full) {
+                        //return '<input data-role="switch" type="checkbox" data-toggle="toggle" data-on="Paid " data-off="Unpaid " />';
                         return data;
                     }
                 },
@@ -101,7 +102,7 @@ var order = {
                     sortable: true,
                     width: "10%",
                     "render": function (data, type, row) {
-                        return '<input data-role="switch" type="checkbox" data-toggle="toggle" data-on="Paid " data-off="Unpaid " />';
+                        return data;
                     }
                 },
                 {
@@ -117,7 +118,9 @@ var order = {
                     sortable: true,
                     width: "10%",
                     "render": function (data, type, row) {
-                        return '<a class="btn btn-info btn-sm" href="#">' + 'Ship Now ' + '</a>';
+                        if (data) {
+                            return '<a class="btn btn-info btn-sm" href="#" onclick=updateStatus("' + row.OrignalProductLink + '",this)>' + 'Buy Now' + '</a>';
+                        }
                     }
                 },
             ],
@@ -133,7 +136,7 @@ var order = {
                 { "sTitle": 'Payment Status', "mData": 'PaymentStatus', sDefaultContent: "", className: "PaymentStatus" },
                 { "sTitle": 'Seller ID', "mData": 'SellerID', sDefaultContent: "", className: "SellerID" },
                 { "sTitle": 'Seller Email', "mData": 'SellerEmail', sDefaultContent: "", className: "SellerEmail" },
-                { "sTitle": 'Actions', "mData": '', sDefaultContent: "", className: "Actions" }
+                { "sTitle": 'Actions', "mData": 'productExist', sDefaultContent: "", className: "Actions" }
             ]
         });
     }
@@ -146,3 +149,10 @@ $(document).ready(function () {
         off: 'Disabled'
     });
 });
+
+function updateStatus(productLink,data) {
+    if (data.text == "Buy Now") {
+        data.text = "Ship Now";
+        window.open(productLink);
+    }
+}
