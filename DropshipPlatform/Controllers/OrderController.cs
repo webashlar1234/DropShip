@@ -46,8 +46,8 @@ namespace DropshipPlatform.Controllers
                     orderData.AliExpressProductId = item.ProductList[0].SkuCode;
                     List<Product> productData = _orderService.GetProductById(orderData.AliExpressProductId);
                     orderData.OrignalProductId = productData[0].OriginalProductID;
-                    orderData.OrignalProductLink = "https://www.abc.com/xyz";
-                    //orderData.OrignalProductLink = productData[0].SourceWebsite;
+                    //orderData.OrignalProductLink = "https://www.abc.com/xyz";
+                    orderData.OrignalProductLink = productData[0].SourceWebsite;
                     orderData.ProductTitle = item.ProductList[0].ProductName;
                     orderData.OrderAmount = item.ProductList[0].TotalProductAmount.Amount;
                     orderData.DeleveryCountry = null;
@@ -78,6 +78,13 @@ namespace DropshipPlatform.Controllers
             var jsonResult = Json(new { draw = draw, recordsFiltered = recordsTotal, recordsTotal = recordsTotal, data = data }, JsonRequestBehavior.AllowGet);
             jsonResult.MaxJsonLength = int.MaxValue;
             return jsonResult;
+        }
+
+        [HttpPost]
+        public JsonResult trackingOrder(OrderData orderData)
+        {
+            OrderService _orderService = new OrderService();
+            return Json(_orderService.trackingOrder(orderData), JsonRequestBehavior.AllowGet);
         }
     }
 }

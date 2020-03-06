@@ -18,10 +18,28 @@ var order = {
             processing: true,
             serverSide: true,
             sort: true,
-            filter: false,
+            filter: true,
             language: {
+                sSearch: "",
+                searchPlaceholder: "Search Order",
                 loadingRecords: '&nbsp;',
                 processing: '<div class="spinner"></div>'
+            },
+            initComplete: function (setting, json) {
+                var input = $('.dataTables_filter input').unbind(),
+                    self = this.api(),
+                    $searchButton = $('<button class="btn btn-sm btn-black mr-2 ml-2">')
+                        .text('Search')
+                        .click(function () {
+                            self.search(input.val()).draw();
+                        }),
+                    $clearButton = $('<button class="btn btn-sm  btn-white">')
+                        .text('Clear')
+                        .click(function () {
+                            input.val('');
+                            $searchButton.click();
+                        })
+                $('.dataTables_filter').append($searchButton, $clearButton);
             },
             columnDefs: [
                 {
@@ -119,7 +137,7 @@ var order = {
                     width: "10%",
                     "render": function (data, type, row) {
                         if (data) {
-                            return '<a class="btn btn-info btn-sm" href="#" onclick=updateStatus("' + row.OrignalProductLink + '",this)>' + 'Buy Now' + '</a>';
+                            return '<a class="btn btn-info btn-sm" href="#" onclick=updateStatus("' + row.OrignalProductLink + '",this,"' + row.AliExpressOrderNumber + '")>' + 'Buy Now' + '</a>';
                         }
                     }
                 },
@@ -150,9 +168,29 @@ $(document).ready(function () {
     });
 });
 
-function updateStatus(productLink,data) {
+function updateStatus(productLink,data,OrderId) {
     if (data.text == "Buy Now") {
         data.text = "Ship Now";
-        window.open(productLink);
+        data.outerHTML += '<input class="form-control tracking" name="txtTracking" type="text" style="margin-top:5px">'
+        window.open("http://" + productLink);
+    }
+    else {
+        ShowLoader();
+        $.ajax({
+            type: "POST",
+            url: "/Order/trackingOrder",
+            dataType: "json",
+            async: false,
+            data: { AliExpressOrderNumber: OrderId, OrignalProductLink: productLink },
+            success: function (data) {
+                if (data) {
+                    //SuccessMessage("Product Status Updated successfully");
+                }
+                HideLoader();
+            },
+            error: function (err) {
+                HideLoader();
+            }
+        });
     }
 }
