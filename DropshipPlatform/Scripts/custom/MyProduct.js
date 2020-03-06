@@ -69,13 +69,16 @@ $(document).ready(function () {
         $(this).data("isupdated", true);
         $("#frmPickedProduct").valid();
     });
+    $(document).on('change', '#ddlProductCat', function () {
+        GetData();
+    });
 });
 
 function GetData() {
     ShowLoader();
     $.ajax('getPickedAliProducts', {
         type: 'GET',  // http method
-        data: { UserID: 1 },  // data to submit
+        data: { category: $('#ddlProductCat').val() },  // data to submit
         success: function (data, status, xhr) {
             jsonProducts = FormatData(data.data);
             console.log(jsonProducts);
@@ -106,7 +109,7 @@ function FormatData(json) {
             "OriginalProductID": json[i].ParentProduct.OriginalProductID,
             "ParentProductID": json[i].ParentProduct.ParentProductID,
             "check": "<label class='mt-checkbox'><input type='checkbox' class='parentChk' aliexpressproductid=" + json[i].ParentProduct.AliExpressProductID + " data-SKU=" + json[i].ParentProduct.OriginalProductID + " value='1'><span></span></label>",
-            "IsActive": json[i].ParentProduct.IsActive ? '<a class="btn btn-info btn-sm" href="#" onclick=updateStatus("' + json[i].ParentProduct.AliExpressProductID + '","' + json[i].ParentProduct.IsActive + '")>' + 'Online' + '</a>' : '<a class="btn btn-info btn-sm" href="#" onclick=updateStatus("' + json[i].ParentProduct.AliExpressProductID + '","' + json[i].ParentProduct.IsActive + '")>' + 'Offline' + '</a>',
+            "IsOnline": json[i].ParentProduct.IsOnline ? '<a class="btn btn-info btn-sm" href="#" onclick=updateStatus("' + json[i].ParentProduct.AliExpressProductID + '","' + json[i].ParentProduct.IsOnline + '")>' + 'Online' + '</a>' : '<a class="btn btn-info btn-sm" href="#" onclick=updateStatus("' + json[i].ParentProduct.AliExpressProductID + '","' + json[i].ParentProduct.IsOnline + '")>' + 'Offline' + '</a>',
             "ChildProductList": json[i].ChildProductList,
             "AliExpressProductID": json[i].ParentProduct.AliExpressProductID
         };
@@ -204,7 +207,7 @@ function BindData(jsonProducts) {
         { "data": "manufacturerName" },
         { "data": "origin" },
         { "data": "check" },
-        { "data": "IsActive" }
+        { "data": "IsOnline" }
 
         ]
     });

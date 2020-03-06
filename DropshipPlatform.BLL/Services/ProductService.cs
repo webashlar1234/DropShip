@@ -45,8 +45,8 @@ namespace DropshipPlatform.BLL.Services
 
                     products = (from p in datacontext.Products
                                 join c in datacontext.Categories on p.CategoryID equals c.CategoryID
-                                //from sp in datacontext.SellersPickedProducts.Where(x => x.ParentProductID == p.ProductID && x.UserID == UserID).DefaultIfEmpty()
-                                //from spsku in datacontext.SellerPickedProductSKUs.Where(x => x.ProductId == p.ProductID && x.UserId == UserID).DefaultIfEmpty()
+                                from sp in datacontext.SellersPickedProducts.Where(x => x.ParentProductID == p.ProductID && x.UserID == UserID).DefaultIfEmpty()
+                                    //from spsku in datacontext.SellerPickedProductSKUs.Where(x => x.ProductId == p.ProductID && x.UserId == UserID).DefaultIfEmpty()
                                 where p.ParentProductID == null || p.ParentProductID == ""
                                 select new ProductViewModel
                                 {
@@ -58,9 +58,9 @@ namespace DropshipPlatform.BLL.Services
                                     Cost = p.Cost,
                                     Inventory = p.Inventory,
                                     ShippingWeight = p.ShippingWeight,
-                                    SellerPickedCount = datacontext.SellersPickedProducts.Where(x => x.ParentProductID == p.ProductID).Count(),
+                                    SellerPickedCount = datacontext.SellersPickedProducts.Where(x => x.ParentProductID == p.ProductID && x.UserID != UserID).Count(),
                                     IsActive = p.IsActive,
-                                    UserID = UserID,
+                                    UserID = sp.UserID,
                                     AliExpressCategoryID = c.AliExpressCategoryId.Value
                                 }).ToList();
 
@@ -72,7 +72,7 @@ namespace DropshipPlatform.BLL.Services
                             SellersPickedProduct sellersPickedProduct = datacontext.SellersPickedProducts.Where(x => x.ParentProductID == productViewModel.ProductID && x.UserID == UserID).FirstOrDefault();
                             if (sellersPickedProduct != null)
                             {
-                                productViewModel.hasProductSkuSync = true;
+                                productViewModel.hasProductSkuSync =  true;
                                 if (!string.IsNullOrEmpty(sellersPickedProduct.AliExpressProductID))
                                 {
                                     productViewModel.SellerPrice = sellersPickedProduct.SellerPrice;
@@ -130,6 +130,7 @@ namespace DropshipPlatform.BLL.Services
                                 obj.SellerPrice = Convert.ToDouble(product.price);
                                 obj.ItemCreatedBy = UserID;
                                 obj.ItemCreatedWhen = DateTime.UtcNow;
+                                obj.IsOnline = true;
                                 foreach (ProductSKUModel productSKUModel in product.SKUModels)
                                 {
                                     obj.SellerPickedProductSKUs.Add(new SellerPickedProductSKU()
@@ -239,7 +240,7 @@ namespace DropshipPlatform.BLL.Services
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    List<SellersPickedProduct> dbSellerPickedProducts = datacontext.SellersPickedProducts.Where(x => x.UserID == UserID).GroupBy(x => x.ParentProductID).Select(x => x.FirstOrDefault()).ToList();
+                    List<SellersPickedProduct> dbSellerPickedProducts = datacontext.SellersPickedProducts.Where(x => x.UserID == UserID && x.AliExpressProductID != null && x.AliExpressProductID != string.Empty).GroupBy(x => x.ParentProductID).Select(x => x.FirstOrDefault()).ToList();
                     if (dbSellerPickedProducts.Count > 0)
                     {
                         foreach (SellersPickedProduct item in dbSellerPickedProducts)
@@ -254,6 +255,7 @@ namespace DropshipPlatform.BLL.Services
                                     List<Product> childProducts = datacontext.Products.Where(x => x.ParentProductID.ToString() == dbParentProduct.OriginalProductID).ToList();
 
                                     productGroup.ParentProduct = GenerateProductViewModel(dbParentProduct);
+                                    productGroup.ParentProduct.IsOnline = item.IsOnline;
                                     if (productGroup.ParentProduct != null)
                                     {
                                         productGroup.ParentProduct.AliExpressProductID = item.AliExpressProductID; //datacontext.SellersPickedProducts.Where(x => x.ParentProductID == dbParentProduct.ProductID).Select(x => x.AliExpressProductID).FirstOrDefault();
@@ -564,11 +566,14 @@ namespace DropshipPlatform.BLL.Services
                         skus.Add("{\"sku_code\": \"" + productSKUModel.skuCode + "\",\"price\": " + productSKUModel.price + "}");
                     }
                     obj3.ItemContentId = Guid.NewGuid().ToString();
-                    obj3.ItemContent = "[{\"item_content_id\": \"" + obj3.ItemContentId + "\",\"item_content\": {\"aliexpress_product_id\": " + scproductModel.aliExpressProductId + ",\"multiple_sku_update_list\":" +
-                                       "[" + string.Join(",", skus.ToArray()) + "]}}" +
-                                       "]";
+                    //obj3.ItemContent = "[{\"item_content_id\": \"" + obj3.ItemContentId + "\",\"item_content\": {\"aliexpress_product_id\": " + scproductModel.aliExpressProductId + ",\"multiple_sku_update_list\":" +
+                    //                   "[" + string.Join(",", skus.ToArray()) + "]}}" +
+                    //                   "]";
+                    obj3.ItemContent = "{\"aliexpress_product_id\":"+ scproductModel.aliExpressProductId + ",\"multiple_sku_update_list\":["+ string.Join(",", skus.ToArray()) + "]}";
+
                     list2.Add(obj3);
                     req.ItemList_ = list2;
+                    
 
                     if (SessionManager.GetAccessToken().access_token != null)
                     {
@@ -583,7 +588,10 @@ namespace DropshipPlatform.BLL.Services
                             JobId = rsp.JobId,
                             ContentId = obj3.ItemContentId,
                             SuccessItemCount = fqRsp.SuccessItemCount,
-                            Result = result,
+                            UserID = userId,
+                            ProductID = scproductModel.productId,
+                            ProductDetails = obj3.ItemContent,
+                            Result = result
                         });
 
                         List<AliexpressSolutionFeedResponseModel> solutionResponse = JsonConvert.DeserializeObject<List<AliexpressSolutionFeedResponseModel>>(result);
@@ -706,12 +714,40 @@ namespace DropshipPlatform.BLL.Services
             {
                 Product dbProduct = datacontext.Products.Where(x => x.OriginalProductID == scproduct.productId.ToString()).FirstOrDefault();
 
+                string CategorySchema = GetSchemaByCategory(AliCategoryID);
+                CategorySchemaModel categorySchemaModel = JsonConvert.DeserializeObject<CategorySchemaModel>(CategorySchema);
+                List<PropertyModel> colors = new List<PropertyModel>();
+                List<PropertyModel> sizes = new List<PropertyModel>();
+                if (categorySchemaModel != null)
+                {
+                    foreach (OneOf19 item in categorySchemaModel.properties.sku_info_list.items.properties.sku_attributes.properties.Color.properties.value.oneOf)
+                    {
+                        PropertyModel propertyModel = new PropertyModel();
+                        propertyModel.PropertyID = item.@const;
+                        propertyModel.PropertyName = item.title;
+                        colors.Add(propertyModel);
+                    }
+                    
+                    foreach (OneOf18 item in categorySchemaModel.properties.sku_info_list.items.properties.sku_attributes.properties.Size.properties.value.oneOf)
+                    {
+                        PropertyModel propertyModel = new PropertyModel();
+                        propertyModel.PropertyID = item.@const;
+                        propertyModel.PropertyName = item.title;
+                        sizes.Add(propertyModel);
+                    }
+                }
+                
+
                 if (dbProduct != null)
                 {
                     List<string> skuStr = new List<string>();
                     foreach (ProductSKUModel productSKU in scproduct.SKUModels)
                     {
-                        skuStr.Add("{\"discount_price\":" + productSKU.discount_price + ",\"inventory\":" + productSKU.inventory + ",\"price\":" + productSKU.price + ",\"sku_attributes\":{\"Size\":{\"value\":\"4181\"},\"Color\":{\"alias\":\"32\",\"sku_image_url\":\"" + StaticValues.sampleImage + "\",\"value\":\"771\"}},\"sku_code\":\"" + productSKU.skuCode + "\"}");
+                        Product originalSKU = datacontext.Products.Where(x => x.OriginalProductID == productSKU.skuCode).FirstOrDefault();
+                        string Size = sizes.Where(x => x.PropertyName == originalSKU.Size).Select(x => x.PropertyID).FirstOrDefault();
+                        string color = colors.Where(x => x.PropertyName == originalSKU.Color).Select(x => x.PropertyID).FirstOrDefault();
+                        skuStr.Add("{\"discount_price\":" + productSKU.discount_price + ",\"inventory\":" + productSKU.inventory + ",\"price\":" + productSKU.price + ",\"sku_attributes\":{\"Size\":{\"value\":\""+Size+"\"},\"Color\":{\"alias\":\"32\",\"sku_image_url\":\"" + StaticValues.sampleImage + "\",\"value\":\""+color+"\"}},\"sku_code\":\"" + productSKU.skuCode + "\"}");
+                        //skuStr.Add("{\"discount_price\":" + productSKU.discount_price + ",\"inventory\":" + productSKU.inventory + ",\"price\":" + productSKU.price + ",\"sku_attributes\":{\"Size\":{\"value\":"+ Size + "},\"Color\":{\"alias\":\"32\",\"sku_image_url\":\"" + StaticValues.sampleImage + "\",\"value\":"+ color + "}},\"sku_code\":\"" + productSKU.skuCode + "\"}");
                     }
 
                     result = "{\"category_attributes\":{\"Brand Name\":{\"value\":\"201470514\"},\"Material\":{\"value\":[\"47\",\"49\"]}},\"category_id\":" + AliCategoryID + ",\"description_multi_language_list\":[{\"locale\":\"en_US\",\"module_list\":[{\"html\":{\"content\":\"" + dbProduct.Description + "\"},\"type\":\"html\"}]}],\"image_url_list\":[\"" + StaticValues.sampleImage + "\"],\"inventory_deduction_strategy\":\"place_order_withhold\",\"locale\":\"en_US\",\"package_height\":234,\"package_length\":234,\"package_weight\":234.00,\"package_width\":234,\"product_units_type\":\"100000015\",\"service_template_id\":\"0\",\"shipping_preparation_time\":20,\"shipping_template_id\":\"1013213014\",\"sku_info_list\":[" + string.Join(",", skuStr) + "],\"title_multi_language_list\":[{\"locale\":\"en_US\",\"title\":\"" + dbProduct.Title + "\"}]}";
@@ -918,13 +954,8 @@ namespace DropshipPlatform.BLL.Services
                         SellersPickedProduct obj = datacontext.SellersPickedProducts.Where(x => x.AliExpressProductID == id).FirstOrDefault();
                         if (obj != null)
                         {
-                            int productId = Convert.ToInt32(obj.ParentProductID);
-                            Product product = datacontext.Products.Where(x => x.ProductID == productId).FirstOrDefault();
-                            if (product != null)
-                            {
-                                product.IsActive = !status;
-                            }
-                            datacontext.Entry(product).State = System.Data.Entity.EntityState.Modified;
+                            obj.IsOnline = !status; 
+                            datacontext.Entry(obj).State = System.Data.Entity.EntityState.Modified;
                             datacontext.SaveChanges();
                             result = true;
                         }

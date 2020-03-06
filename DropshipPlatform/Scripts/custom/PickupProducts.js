@@ -9,7 +9,7 @@ var product = {
     },
     change: function () {
         $(document).on('change', '#ddlProductCat, #ddlPickupFilter', function () {
-            product.initProductDT();
+            GetData();
         });
         $(document).on('change', '#ddlProductBulkAction', function () {
             //$('.spinner').show();
@@ -26,6 +26,8 @@ var product = {
                     $("#ddlProductBulkAction").val("");
                     ErrorMessage("Please select atleast one product");
                 }
+                $('#ddlProductBulkAction').val('');
+                $('#ddlProductBulkAction').selectpicker('refresh');
             }
         });
     },
@@ -281,7 +283,7 @@ function GetData() {
     $.ajax("/Products/getProductManagementDT", {
         "type": "POST",
         "datatype": "json",
-        "data": function (d) { d.category = $('#ddlProductCat').val(), d.filterOptions = $('#ddlPickupFilter').val() },
+        "data": { category : $('#ddlProductCat').val(), filterOptions : $('#ddlPickupFilter').val() },
         success: function (data, status, xhr) {
             HideLoader();
             jsonProducts = FormatData(data.data);
@@ -316,6 +318,8 @@ function FormatData(json) {
             "isProductPicked": json[i].ParentProduct.isProductPicked,
             "check": "<label class='mt-checkbox'><input type='checkbox' class='parentChk' data-SKU=" + json[i].ParentProduct.OriginalProductID + " value='1'><span></span></label>",
             "ChildProductList": json[i].ChildProductList,
+            "SellerPickedCount": json[i].ParentProduct.SellerPickedCount,
+            "IsActive": json[i].ParentProduct.IsActive
         };
         jsonData.push(productGroup);
     }
@@ -375,7 +379,6 @@ function GeneratePropertyList(propertyList, elementName, Id) {
 }
 
 function BindData(jsonProducts) {
-    debugger
     if (ProductsDt) {
         ProductsDt.destroy();
     }
@@ -410,7 +413,7 @@ function BindData(jsonProducts) {
                     rawHTML = "Picked";
                 }
                 else if (full.hasProductSkuSync) {
-                    rawHTML = '<label class="mt-checkbox mt-checkbox-outline"><input disabled type="checkbox" productid=' + full.OriginalProductID + ' id="chk_prod_' + full.OriginalProductID + '" class="chkProducts parentChk"><span></span></label>';
+                    rawHTML = '<label class="mt-checkbox mt-checkbox-outline disabled"><input disabled type="checkbox" productid=' + full.OriginalProductID + ' id="chk_prod_' + full.OriginalProductID + '" class="chkProducts parentChk"><span></span></label>';
                 }
                 else {
                     rawHTML = '<label class="mt-checkbox mt-checkbox-outline"><input type="checkbox" productid=' + full.OriginalProductID + ' id="chk_prod_' + full.OriginalProductID + '" class="chkProducts parentChk"><span></span></label>';
@@ -421,7 +424,15 @@ function BindData(jsonProducts) {
 
         {
             "data": "check", "render": function (data, type, full) {
-                return full.SellerPickedCount > 0 ? ("Picked by " + full.SellerPickedCount + " sellers") : (full.IsActive ? "Online" : "Offline");
+                var rawHTML = "";
+                if (full.hasProductSkuSync && !full.isProductPicked) {
+                    rawHTML = "In Progress"
+                }
+                else {
+                    rawHTML = full.SellerPickedCount > 0 ? ("Picked by " + full.SellerPickedCount + " sellers") : (full.IsActive ? "Online" : "Offline");
+                }
+
+                return rawHTML;
             }
         }
         ]

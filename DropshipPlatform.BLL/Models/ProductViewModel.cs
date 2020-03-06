@@ -33,6 +33,7 @@ namespace DropshipPlatform.BLL.Models
         public string Color { get; set; }
         public string SourceWebsite { get; set; }
         public Nullable<bool> IsActive { get; set; }
+        public Nullable<bool> IsOnline { get; set; }
         public double UpdatedPrice { get; set; }
         public long UpdatedInvetory { get; set; }
 

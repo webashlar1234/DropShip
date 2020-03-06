@@ -65,9 +65,13 @@ namespace DropshipPlatform.Controllers
             return View();
         }
 
-        public JsonResult getPickedAliProducts(int UserID = 1)
+        public JsonResult getPickedAliProducts(int? category)
         {
-            List<ProductGroupModel> list = _productService.GetPickedProducts(UserID);
+            List<ProductGroupModel> list = _productService.GetPickedProducts(SessionManager.GetUserSession().UserID);
+            if (category > 0)
+            {
+                list = list.Where(x => x.ParentProduct.CategoryID == category).ToList();
+            }
             return Json(new { data = list.ToArray(), }, JsonRequestBehavior.AllowGet);
         }
 

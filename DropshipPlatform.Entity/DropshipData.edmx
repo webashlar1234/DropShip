@@ -26,11 +26,11 @@
           <Property Name="SuccessItemCount" Type="bigint" />
           <Property Name="ContentId" Type="nvarchar(max)" />
           <Property Name="Result" Type="nvarchar(max)" />
-          <Property Name="CreatedOn" Type="datetime" />
-          <Property Name="CreatedBy" Type="int" />
           <Property Name="ProductID" Type="int" />
           <Property Name="UserID" Type="int" />
           <Property Name="ProductDetails" Type="nvarchar(max)" />
+          <Property Name="CreatedOn" Type="datetime" />
+          <Property Name="CreatedBy" Type="int" />
         </EntityType>
         <EntityType Name="AliExpressOrderItems">
           <Key>
@@ -198,12 +198,12 @@
           <Property Name="Size" Type="nvarchar" MaxLength="50" />
           <Property Name="Color" Type="nvarchar" MaxLength="50" />
           <Property Name="SourceWebsite" Type="nvarchar(max)" />
+          <Property Name="Unit" Type="nvarchar" MaxLength="50" />
           <Property Name="IsActive" Type="bit" />
           <Property Name="ItemCreatedBy" Type="int" />
           <Property Name="ItemCreatedWhen" Type="datetime" />
           <Property Name="ItemModifyBy" Type="int" />
           <Property Name="ItemModifyWhen" Type="datetime" />
-          <Property Name="Unit" Type="nchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="Roles">
           <Key>
@@ -240,6 +240,7 @@
           <Property Name="ParentProductID" Type="int" />
           <Property Name="SellerPrice" Type="float" />
           <Property Name="AliExpressProductID" Type="nvarchar" MaxLength="50" />
+          <Property Name="IsOnline" Type="bit" />
           <Property Name="ItemCreatedBy" Type="int" />
           <Property Name="ItemCreatedWhen" Type="datetime" />
           <Property Name="ItemModifyBy" Type="int" />
@@ -285,6 +286,7 @@
           <Property Name="CountryID" Type="int" />
           <Property Name="Password" Type="nvarchar" MaxLength="150" />
           <Property Name="AliExpressSellerID" Type="nvarchar" MaxLength="150" />
+          <Property Name="AliExpressAccessToken" Type="nvarchar(max)" />
           <Property Name="StripeCustomerID" Type="nvarchar" MaxLength="150" />
           <Property Name="IsActive" Type="bit" />
           <Property Name="ItemCreatedBy" Type="int" />
@@ -292,7 +294,6 @@
           <Property Name="ItemModifyBy" Type="int" />
           <Property Name="ItemModifyWhen" Type="datetime" />
           <Property Name="IsPolicyAccepted" Type="bit" />
-          <Property Name="AliExpressAccessToken" Type="nvarchar(max)" />
         </EntityType>
         <Association Name="FK_SellerPickedProductSKU_SellersPickedProducts">
           <End Role="SellersPickedProducts" Type="Self.SellersPickedProducts" Multiplicity="1" />
@@ -504,6 +505,7 @@
           <Property Name="ItemModifyWhen" Type="DateTime" Precision="3" />
           <Property Name="SellerPrice" Type="Double" />
           <NavigationProperty Name="SellerPickedProductSKUs" Relationship="DropshipDataModel.FK_SellerPickedProductSKU_SellersPickedProducts" FromRole="SellersPickedProduct" ToRole="SellerPickedProductSKU" />
+          <Property Name="IsOnline" Type="Boolean" />
         </EntityType>
         <EntityType Name="Subscription">
           <Key>
@@ -602,7 +604,7 @@
           <Property Name="ItemCreatedWhen" Type="DateTime" Precision="3" />
           <Property Name="ItemModifyBy" Type="Int32" />
           <Property Name="ItemModifyWhen" Type="DateTime" Precision="3" />
-          <Property Name="Unit" Type="String" MaxLength="50" FixedLength="true" Unicode="true" />
+          <Property Name="Unit" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="ApplicationLog">
           <Key>
@@ -812,6 +814,7 @@
           <EntitySetMapping Name="SellersPickedProducts">
             <EntityTypeMapping TypeName="DropshipDataModel.SellersPickedProduct">
               <MappingFragment StoreEntitySet="SellersPickedProducts">
+                <ScalarProperty Name="IsOnline" ColumnName="IsOnline" />
                 <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
                 <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
                 <ScalarProperty Name="ItemCreatedWhen" ColumnName="ItemCreatedWhen" />

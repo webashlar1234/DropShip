@@ -73,6 +73,11 @@ namespace DropshipPlatform.BLL.Services
                                         }
                                         else
                                         {
+                                            List<SellerPickedProductSKU> skulist =datacontext.SellerPickedProductSKUs.Where(x => x.SellerPickedId == obj.SellersPickedID).ToList();
+                                            foreach(var sku in skulist)
+                                            {
+                                                datacontext.SellerPickedProductSKUs.Remove(sku);
+                                            }
                                             datacontext.SellersPickedProducts.Remove(obj);
                                         }
                                     }
