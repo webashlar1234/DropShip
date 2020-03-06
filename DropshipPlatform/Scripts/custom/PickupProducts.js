@@ -37,7 +37,7 @@ var product = {
         var pickedProducts = [];
         var update_price = true;
         $.each(selectedItems, function (index, item) {
-            pickedProducts.push({ productId: item, price: $('.chkProducts[productid=' + item + ']').parents('tr').find('.SellerPriceInp').val(), SKUModels: [] });
+            pickedProducts.push({ productId: item, price: $('.parentChk[productid=' + item + ']').parents('tr').find('.updatedParentPrice').val(), SKUModels: [] });
             if ($(".innertable").find("tr.skuRow[data-for='" + item + "']")) {
                 $.each($(".innertable").find("tr.skuRow[data-for='" + item + "']"), function (i, data) {
                     pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: $(data).data("sku"), inventory: $(data).data("inventory"), price: $(data).find(".updatedPrice").val(), discount_price: 1 })

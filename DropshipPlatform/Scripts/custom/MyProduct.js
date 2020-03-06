@@ -53,12 +53,14 @@ $(document).ready(function () {
             }
 
             $('.txtEdit_' + parentProductID + '').prop("disabled", false);
+            $('.txtParent_' + parentProductID + '').prop("disabled", false);
             $('#btnSave').prop('disabled', false);
 
         }
         else {
             $('#chkAllProduct').prop('checked', false);
             $('.txtEdit_' + parentProductID + '').prop("disabled", true);
+            $('.txtParent_' + parentProductID + '').prop("disabled", true);
         }
     });
 
@@ -108,6 +110,7 @@ function FormatData(json) {
             "website": json[i].ParentProduct.SourceWebsite,
             "OriginalProductID": json[i].ParentProduct.OriginalProductID,
             "ParentProductID": json[i].ParentProduct.ParentProductID,
+            "SellerPrice": json[i].ParentProduct.SellerPrice,
             "check": "<label class='mt-checkbox'><input type='checkbox' class='parentChk' aliexpressproductid=" + json[i].ParentProduct.AliExpressProductID + " data-SKU=" + json[i].ParentProduct.OriginalProductID + " value='1'><span></span></label>",
             "IsOnline": json[i].ParentProduct.IsOnline ? '<a class="btn btn-info btn-sm" href="#" onclick=updateStatus("' + json[i].ParentProduct.AliExpressProductID + '","' + json[i].ParentProduct.IsOnline + '")>' + 'Online' + '</a>' : '<a class="btn btn-info btn-sm" href="#" onclick=updateStatus("' + json[i].ParentProduct.AliExpressProductID + '","' + json[i].ParentProduct.IsOnline + '")>' + 'Offline' + '</a>',
             "ChildProductList": json[i].ChildProductList,
@@ -206,6 +209,17 @@ function BindData(jsonProducts) {
         { "data": "shippingweight" },
         { "data": "manufacturerName" },
         { "data": "origin" },
+        {
+            "data": "SellerPrice", "render": function (data, type, full) {
+                if (!(full.ChildProductList.length > 0)) {
+                    full.cost > 0 ? full.cost : 0;
+                    return "<input name='updatedPrice' disabled dataSKU='" + full.OriginalProductID + "' type='number' value=" + full.SellerPrice + " class='updatedParentPrice txtParent_" + full.OriginalProductID + "'>";
+                }
+                else {
+                    return "";
+                }
+            }
+        },
         { "data": "check" },
         { "data": "IsOnline" }
 
@@ -226,7 +240,7 @@ function SavePickedProducts() {
     var updatedProducts = [];
     var update_price = true;
     $.each(selectedItems, function (index, item) {
-        updatedProducts.push({ aliExpressProductId: item, SKUModels: [] });
+        updatedProducts.push({ aliExpressProductId: item, price: $('.parentChk[aliexpressproductid=' + item + ']').parents('tr').find('.updatedParentPrice').val(), SKUModels: [] });
         if ($(".innertable").find("tr.skuRow[data-for='" + item + "']")) {
             $.each($(".innertable").find("tr.skuRow[data-for='" + item + "']"), function (i, data) {
                 if ($(data).find(".updatedPrice").data("isupdated")) {
