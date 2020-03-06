@@ -73,8 +73,8 @@ namespace DropshipPlatform.BLL.Services
                                         }
                                         else
                                         {
-                                            List<SellerPickedProductSKU> skulist =datacontext.SellerPickedProductSKUs.Where(x => x.SellerPickedId == obj.SellersPickedID).ToList();
-                                            foreach(var sku in skulist)
+                                            List<SellerPickedProductSKU> skulist = datacontext.SellerPickedProductSKUs.Where(x => x.SellerPickedId == obj.SellersPickedID).ToList();
+                                            foreach (var sku in skulist)
                                             {
                                                 datacontext.SellerPickedProductSKUs.Remove(sku);
                                             }
@@ -94,7 +94,7 @@ namespace DropshipPlatform.BLL.Services
             }
         }
 
-        public void RefreshAliExpressInventory()
+        public void RefreshAliExpressInventory1()
         {
             try
             {
@@ -127,9 +127,12 @@ namespace DropshipPlatform.BLL.Services
                             productList.Add(productObj);
                         }
 
-                        req.MutipleProductUpdateList_ = productList;
-                        AliexpressSolutionBatchProductInventoryUpdateResponse rsp = client.Execute(req, token.access_token);
-                        Console.WriteLine(rsp.Body);
+                        for (int i = 0; i < productList.Count; i = i + 1)
+                        {
+                            req.MutipleProductUpdateList_ = productList.Skip(i * 20).Take(20).ToList();
+                            AliexpressSolutionBatchProductInventoryUpdateResponse rsp = client.Execute(req, token.access_token);
+                            Console.WriteLine(rsp.Body);
+                        }
                     }
 
                 }
@@ -138,6 +141,82 @@ namespace DropshipPlatform.BLL.Services
             {
                 logger.Error(ex.ToString());
             }
+        }
+
+        public string RefreshAliExpressInventory()
+        {
+            string result = String.Empty;
+            try
+            {
+                ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret, "json");
+                AliexpressSolutionFeedSubmitRequest req = new AliexpressSolutionFeedSubmitRequest();
+                req.OperationType = "PRODUCT_STOCKS_UPDATE";
+                List<AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain> list2 = new List<AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain>();
+                AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain obj3 = new AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain();
+                List<string> skus = new List<string>();
+                using (DropshipDataEntities datacontext = new DropshipDataEntities())
+                {
+                    List<User> users = datacontext.Users.Where(x => x.IsActive == true && x.AliExpressSellerID != null).ToList();
+                    foreach (User user in users)
+                    {
+                        List<SellersPickedProduct> sellerProducts = datacontext.SellersPickedProducts.Where(x => x.UserID == user.UserID && x.AliExpressProductID != null).ToList();
+                        foreach (SellersPickedProduct scproductModel in sellerProducts)
+                        {
+                            scproductModel productObj = new scproductModel();
+                            productObj.SKUModels = (from pp in datacontext.SellerPickedProductSKUs.Where(x => x.SellerPickedId == scproductModel.SellersPickedID)
+                                                    from p in datacontext.Products.Where(x => x.OriginalProductID == pp.SKUCode)
+                                                    select new { OriginalProductID = p.OriginalProductID, Inventory = p.Inventory }
+                                                                ).ToList().Select(x => new ProductSKUModel
+                                                                {
+                                                                    skuCode = x.OriginalProductID,
+                                                                    inventory = x.Inventory != null ? Int32.Parse(x.Inventory) : 0
+                                                                }).ToList();
+                            foreach (ProductSKUModel productSKUModel in productObj.SKUModels)
+                            {
+                                skus.Add("{\"sku_code\": \"" + productSKUModel.skuCode + "\",\"inventory\": " + productSKUModel.inventory + "}");
+                            }
+                            obj3.ItemContentId = Guid.NewGuid().ToString();
+                            obj3.ItemContent = "{\"aliexpress_product_id\":" + scproductModel.AliExpressProductID + ",\"multiple_sku_update_list\":[" + string.Join(",", skus.ToArray()) + "]}";
+
+                            list2.Add(obj3);
+                            req.ItemList_ = list2;
+
+
+                            if (SessionManager.GetAccessToken().access_token != null)
+                            {
+                                AliexpressSolutionFeedSubmitResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
+                                AliexpressSolutionFeedQueryRequest fqReq = new AliexpressSolutionFeedQueryRequest();
+                                fqReq.JobId = rsp.JobId;
+                                AliexpressSolutionFeedQueryResponse fqRsp = client.Execute(fqReq, SessionManager.GetAccessToken().access_token);
+                                result = JsonConvert.SerializeObject(fqRsp.ResultList);
+                                AliExpressJobLogService _aliExpressJobLogService = new AliExpressJobLogService();
+                                _aliExpressJobLogService.AddAliExpressJobLog(new AliExpressJobLog()
+                                {
+                                    JobId = rsp.JobId,
+                                    ContentId = obj3.ItemContentId,
+                                    SuccessItemCount = fqRsp.SuccessItemCount,
+                                    UserID = user.UserID,
+                                    ProductID = scproductModel.ParentProductID,
+                                    ProductDetails = obj3.ItemContent,
+                                    Result = result
+                                });
+
+                                List<AliexpressSolutionFeedResponseModel> solutionResponse = JsonConvert.DeserializeObject<List<AliexpressSolutionFeedResponseModel>>(result);
+                                if (solutionResponse != null && solutionResponse.Count > 0)
+                                {
+                                    ItemExecutionResultModel itemModel = JsonConvert.DeserializeObject<ItemExecutionResultModel>(solutionResponse[0].ItemExecutionResult);
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Info(ex.ToString());
+            }
+            return result;
         }
     }
 }
