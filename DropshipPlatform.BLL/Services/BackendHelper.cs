@@ -151,17 +151,19 @@ namespace DropshipPlatform.BLL.Services
                 ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret, "json");
                 AliexpressSolutionFeedSubmitRequest req = new AliexpressSolutionFeedSubmitRequest();
                 req.OperationType = "PRODUCT_STOCKS_UPDATE";
-                List<AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain> list2 = new List<AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain>();
-                AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain obj3 = new AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain();
+                
+                
                 List<string> skus = new List<string>();
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
                     List<User> users = datacontext.Users.Where(x => x.IsActive == true && x.AliExpressSellerID != null).ToList();
                     foreach (User user in users)
                     {
+                        List<AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain> list2 = new List<AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain>();
                         List<SellersPickedProduct> sellerProducts = datacontext.SellersPickedProducts.Where(x => x.UserID == user.UserID && x.AliExpressProductID != null).ToList();
                         foreach (SellersPickedProduct scproductModel in sellerProducts)
                         {
+                            AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain obj3 = new AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain();
                             scproductModel productObj = new scproductModel();
                             productObj.SKUModels = (from pp in datacontext.SellerPickedProductSKUs.Where(x => x.SellerPickedId == scproductModel.SellersPickedID)
                                                     from p in datacontext.Products.Where(x => x.OriginalProductID == pp.SKUCode)
@@ -179,35 +181,34 @@ namespace DropshipPlatform.BLL.Services
                             obj3.ItemContent = "{\"aliexpress_product_id\":" + scproductModel.AliExpressProductID + ",\"multiple_sku_update_list\":[" + string.Join(",", skus.ToArray()) + "]}";
 
                             list2.Add(obj3);
-                            req.ItemList_ = list2;
+                        }
+                        req.ItemList_ = list2;
+                        
+                        if (SessionManager.GetAccessToken().access_token != null)
+                        {
+                            AliexpressSolutionFeedSubmitResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
+                            AliexpressSolutionFeedQueryRequest fqReq = new AliexpressSolutionFeedQueryRequest();
+                            fqReq.JobId = rsp.JobId;
+                            AliexpressSolutionFeedQueryResponse fqRsp = client.Execute(fqReq, SessionManager.GetAccessToken().access_token);
+                            result = JsonConvert.SerializeObject(fqRsp.ResultList);
+                            AliExpressJobLogService _aliExpressJobLogService = new AliExpressJobLogService();
+                            //_aliExpressJobLogService.AddAliExpressJobLog(new AliExpressJobLog()
+                            //{
+                            //    JobId = rsp.JobId,
+                            //    ContentId = obj3.ItemContentId,
+                            //    SuccessItemCount = fqRsp.SuccessItemCount,
+                            //    UserID = user.UserID,
+                            //    ProductID = null,
+                            //    ProductDetails = Newtonsoft.Json.JsonConvert.SerializeObject(list2),
+                            //    Result = result
+                            //});
 
-
-                            if (SessionManager.GetAccessToken().access_token != null)
+                            List<AliexpressSolutionFeedResponseModel> solutionResponse = JsonConvert.DeserializeObject<List<AliexpressSolutionFeedResponseModel>>(result);
+                            if (solutionResponse != null && solutionResponse.Count > 0)
                             {
-                                AliexpressSolutionFeedSubmitResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
-                                AliexpressSolutionFeedQueryRequest fqReq = new AliexpressSolutionFeedQueryRequest();
-                                fqReq.JobId = rsp.JobId;
-                                AliexpressSolutionFeedQueryResponse fqRsp = client.Execute(fqReq, SessionManager.GetAccessToken().access_token);
-                                result = JsonConvert.SerializeObject(fqRsp.ResultList);
-                                AliExpressJobLogService _aliExpressJobLogService = new AliExpressJobLogService();
-                                _aliExpressJobLogService.AddAliExpressJobLog(new AliExpressJobLog()
-                                {
-                                    JobId = rsp.JobId,
-                                    ContentId = obj3.ItemContentId,
-                                    SuccessItemCount = fqRsp.SuccessItemCount,
-                                    UserID = user.UserID,
-                                    ProductID = scproductModel.ParentProductID,
-                                    ProductDetails = obj3.ItemContent,
-                                    Result = result
-                                });
-
-                                List<AliexpressSolutionFeedResponseModel> solutionResponse = JsonConvert.DeserializeObject<List<AliexpressSolutionFeedResponseModel>>(result);
-                                if (solutionResponse != null && solutionResponse.Count > 0)
-                                {
-                                    ItemExecutionResultModel itemModel = JsonConvert.DeserializeObject<ItemExecutionResultModel>(solutionResponse[0].ItemExecutionResult);
-                                }
-
+                                ItemExecutionResultModel itemModel = JsonConvert.DeserializeObject<ItemExecutionResultModel>(solutionResponse[0].ItemExecutionResult);
                             }
+
                         }
                     }
                 }
