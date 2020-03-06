@@ -36,31 +36,35 @@ namespace DropshipPlatform.Controllers
             int pageSize = length != null ? Convert.ToInt32(length) : 0;
             int skip = start != null ? Convert.ToInt32(start) : 0;
             ResultData resultList = _orderService.getAllOrders();
-            //List<OrderModel> retvalue = resultList;
             OrderData orderData = new OrderData();
             List<OrderData> retvalue = new List<OrderData>();
-            if (resultList.target_list != null)
+            if (resultList.TargetList != null)
             {
-                foreach (var item in resultList.target_list[0].order_dto)
+                foreach (var item in resultList.TargetList)
                 {
-                    orderData.AliExpressOrderNumber = Convert.ToInt32(item.order_id);
-                    orderData.AliExpressProductId = item.product_list.order_product_dto[0].product_id;
-                    List<Product> productData = _orderService.GetProductById(orderData.AliExpressProductId.ToString());
+                    orderData.AliExpressOrderNumber = item.OrderId.ToString();
+                    orderData.AliExpressProductId = item.ProductList[0].SkuCode;
+                    List<Product> productData = _orderService.GetProductById(orderData.AliExpressProductId);
                     orderData.OrignalProductId = productData[0].OriginalProductID;
-                    orderData.OrignalProductLink = productData[0].SourceWebsite;
-                    orderData.ProductTitle = item.product_list.order_product_dto[0].product_name;
-                    orderData.OrderAmount = item.product_list.order_product_dto[0].total_product_amount.amount;
+                    orderData.OrignalProductLink = "https://www.abc.com/xyz";
+                    //orderData.OrignalProductLink = productData[0].SourceWebsite;
+                    orderData.ProductTitle = item.ProductList[0].ProductName;
+                    orderData.OrderAmount = item.ProductList[0].TotalProductAmount.Amount;
                     orderData.DeleveryCountry = null;
                     orderData.ShippingWeight = productData[0].ShippingWeight;
                     orderData.OrderStatus = "New Order";
                     orderData.PaymentStatus = "UnPaid";
-                    orderData.SellerID = item.seller_login_id;
+                    orderData.SellerID = item.SellerLoginId;
                     orderData.SellerEmail = null;
+                    orderData.productExist = false;
+                    if (productData.Count > 0)
+                    {
+                        orderData.productExist = true;
+                    }
                     retvalue.Add(orderData);
                 }
             }
             var data = new List<OrderData>();
-            //var data = new List<OrderModel>();
             if (pageSize != -1)
             {
                 data = retvalue.Skip(skip).Take(pageSize).ToList();

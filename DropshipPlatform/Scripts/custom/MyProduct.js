@@ -412,7 +412,6 @@ $.validator.addMethod('lessThanEqual', function (value, element, param) {
 
 
 function updateStatus(AliExpressProductID, Status) {
-    debugger
     ShowLoader();
     $.ajax({
         type: "POST",
