@@ -591,14 +591,14 @@ namespace DropshipPlatform.BLL.Services
                                            parent_SKUCOde = p.OriginalProductID
                                         }).Select(x => x.parent_SKUCOde).FirstOrDefault();
 
-                            skus.Add("{\"sku_code\": \"" + parent_SKUCOde + "\",\"price\": " + scproductModel.price + "}");
+                            skus.Add("{\"sku_code\": \"" + parent_SKUCOde + "\",\"price\": " +  (100000 + scproductModel.price) + "}");
                         }
                     }
                     else
                     {
                         foreach (ProductSKUModel productSKUModel in scproductModel.SKUModels)
                         {
-                            skus.Add("{\"sku_code\": \"" + productSKUModel.skuCode + "\",\"price\": " + productSKUModel.price + "}");
+                            skus.Add("{\"sku_code\": \"" + productSKUModel.skuCode + "\",\"price\": " + (100000 + productSKUModel.price) + "}");
                         }
                     }
                     
