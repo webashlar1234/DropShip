@@ -33,15 +33,16 @@ namespace DropshipPlatform.Controllers
             var draw = Request.Form.GetValues("draw") != null ? Request.Form.GetValues("draw").FirstOrDefault() : null;
             var start = Request.Form.GetValues("start") != null ? Request.Form.GetValues("start").FirstOrDefault() : null;
             var length = Request.Form.GetValues("length") != null ? Request.Form.GetValues("length").FirstOrDefault() : null;
+            string search = Request.Form.GetValues("search[value]").FirstOrDefault();
             int pageSize = length != null ? Convert.ToInt32(length) : 0;
             int skip = start != null ? Convert.ToInt32(start) : 0;
             ResultData resultList = _orderService.getAllOrders();
-            OrderData orderData = new OrderData();
             List<OrderData> retvalue = new List<OrderData>();
             if (resultList.TargetList != null)
             {
                 foreach (var item in resultList.TargetList)
                 {
+                    OrderData orderData = new OrderData();
                     orderData.AliExpressOrderNumber = item.OrderId.ToString();
                     orderData.AliExpressProductId = item.ProductList[0].SkuCode;
                     List<Product> productData = _orderService.GetProductById(orderData.AliExpressProductId);
@@ -61,8 +62,18 @@ namespace DropshipPlatform.Controllers
                     {
                         orderData.productExist = true;
                     }
+                    orderData.LogisticName = item.ProductList[0].LogisticsServiceName;
+                    orderData.LogisticType = item.ProductList[0].LogisticsType;
                     retvalue.Add(orderData);
                 }
+            }
+            if (!string.IsNullOrEmpty(search))
+            {
+                retvalue = retvalue.Where(x => x.AliExpressOrderNumber != null && x.AliExpressOrderNumber.ToLower().Contains(search.ToLower()) ||
+                x.AliExpressProductId != null && x.AliExpressProductId.ToString().ToLower().Contains(search.ToLower()) ||
+                x.OrignalProductId != null && x.OrignalProductId.ToString().ToLower().Contains(search.ToLower()) ||
+                x.OrignalProductLink != null && x.OrignalProductLink.ToString().ToLower().Contains(search.ToLower())
+                ).ToList();
             }
             var data = new List<OrderData>();
             if (pageSize != -1)

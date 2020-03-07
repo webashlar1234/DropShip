@@ -137,7 +137,7 @@ var order = {
                     width: "10%",
                     "render": function (data, type, row) {
                         if (data) {
-                            return '<a class="btn btn-info btn-sm" href="#" onclick=updateStatus("' + row.OrignalProductLink + '",this,"' + row.AliExpressOrderNumber + '")>' + 'Buy Now' + '</a>';
+                            return '<a class="btn btn-info btn-sm" href="#" onclick=updateStatus("' + row.OrignalProductLink + '",this,"' + row.AliExpressOrderNumber + '","' + row.LogisticType + '")>' + 'Buy Now' + '</a>';
                         }
                     }
                 },
@@ -168,7 +168,7 @@ $(document).ready(function () {
     });
 });
 
-function updateStatus(productLink,data,OrderId) {
+function updateStatus(productLink, data, OrderId, LogisticType) {
     if (data.text == "Buy Now") {
         data.text = "Ship Now";
         data.outerHTML += '<input class="form-control tracking" name="txtTracking" type="text" style="margin-top:5px">'
@@ -181,7 +181,7 @@ function updateStatus(productLink,data,OrderId) {
             url: "/Order/trackingOrder",
             dataType: "json",
             async: false,
-            data: { AliExpressOrderNumber: OrderId, OrignalProductLink: productLink },
+            data: { AliExpressOrderNumber: OrderId, OrignalProductLink: productLink, LogisticType: LogisticType},
             success: function (data) {
                 if (data) {
                     //SuccessMessage("Product Status Updated successfully");

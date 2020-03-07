@@ -87,19 +87,23 @@ namespace DropshipPlatform.BLL.Services
                     LogisticsNo = rsp1.ResultList[0].LogisticsServiceId;
                 }
 
-                //AliexpressSolutionOrderInfoGetRequest req2 = new AliexpressSolutionOrderInfoGetRequest();
-                //AliexpressSolutionOrderInfoGetRequest.OrderDetailQueryDomain obj1 = new AliexpressSolutionOrderInfoGetRequest.OrderDetailQueryDomain();
+                AliexpressSolutionOrderInfoGetRequest req2 = new AliexpressSolutionOrderInfoGetRequest();
+                AliexpressSolutionOrderInfoGetRequest.OrderDetailQueryDomain obj1 = new AliexpressSolutionOrderInfoGetRequest.OrderDetailQueryDomain();
                 //obj1.ExtInfoBitFlag = 11111L;
-                //obj1.OrderId = Convert.ToInt64(orderData.AliExpressOrderNumber);
-                //req2.Param1_ = obj1;
-                //AliexpressSolutionOrderInfoGetResponse rsp2 = client.Execute(req2, SessionManager.GetAccessToken().access_token);
+                obj1.OrderId = Convert.ToInt64(orderData.AliExpressOrderNumber);
+                req2.Param1_ = obj1;
+                AliexpressSolutionOrderInfoGetResponse rsp2 = client.Execute(req2, SessionManager.GetAccessToken().access_token);
+
+                AliexpressLogisticsRedefiningListlogisticsserviceRequest req3 = new AliexpressLogisticsRedefiningListlogisticsserviceRequest();
+                AliexpressLogisticsRedefiningListlogisticsserviceResponse rsp3 = client.Execute(req3, SessionManager.GetAccessToken().access_token);
 
                 AliexpressSolutionOrderFulfillRequest req = new AliexpressSolutionOrderFulfillRequest();
-                req.ServiceName = "CAINIAO_G2G_DIRECTSHIP";
+                req.ServiceName = orderData.LogisticType;
                 req.TrackingWebsite = orderData.OrignalProductLink;
                 req.OutRef = orderData.AliExpressOrderNumber;
                 req.SendType = "part";
                 req.Description = "memo";
+                //req.LogisticsNo = "AEFP123456RU2";
                 req.LogisticsNo = LogisticsNo;
                 AliexpressSolutionOrderFulfillResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
                 var data = rsp;
