@@ -44,8 +44,29 @@ namespace DropshipPlatform.BLL.Models
         public int inventory { get; set; }
         public double price { get; set; }
         public double discount_price { get; set; }
+    }
 
-
+    public class custom_Size
+    {
+        public string value { get; set; }
+    }
+    public class custom_color
+    {
+        public string alias { get; set; }
+        public string value { get; set; }
+        public string sku_image_url { get; set; }
+    }
+    public class ali_SKUModel
+    {
+        public string inventory { get; set; }
+        public double price { get; set; }
+        public string sku_code { get; set; }
+        public custom_sku_attributes sku_attributes { get; set; }
+    }
+    public class custom_sku_attributes
+    {
+        public custom_Size Size { get; set; }
+        public custom_color Color { get; set; }
     }
 
 }

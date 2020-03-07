@@ -561,7 +561,7 @@ namespace DropshipPlatform.BLL.Models
     public class Properties6
     {
         [JsonProperty("Brand Name")]
-        public BrandName BrandName { get; set; }
+        public AliBrandName BrandName { get; set; }
 
         [JsonProperty("Material")]
         public Material material { get; set; }
@@ -571,6 +571,13 @@ namespace DropshipPlatform.BLL.Models
 
         [JsonProperty("Collar")]
         public Collar collar { get; set; }
+    }
+    public class AliBrandName
+    {
+        public string title { get; set; }
+        public string type { get; set; }
+        public List<string> required { get; set; }
+        public Properties7 properties { get; set; }
     }
 
     public class AttributeName
@@ -952,7 +959,7 @@ namespace DropshipPlatform.BLL.Models
         public Locale3 locale { get; set; }
         public ProductUnitsType product_units_type { get; set; }
         public ImageUrlList image_url_list { get; set; }
-        public CategoryAttributes category_attributes { get; set; }
+        public AliCategoryAttributes category_attributes { get; set; }
         public UserDefinedAttributeList user_defined_attribute_list { get; set; }
         public AliSkuInfoList sku_info_list { get; set; }
         public InventoryDeductionStrategy inventory_deduction_strategy { get; set; }
@@ -966,6 +973,13 @@ namespace DropshipPlatform.BLL.Models
         public ProductGroupId product_group_id { get; set; }
         public SizeChartId size_chart_id { get; set; }
         public MultiCountryPriceConfiguration multi_country_price_configuration { get; set; }
+    }
+    public class AliCategoryAttributes
+    {
+        public string title { get; set; }
+        public string type { get; set; }
+        public List<object> required { get; set; }
+        public Properties6 properties { get; set; }
     }
     public class AliSkuInfoList
     {

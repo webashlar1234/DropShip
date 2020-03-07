@@ -55,30 +55,33 @@ namespace DropshipPlatform.BLL.Services
                             item.Result = JsonConvert.SerializeObject(fqRsp.ResultList);
                             datacontext.Entry(item).State = System.Data.Entity.EntityState.Modified;
 
-                            if (fqRsp.ResultList.Count > 0)
+                            if(fqRsp.ResultList != null)
                             {
-                                var result = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(fqRsp.ResultList.FirstOrDefault().ItemExecutionResult);
-
-                                string productOriginalId = item.ProductID.ToString();
-                                Product prodObj = datacontext.Products.Where(x => x.OriginalProductID == productOriginalId).FirstOrDefault();
-                                if (prodObj != null)
+                                if (fqRsp.ResultList.Count > 0)
                                 {
-                                    SellersPickedProduct obj = datacontext.SellersPickedProducts.Where(x => x.UserID == userid && x.ParentProductID == prodObj.ProductID).FirstOrDefault();
-                                    if (obj != null)
+                                    var result = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(fqRsp.ResultList.FirstOrDefault().ItemExecutionResult);
+
+                                    string productOriginalId = item.ProductID.ToString();
+                                    Product prodObj = datacontext.Products.Where(x => x.OriginalProductID == productOriginalId).FirstOrDefault();
+                                    if (prodObj != null)
                                     {
-                                        if (result.success == true)
+                                        SellersPickedProduct obj = datacontext.SellersPickedProducts.Where(x => x.UserID == userid && x.ParentProductID == prodObj.ProductID).FirstOrDefault();
+                                        if (obj != null)
                                         {
-                                            obj.AliExpressProductID = result.productId;
-                                            datacontext.Entry(obj).State = System.Data.Entity.EntityState.Modified;
-                                        }
-                                        else
-                                        {
-                                            List<SellerPickedProductSKU> skulist = datacontext.SellerPickedProductSKUs.Where(x => x.SellerPickedId == obj.SellersPickedID).ToList();
-                                            foreach (var sku in skulist)
+                                            if (result.success == true)
                                             {
-                                                datacontext.SellerPickedProductSKUs.Remove(sku);
+                                                obj.AliExpressProductID = result.productId;
+                                                datacontext.Entry(obj).State = System.Data.Entity.EntityState.Modified;
                                             }
-                                            datacontext.SellersPickedProducts.Remove(obj);
+                                            else
+                                            {
+                                                List<SellerPickedProductSKU> skulist = datacontext.SellerPickedProductSKUs.Where(x => x.SellerPickedId == obj.SellersPickedID).ToList();
+                                                foreach (var sku in skulist)
+                                                {
+                                                    datacontext.SellerPickedProductSKUs.Remove(sku);
+                                                }
+                                                datacontext.SellersPickedProducts.Remove(obj);
+                                            }
                                         }
                                     }
                                 }

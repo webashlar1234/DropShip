@@ -747,30 +747,59 @@ namespace DropshipPlatform.BLL.Services
             using (DropshipDataEntities datacontext = new DropshipDataEntities())
             {
                 Product dbProduct = datacontext.Products.Where(x => x.OriginalProductID == scproduct.productId.ToString()).FirstOrDefault();
-
                 string CategorySchema = GetSchemaByCategory(AliCategoryID);
                 CategorySchemaModel categorySchemaModel = JsonConvert.DeserializeObject<CategorySchemaModel>(CategorySchema);
                 List<PropertyModel> colors = new List<PropertyModel>();
                 List<PropertyModel> sizes = new List<PropertyModel>();
+                List<PropertyModel> brands = new List<PropertyModel>();
+                List<PropertyModel> units = new List<PropertyModel>();
                 if (categorySchemaModel != null)
                 {
-                    foreach (OneOf19 item in categorySchemaModel.properties.sku_info_list.items.properties.sku_attributes.properties.Color.properties.value.oneOf)
+                    if(categorySchemaModel.properties.sku_info_list.items.properties.sku_attributes.properties.Color != null)
                     {
-                        PropertyModel propertyModel = new PropertyModel();
-                        propertyModel.PropertyID = item.@const;
-                        propertyModel.PropertyName = item.title;
-                        colors.Add(propertyModel);
+                        foreach (OneOf19 item in categorySchemaModel.properties.sku_info_list.items.properties.sku_attributes.properties.Color.properties.value.oneOf)
+                        {
+                            PropertyModel propertyModel = new PropertyModel();
+                            propertyModel.PropertyID = item.@const;
+                            propertyModel.PropertyName = item.title;
+                            colors.Add(propertyModel);
+                        }
                     }
                     
-                    foreach (OneOf18 item in categorySchemaModel.properties.sku_info_list.items.properties.sku_attributes.properties.Size.properties.value.oneOf)
+                    if (categorySchemaModel.properties.sku_info_list.items.properties.sku_attributes.properties.Size != null)
                     {
-                        PropertyModel propertyModel = new PropertyModel();
-                        propertyModel.PropertyID = item.@const;
-                        propertyModel.PropertyName = item.title;
-                        sizes.Add(propertyModel);
+                        foreach (OneOf18 item in categorySchemaModel.properties.sku_info_list.items.properties.sku_attributes.properties.Size.properties.value.oneOf)
+                        {
+                            PropertyModel propertyModel = new PropertyModel();
+                            propertyModel.PropertyID = item.@const;
+                            propertyModel.PropertyName = item.title;
+                            sizes.Add(propertyModel);
+                        }
+                    }
+                    
+                    if (categorySchemaModel.properties.category_attributes.properties.BrandName != null)
+                    {
+                        foreach (OneOf7 item in categorySchemaModel.properties.category_attributes.properties.BrandName.properties.value.oneOf)
+                        {
+                            PropertyModel propertyModel = new PropertyModel();
+                            propertyModel.PropertyID = item.@const;
+                            propertyModel.PropertyName = item.title;
+                            brands.Add(propertyModel);
+                        }
+                    }
+                    
+                    if (categorySchemaModel.properties.product_units_type != null)
+                    {
+                        foreach (OneOf6 item in categorySchemaModel.properties.product_units_type.oneOf)
+                        {
+                            PropertyModel propertyModel = new PropertyModel();
+                            propertyModel.PropertyID = item.@const;
+                            propertyModel.PropertyName = item.title;
+                            units.Add(propertyModel);
+                        }
                     }
                 }
-                
+
 
                 if (dbProduct != null)
                 {
@@ -779,8 +808,17 @@ namespace DropshipPlatform.BLL.Services
                     {
                         string Size = sizes.Where(x => x.PropertyName == dbProduct.Size).Select(x => x.PropertyID).FirstOrDefault();
                         string color = colors.Where(x => x.PropertyName.ToLower() == dbProduct.Color.ToLower()).Select(x => x.PropertyID).FirstOrDefault();
+                        
+                        ali_SKUModel ali_SKUModel = new ali_SKUModel();
+                        ali_SKUModel.inventory = dbProduct.Inventory;
+                        ali_SKUModel.price = scproduct.price + 100000;
+                        ali_SKUModel.sku_code = dbProduct.OriginalProductID;
+                        ali_SKUModel.sku_attributes = getSKUattrStr(categorySchemaModel, Size, color, StaticValues.sampleImage);
+
+                        string jsonstr = JsonConvert.SerializeObject(ali_SKUModel,Newtonsoft.Json.Formatting.None,new JsonSerializerSettings{NullValueHandling = NullValueHandling.Ignore});
+                        skuStr.Add(jsonstr);
                         //only required
-                        skuStr.Add("{\"inventory\":" + dbProduct.Inventory + ",\"price\":" + scproduct.price + ",\"sku_attributes\":{\"Color\":{\"alias\":\"32\",\"sku_image_url\":\"" + StaticValues.sampleImage + "\",\"value\":\"" + color + "\"}},\"sku_code\":\"" + dbProduct.OriginalProductID + "\"}");
+                        //skuStr.Add("{\"inventory\":" + dbProduct.Inventory + ",\"price\":" + scproduct.price + ",\"sku_attributes\":{\"Color\":{\"alias\":\"32\",\"sku_image_url\":\"" + StaticValues.sampleImage + "\",\"value\":\"" + color + "\"}},\"sku_code\":\"" + dbProduct.OriginalProductID + "\"}");
                         //all
                         //skuStr.Add("{\"inventory\":" + dbProduct.Inventory + ",\"price\":" + scproduct.price + ",\"sku_attributes\":{\"Size\":{\"value\":\"" + Size + "\"},\"Color\":{\"alias\":\"32\",\"sku_image_url\":\"" + StaticValues.sampleImage + "\",\"value\":\"" + color + "\"}},\"sku_code\":\"" + dbProduct.OriginalProductID + "\"}");
                     }
@@ -791,14 +829,27 @@ namespace DropshipPlatform.BLL.Services
                             Product originalSKU = datacontext.Products.Where(x => x.OriginalProductID == productSKU.skuCode).FirstOrDefault();
                             string Size = sizes.Where(x => x.PropertyName == originalSKU.Size).Select(x => x.PropertyID).FirstOrDefault();
                             string color = colors.Where(x => x.PropertyName == originalSKU.Color).Select(x => x.PropertyID).FirstOrDefault();
+
+                            ali_SKUModel ali_SKUModel = new ali_SKUModel();
+                            ali_SKUModel.inventory = productSKU.inventory.ToString();
+                            ali_SKUModel.price = productSKU.price + 100000;
+                            ali_SKUModel.sku_code = productSKU.skuCode;
+                            ali_SKUModel.sku_attributes = getSKUattrStr(categorySchemaModel, Size, color, StaticValues.sampleImage);
+
+                            string jsonstr = JsonConvert.SerializeObject(ali_SKUModel,Newtonsoft.Json.Formatting.None,new JsonSerializerSettings{NullValueHandling = NullValueHandling.Ignore});
+                            skuStr.Add(jsonstr);
+
                             //only requred
-                            skuStr.Add("{\"inventory\":" + productSKU.inventory + ",\"price\":" + (productSKU.price + 100000) + ",\"sku_attributes\":{\"Color\":{\"alias\":\"32\",\"sku_image_url\":\"" + StaticValues.sampleImage + "\",\"value\":\"" + color + "\"}},\"sku_code\":\"" + productSKU.skuCode + "\"}");
+                            //skuStr.Add("{\"inventory\":" + productSKU.inventory + ",\"price\":" + (productSKU.price + 100000) + ",\"sku_attributes\":{\"Color\":{\"alias\":\"32\",\"sku_image_url\":\"" + StaticValues.sampleImage + "\",\"value\":\"" + color + "\"}},\"sku_code\":\"" + productSKU.skuCode + "\"}");
                             //all
                             //skuStr.Add("{\"discount_price\":" + productSKU.discount_price + ",\"inventory\":" + productSKU.inventory + ",\"price\":" + productSKU.price + ",\"sku_attributes\":{\"Size\":{\"value\":\"" + Size + "\"},\"Color\":{\"alias\":\"32\",\"sku_image_url\":\"" + StaticValues.sampleImage + "\",\"value\":\"" + color + "\"}},\"sku_code\":\"" + productSKU.skuCode + "\"}");
                         }
                     }
+                    
+                    string brandname = brands.Where(x => x.PropertyName == dbProduct.Brand).Select(x => x.PropertyID).FirstOrDefault();
+                    string unit = units.Where(x => x.PropertyName == dbProduct.Unit).Select(x => x.PropertyID).FirstOrDefault();
                     //only requred
-                    result = "{\"category_id\":" + AliCategoryID + ",\"description_multi_language_list\":[{\"locale\":\"en_US\",\"module_list\":[{\"html\":{\"content\":\"" + dbProduct.Description + "\"},\"type\":\"html\"}]}],\"image_url_list\":[\"" + StaticValues.sampleImage + "\"],\"inventory_deduction_strategy\":\"place_order_withhold\",\"locale\":\"en_US\",\"package_height\":234,\"package_length\":234,\"package_weight\":234.00,\"package_width\":234,\"product_units_type\":\"100000015\",\"service_template_id\":\"0\",\"shipping_preparation_time\":20,\"shipping_template_id\":\"1013213014\",\"sku_info_list\":[" + string.Join(",", skuStr) + "],\"title_multi_language_list\":[{\"locale\":\"en_US\",\"title\":\"" + dbProduct.Title +" " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "\"}]}";
+                    result = "{\"category_id\":" + AliCategoryID + ",\"brand_name\":" + (brandname ?? "201470514") + ",\"description_multi_language_list\":[{\"locale\":\"en_US\",\"module_list\":[{\"html\":{\"content\":\"" + dbProduct.Description + "\"},\"type\":\"html\"}]}],\"image_url_list\":[\"" + StaticValues.sampleImage + "\"],\"inventory_deduction_strategy\":\"place_order_withhold\",\"locale\":\"en_US\",\"package_height\":234,\"package_length\":234,\"package_weight\":234.00,\"package_width\":234,\"product_units_type\":\""+ (unit ?? "100000015") + "\",\"service_template_id\":\"0\",\"shipping_preparation_time\":20,\"shipping_template_id\":\"1013213014\",\"sku_info_list\":[" + string.Join(",", skuStr) + "],\"title_multi_language_list\":[{\"locale\":\"en_US\",\"title\":\"" + dbProduct.Title +" " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "\"}]}";
                     //all
                     //result = "{\"category_attributes\":{\"Brand Name\":{\"value\":\"201470514\"},\"Material\":{\"value\":[\"47\",\"49\"]}},\"category_id\":" + AliCategoryID + ",\"description_multi_language_list\":[{\"locale\":\"en_US\",\"module_list\":[{\"html\":{\"content\":\"" + dbProduct.Description + "\"},\"type\":\"html\"}]}],\"image_url_list\":[\"" + StaticValues.sampleImage + "\"],\"inventory_deduction_strategy\":\"place_order_withhold\",\"locale\":\"en_US\",\"package_height\":234,\"package_length\":234,\"package_weight\":234.00,\"package_width\":234,\"product_units_type\":\"100000015\",\"service_template_id\":\"0\",\"shipping_preparation_time\":20,\"shipping_template_id\":\"1013213014\",\"sku_info_list\":[" + string.Join(",", skuStr) + "],\"title_multi_language_list\":[{\"locale\":\"en_US\",\"title\":\"" + dbProduct.Title + "\"}]}";
                 }
@@ -806,6 +857,28 @@ namespace DropshipPlatform.BLL.Services
             return result;
         }
 
+        public custom_sku_attributes getSKUattrStr(CategorySchemaModel categorySchemaModel, string size, string color, string imgURL)
+        {
+            string skuStr = string.Empty;
+
+            custom_sku_attributes sku_attributes_obj = new custom_sku_attributes();
+            if (categorySchemaModel.properties.sku_info_list.items.properties.sku_attributes.properties.Size != null && size != null)
+            {
+                sku_attributes_obj.Size = new custom_Size();
+                sku_attributes_obj.Size.value = size;
+            }
+            if (categorySchemaModel.properties.sku_info_list.items.properties.sku_attributes.properties.Color != null && color != null)
+            {
+                sku_attributes_obj.Color = new custom_color();
+                sku_attributes_obj.Color.value = color;
+                sku_attributes_obj.Color.sku_image_url = imgURL;
+            }
+            if(sku_attributes_obj.Size == null && sku_attributes_obj.Color == null)
+            {
+                sku_attributes_obj = null;
+            }
+            return sku_attributes_obj;
+        }
         public string checkResultByJobId(long jobid)
         {
             ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret, "json");
