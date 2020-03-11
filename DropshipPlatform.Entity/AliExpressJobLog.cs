@@ -19,10 +19,10 @@ namespace DropshipPlatform.Entity
         public Nullable<long> SuccessItemCount { get; set; }
         public string ContentId { get; set; }
         public string Result { get; set; }
-        public Nullable<System.DateTime> CreatedOn { get; set; }
-        public Nullable<int> CreatedBy { get; set; }
-        public Nullable<int> ProductID { get; set; }
+        public string ProductID { get; set; }
         public Nullable<int> UserID { get; set; }
         public string ProductDetails { get; set; }
+        public Nullable<System.DateTime> CreatedOn { get; set; }
+        public Nullable<int> CreatedBy { get; set; }
     }
 }

@@ -26,7 +26,7 @@
           <Property Name="SuccessItemCount" Type="bigint" />
           <Property Name="ContentId" Type="nvarchar(max)" />
           <Property Name="Result" Type="nvarchar(max)" />
-          <Property Name="ProductID" Type="int" />
+          <Property Name="ProductID" Type="nvarchar" MaxLength="50" />
           <Property Name="UserID" Type="int" />
           <Property Name="ProductDetails" Type="nvarchar(max)" />
           <Property Name="CreatedOn" Type="datetime" />
@@ -237,7 +237,7 @@
           </Key>
           <Property Name="SellersPickedID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="UserID" Type="int" />
-          <Property Name="ParentProductID" Type="int" />
+          <Property Name="ParentProductID" Type="nvarchar" MaxLength="50" />
           <Property Name="SellerPrice" Type="float" />
           <Property Name="AliExpressProductID" Type="nvarchar" MaxLength="50" />
           <Property Name="IsOnline" Type="bit" />
@@ -349,10 +349,10 @@
           <EntitySet Name="User_Roles" EntityType="DropshipDataModel.User_Roles" />
           <EntitySet Name="Users" EntityType="DropshipDataModel.User" />
           <EntitySet Name="MembershipTypes" EntityType="DropshipDataModel.MembershipType" />
-          <EntitySet Name="Products" EntityType="DropshipDataModel.Product" />
-          <EntitySet Name="SellersPickedProducts" EntityType="DropshipDataModel.SellersPickedProduct" />
           <EntitySet Name="ApplicationLogs" EntityType="DropshipDataModel.ApplicationLog" />
+          <EntitySet Name="Products" EntityType="DropshipDataModel.Product" />
           <EntitySet Name="SellerPickedProductSKUs" EntityType="DropshipDataModel.SellerPickedProductSKU" />
+          <EntitySet Name="SellersPickedProducts" EntityType="DropshipDataModel.SellersPickedProduct" />
           <AssociationSet Name="FK_SellerPickedProductSKU_SellersPickedProducts" Association="DropshipDataModel.FK_SellerPickedProductSKU_SellersPickedProducts">
             <End Role="SellersPickedProduct" EntitySet="SellersPickedProducts" />
             <End Role="SellerPickedProductSKU" EntitySet="SellerPickedProductSKUs" />
@@ -491,22 +491,6 @@
           <Property Name="ItemModifyBy" Type="Int32" />
           <Property Name="ItemModifyWhen" Type="DateTime" Precision="3" />
         </EntityType>
-        <EntityType Name="SellersPickedProduct">
-          <Key>
-            <PropertyRef Name="SellersPickedID" />
-          </Key>
-          <Property Name="SellersPickedID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="UserID" Type="Int32" />
-          <Property Name="ParentProductID" Type="Int32" />
-          <Property Name="AliExpressProductID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="ItemCreatedBy" Type="Int32" />
-          <Property Name="ItemCreatedWhen" Type="DateTime" Precision="3" />
-          <Property Name="ItemModifyBy" Type="Int32" />
-          <Property Name="ItemModifyWhen" Type="DateTime" Precision="3" />
-          <Property Name="SellerPrice" Type="Double" />
-          <NavigationProperty Name="SellerPickedProductSKUs" Relationship="DropshipDataModel.FK_SellerPickedProductSKU_SellersPickedProducts" FromRole="SellersPickedProduct" ToRole="SellerPickedProductSKU" />
-          <Property Name="IsOnline" Type="Boolean" />
-        </EntityType>
         <EntityType Name="Subscription">
           <Key>
             <PropertyRef Name="SubscriptionID" />
@@ -574,6 +558,20 @@
           <Property Name="ItemModifyWhen" Type="DateTime" Precision="3" />
           <Property Name="OrderLimit" Type="Int32" />
         </EntityType>
+        <EntityType Name="ApplicationLog">
+          <Key>
+            <PropertyRef Name="ApplicationLogID" />
+          </Key>
+          <Property Name="ApplicationLogID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserID" Type="Int32" />
+          <Property Name="ApplicationName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="IP" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Agent" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ErrorMsg" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ErrorDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ItemCreatedBy" Type="Int32" />
+          <Property Name="ItemCreatedOn" Type="DateTime" Precision="3" />
+        </EntityType>
         <EntityType Name="Product">
           <Key>
             <PropertyRef Name="ProductID" />
@@ -606,20 +604,6 @@
           <Property Name="ItemModifyWhen" Type="DateTime" Precision="3" />
           <Property Name="Unit" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
-        <EntityType Name="ApplicationLog">
-          <Key>
-            <PropertyRef Name="ApplicationLogID" />
-          </Key>
-          <Property Name="ApplicationLogID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="UserID" Type="Int32" />
-          <Property Name="ApplicationName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="IP" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Agent" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="ErrorMsg" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="ErrorDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="ItemCreatedBy" Type="Int32" />
-          <Property Name="ItemCreatedOn" Type="DateTime" Precision="3" />
-        </EntityType>
         <EntityType Name="SellerPickedProductSKU">
           <Key>
             <PropertyRef Name="Id" />
@@ -630,11 +614,27 @@
           <Property Name="UpdatedPrice" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="SellerPickedId" Type="Int32" Nullable="false" />
           <Property Name="UserId" Type="Int32" />
-          <NavigationProperty Name="SellersPickedProduct" Relationship="DropshipDataModel.FK_SellerPickedProductSKU_SellersPickedProducts" FromRole="SellerPickedProductSKU" ToRole="SellersPickedProduct" />
           <Property Name="UpdatedBy" Type="Int32" />
           <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
           <Property Name="CreatedBy" Type="Int32" />
           <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="SellersPickedProduct" Relationship="DropshipDataModel.FK_SellerPickedProductSKU_SellersPickedProducts" FromRole="SellerPickedProductSKU" ToRole="SellersPickedProduct" />
+        </EntityType>
+        <EntityType Name="SellersPickedProduct">
+          <Key>
+            <PropertyRef Name="SellersPickedID" />
+          </Key>
+          <Property Name="SellersPickedID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserID" Type="Int32" />
+          <Property Name="ParentProductID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="SellerPrice" Type="Double" />
+          <Property Name="AliExpressProductID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="IsOnline" Type="Boolean" />
+          <Property Name="ItemCreatedBy" Type="Int32" />
+          <Property Name="ItemCreatedWhen" Type="DateTime" Precision="3" />
+          <Property Name="ItemModifyBy" Type="Int32" />
+          <Property Name="ItemModifyWhen" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="SellerPickedProductSKUs" Relationship="DropshipDataModel.FK_SellerPickedProductSKU_SellersPickedProducts" FromRole="SellersPickedProduct" ToRole="SellerPickedProductSKU" />
         </EntityType>
         <Association Name="FK_SellerPickedProductSKU_SellersPickedProducts">
           <End Type="DropshipDataModel.SellersPickedProduct" Role="SellersPickedProduct" Multiplicity="1" />
@@ -657,11 +657,11 @@
           <Property Name="SuccessItemCount" Type="Int64" />
           <Property Name="ContentId" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Result" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
-          <Property Name="CreatedBy" Type="Int32" />
-          <Property Name="ProductID" Type="Int32" />
+          <Property Name="ProductID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="UserID" Type="Int32" />
           <Property Name="ProductDetails" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+          <Property Name="CreatedBy" Type="Int32" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -811,22 +811,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="SellersPickedProducts">
-            <EntityTypeMapping TypeName="DropshipDataModel.SellersPickedProduct">
-              <MappingFragment StoreEntitySet="SellersPickedProducts">
-                <ScalarProperty Name="IsOnline" ColumnName="IsOnline" />
-                <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
-                <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
-                <ScalarProperty Name="ItemCreatedWhen" ColumnName="ItemCreatedWhen" />
-                <ScalarProperty Name="ItemCreatedBy" ColumnName="ItemCreatedBy" />
-                <ScalarProperty Name="AliExpressProductID" ColumnName="AliExpressProductID" />
-                <ScalarProperty Name="SellerPrice" ColumnName="SellerPrice" />
-                <ScalarProperty Name="ParentProductID" ColumnName="ParentProductID" />
-                <ScalarProperty Name="UserID" ColumnName="UserID" />
-                <ScalarProperty Name="SellersPickedID" ColumnName="SellersPickedID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Subscriptions">
             <EntityTypeMapping TypeName="DropshipDataModel.Subscription">
               <MappingFragment StoreEntitySet="Subscriptions">
@@ -898,6 +882,21 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="ApplicationLogs">
+            <EntityTypeMapping TypeName="DropshipDataModel.ApplicationLog">
+              <MappingFragment StoreEntitySet="ApplicationLogs">
+                <ScalarProperty Name="ItemCreatedOn" ColumnName="ItemCreatedOn" />
+                <ScalarProperty Name="ItemCreatedBy" ColumnName="ItemCreatedBy" />
+                <ScalarProperty Name="ErrorDescription" ColumnName="ErrorDescription" />
+                <ScalarProperty Name="ErrorMsg" ColumnName="ErrorMsg" />
+                <ScalarProperty Name="Agent" ColumnName="Agent" />
+                <ScalarProperty Name="IP" ColumnName="IP" />
+                <ScalarProperty Name="ApplicationName" ColumnName="ApplicationName" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="ApplicationLogID" ColumnName="ApplicationLogID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Products">
             <EntityTypeMapping TypeName="DropshipDataModel.Product">
               <MappingFragment StoreEntitySet="Products">
@@ -931,21 +930,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="ApplicationLogs">
-            <EntityTypeMapping TypeName="DropshipDataModel.ApplicationLog">
-              <MappingFragment StoreEntitySet="ApplicationLogs">
-                <ScalarProperty Name="ItemCreatedOn" ColumnName="ItemCreatedOn" />
-                <ScalarProperty Name="ItemCreatedBy" ColumnName="ItemCreatedBy" />
-                <ScalarProperty Name="ErrorDescription" ColumnName="ErrorDescription" />
-                <ScalarProperty Name="ErrorMsg" ColumnName="ErrorMsg" />
-                <ScalarProperty Name="Agent" ColumnName="Agent" />
-                <ScalarProperty Name="IP" ColumnName="IP" />
-                <ScalarProperty Name="ApplicationName" ColumnName="ApplicationName" />
-                <ScalarProperty Name="UserID" ColumnName="UserID" />
-                <ScalarProperty Name="ApplicationLogID" ColumnName="ApplicationLogID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="SellerPickedProductSKUs">
             <EntityTypeMapping TypeName="DropshipDataModel.SellerPickedProductSKU">
               <MappingFragment StoreEntitySet="SellerPickedProductSKU">
@@ -962,14 +946,30 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="SellersPickedProducts">
+            <EntityTypeMapping TypeName="DropshipDataModel.SellersPickedProduct">
+              <MappingFragment StoreEntitySet="SellersPickedProducts">
+                <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
+                <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
+                <ScalarProperty Name="ItemCreatedWhen" ColumnName="ItemCreatedWhen" />
+                <ScalarProperty Name="ItemCreatedBy" ColumnName="ItemCreatedBy" />
+                <ScalarProperty Name="IsOnline" ColumnName="IsOnline" />
+                <ScalarProperty Name="AliExpressProductID" ColumnName="AliExpressProductID" />
+                <ScalarProperty Name="SellerPrice" ColumnName="SellerPrice" />
+                <ScalarProperty Name="ParentProductID" ColumnName="ParentProductID" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="SellersPickedID" ColumnName="SellersPickedID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="AliExpressJobLogs">
             <EntityTypeMapping TypeName="DropshipDataModel.AliExpressJobLog">
               <MappingFragment StoreEntitySet="AliExpressJobLog">
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
                 <ScalarProperty Name="ProductDetails" ColumnName="ProductDetails" />
                 <ScalarProperty Name="UserID" ColumnName="UserID" />
                 <ScalarProperty Name="ProductID" ColumnName="ProductID" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
                 <ScalarProperty Name="Result" ColumnName="Result" />
                 <ScalarProperty Name="ContentId" ColumnName="ContentId" />
                 <ScalarProperty Name="SuccessItemCount" ColumnName="SuccessItemCount" />
@@ -978,7 +978,7 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-        </EntityContainerMapping>
+          </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
   </edmx:Runtime>

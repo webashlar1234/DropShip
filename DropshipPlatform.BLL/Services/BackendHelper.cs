@@ -65,7 +65,7 @@ namespace DropshipPlatform.BLL.Services
                                     Product prodObj = datacontext.Products.Where(x => x.OriginalProductID == productOriginalId).FirstOrDefault();
                                     if (prodObj != null)
                                     {
-                                        SellersPickedProduct obj = datacontext.SellersPickedProducts.Where(x => x.UserID == userid && x.ParentProductID == prodObj.ProductID).FirstOrDefault();
+                                        SellersPickedProduct obj = datacontext.SellersPickedProducts.Where(x => x.UserID == userid && x.ParentProductID == prodObj.ProductID.ToString()).FirstOrDefault();
                                         if (obj != null)
                                         {
                                             if (result.success == true)

@@ -22,14 +22,14 @@ namespace DropshipPlatform.Entity
     
         public int SellersPickedID { get; set; }
         public Nullable<int> UserID { get; set; }
-        public Nullable<int> ParentProductID { get; set; }
+        public string ParentProductID { get; set; }
+        public Nullable<double> SellerPrice { get; set; }
         public string AliExpressProductID { get; set; }
+        public Nullable<bool> IsOnline { get; set; }
         public Nullable<int> ItemCreatedBy { get; set; }
         public Nullable<System.DateTime> ItemCreatedWhen { get; set; }
         public Nullable<int> ItemModifyBy { get; set; }
         public Nullable<System.DateTime> ItemModifyWhen { get; set; }
-        public Nullable<double> SellerPrice { get; set; }
-        public Nullable<bool> IsOnline { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<SellerPickedProductSKU> SellerPickedProductSKUs { get; set; }
