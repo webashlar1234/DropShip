@@ -32,7 +32,7 @@ var product = {
         });
     },
     AddPickedProducts: function () {
-
+        debugger
         var selectedItems = global.getSelectedCheckboxList('.chkProducts', 'productid');
         var pickedProducts = [];
         var update_price = true;
@@ -40,7 +40,12 @@ var product = {
             pickedProducts.push({ productId: item, price: $('.parentChk[productid=' + item + ']').parents('tr').find('.updatedParentPrice').val(), SKUModels: [] });
             if ($(".innertable").find("tr.skuRow[data-for='" + item + "']")) {
                 $.each($(".innertable").find("tr.skuRow[data-for='" + item + "']"), function (i, data) {
-                    pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: $(data).data("sku"), inventory: $(data).data("inventory"), price: $(data).find(".updatedPrice").val(), discount_price: 1 })
+                    if ($(data).find(".updatedPrice").val() > 0) {
+                        pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: $(data).data("sku"), inventory: $(data).data("inventory"), price: $(data).find(".updatedPrice").val(), discount_price: 1 })
+                    }
+                    else {
+                        pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: $(data).data("sku"), inventory: $(data).data("inventory"), price: $('.parentChk[productid=' + item + ']').parents('tr').find('td:eq(3)').text(), discount_price: 1 })
+                    }
                 });
             }
 
@@ -283,7 +288,7 @@ function GetData() {
     $.ajax("/Products/getProductManagementDT", {
         "type": "POST",
         "datatype": "json",
-        "data": { category : $('#ddlProductCat').val(), filterOptions : $('#ddlPickupFilter').val() },
+        "data": { category: $('#ddlProductCat').val(), filterOptions: $('#ddlPickupFilter').val() },
         success: function (data, status, xhr) {
             HideLoader();
             jsonProducts = FormatData(data.data);
@@ -385,7 +390,6 @@ function BindData(jsonProducts) {
     ProductsDt = $(table).DataTable({
         "data": jsonProducts,
         "columns": [{
-            "class": 'details-control',
             "orderable": false,
             "data": null,
             "defaultContent": ''
@@ -435,6 +439,11 @@ function BindData(jsonProducts) {
                 return rawHTML;
             }
         }
-        ]
+        ],
+        "createdRow": function (row, data, dataIndex) {
+            if (data.ChildProductList.length > 0) {
+                $(row).find("td:eq(0)").addClass('details-control');
+            }
+        }
     });
 }

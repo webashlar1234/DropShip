@@ -35,11 +35,18 @@ namespace DropshipPlatform.Controllers
             if (filterOptions == 1)
             {
                 list = list.Where(x => x.ParentProduct.UserID == user.UserID).ToList();
+                list = list.Where(x => x.ParentProduct.isProductPicked == true).ToList();
             }
             else if(filterOptions == 2)
             {
                 list = list.Where(x => x.ParentProduct.UserID != user.UserID).ToList();
-            }          
+                list = list.Where(x => x.ParentProduct.hasProductSkuSync == false && x.ParentProduct.isProductPicked == false).ToList();
+            }
+            else if (filterOptions == 3)
+            {
+                list = list.Where(x => x.ParentProduct.UserID == user.UserID).ToList();
+                list = list.Where(x => x.ParentProduct.hasProductSkuSync == true && x.ParentProduct.isProductPicked == false).ToList();
+            }
             return Json(new
             {
                 data = list.ToArray(),
