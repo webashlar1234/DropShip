@@ -27,7 +27,7 @@ namespace DropshipPlatform.Entity
         public string ExternalCode { get; set; }
         public string ExternalCodeType { get; set; }
         public string ParentProductID { get; set; }
-        public Nullable<int> NoOfCustomerReviews { get; set; }
+        public Nullable<double> NoOfCustomerReviews { get; set; }
         public Nullable<int> CustomerReviewRating { get; set; }
         public string NetWeight { get; set; }
         public string ShippingWeight { get; set; }
@@ -35,11 +35,11 @@ namespace DropshipPlatform.Entity
         public string Size { get; set; }
         public string Color { get; set; }
         public string SourceWebsite { get; set; }
+        public string Unit { get; set; }
         public Nullable<bool> IsActive { get; set; }
         public Nullable<int> ItemCreatedBy { get; set; }
         public Nullable<System.DateTime> ItemCreatedWhen { get; set; }
         public Nullable<int> ItemModifyBy { get; set; }
         public Nullable<System.DateTime> ItemModifyWhen { get; set; }
-        public string Unit { get; set; }
     }
 }

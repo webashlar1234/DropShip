@@ -19,11 +19,11 @@
         <EntityTypeShape EntityType="DropshipDataModel.User" Width="1.5" PointX="10.75" PointY="4.75" />
         <EntityTypeShape EntityType="DropshipDataModel.MembershipType" Width="1.5" PointX="13.375" PointY="0.75" />
         <EntityTypeShape EntityType="DropshipDataModel.ApplicationLog" Width="1.5" PointX="13.375" PointY="5.75" />
-        <EntityTypeShape EntityType="DropshipDataModel.Product" Width="1.5" PointX="3.375" PointY="12.75" />
         <EntityTypeShape EntityType="DropshipDataModel.SellerPickedProductSKU" Width="1.5" PointX="13.625" PointY="10" />
         <EntityTypeShape EntityType="DropshipDataModel.SellersPickedProduct" Width="1.5" PointX="11.375" PointY="10" />
         <AssociationConnector Association="DropshipDataModel.FK_SellerPickedProductSKU_SellersPickedProducts" />
         <EntityTypeShape EntityType="DropshipDataModel.AliExpressJobLog" Width="1.5" PointX="5.375" PointY="12.75" />
+        <EntityTypeShape EntityType="DropshipDataModel.Product" Width="1.5" PointX="0.75" PointY="13.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

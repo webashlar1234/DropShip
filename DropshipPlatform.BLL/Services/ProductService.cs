@@ -807,10 +807,11 @@ namespace DropshipPlatform.BLL.Services
                     if (scproduct.SKUModels == null)
                     {
                         string Size = sizes.Where(x => x.PropertyName == dbProduct.Size).Select(x => x.PropertyID).FirstOrDefault();
-                        string color = colors.Where(x => x.PropertyName.ToLower() == dbProduct.Color.ToLower()).Select(x => x.PropertyID).FirstOrDefault();
+                        string dbProductColor = dbProduct.Color != null ? dbProduct.Color.ToLower() : dbProduct.Color;
+                        string color = colors.Where(x => x.PropertyName.ToLower() == dbProductColor).Select(x => x.PropertyID).FirstOrDefault();
                         
                         ali_SKUModel ali_SKUModel = new ali_SKUModel();
-                        ali_SKUModel.inventory = dbProduct.Inventory;
+                        ali_SKUModel.inventory = dbProduct.Inventory != null ? dbProduct.Inventory : "0";
                         ali_SKUModel.price = scproduct.price + 100000;
                         ali_SKUModel.sku_code = dbProduct.OriginalProductID;
                         ali_SKUModel.sku_attributes = getSKUattrStr(categorySchemaModel, Size, color, StaticValues.sampleImage);

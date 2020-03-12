@@ -32,22 +32,41 @@ var product = {
         });
     },
     AddPickedProducts: function () {
-        debugger
+        
         var selectedItems = global.getSelectedCheckboxList('.chkProducts', 'productid');
         var pickedProducts = [];
         var update_price = true;
         $.each(selectedItems, function (index, item) {
-            pickedProducts.push({ productId: item, price: $('.parentChk[productid=' + item + ']').parents('tr').find('.updatedParentPrice').val(), SKUModels: [] });
-            if ($(".innertable").find("tr.skuRow[data-for='" + item + "']")) {
-                $.each($(".innertable").find("tr.skuRow[data-for='" + item + "']"), function (i, data) {
-                    if ($(data).find(".updatedPrice").val() > 0) {
-                        pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: $(data).data("sku"), inventory: $(data).data("inventory"), price: $(data).find(".updatedPrice").val(), discount_price: 1 })
-                    }
-                    else {
-                        pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: $(data).data("sku"), inventory: $(data).data("inventory"), price: $('.parentChk[productid=' + item + ']').parents('tr').find('td:eq(3)').text(), discount_price: 1 })
-                    }
-                });
+            var innerTableLength = $(".innertable").find("tr.skuRow[data-for='" + item + "']").length;
+            if (innerTableLength > 0) {
+
+                if ($(".innertable").find("tr.skuRow[data-for='" + item + "']")) {
+                    $.each($(".innertable").find("tr.skuRow[data-for='" + item + "']"), function (i, data) {
+                        if ($(data).find(".updatedPrice").val() > 0) {
+                            pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: $(data).data("sku"), inventory: $(data).data("inventory"), price: $(data).find(".updatedPrice").val(), discount_price: 1 })
+                        }
+                        else {
+                            pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: $(data).data("sku"), inventory: $(data).data("inventory"), price: $('.parentChk[productid=' + item + ']').parents('tr').find('td:eq(3)').text(), discount_price: 1 })
+                        }
+                    });
+                }
             }
+            else {
+                var parentItem = jsonData.filter(m => m.OriginalProductID == selectedItems);
+                if (parentItem.length > 0) {
+                    parentItem = parentItem[0];
+                    var childrens = parentItem.ChildProductList;
+                    for (var i = 0; i < childrens.length; i++) {
+                        if (childrens[i].UpdatedPrice > 0) {
+                            pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: childrens[i].OriginalProductID, inventory: childrens[i].Inventory, price: childrens[i].UpdatedPrice, discount_price: 1 });
+                        }
+                        else {
+                            pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: childrens[i].OriginalProductID, inventory: childrens[i].Inventory, price: parentItem.cost, discount_price: 1 });
+                        }
+                    }
+                }
+            }
+
 
             //pickedProducts.push({ key: item, value: $('.chkProducts[productid=' + item + ']').parents('tr').find('.SellerPriceInp').val() });
         });
