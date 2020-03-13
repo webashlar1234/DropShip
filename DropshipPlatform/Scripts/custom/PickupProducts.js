@@ -37,6 +37,7 @@ var product = {
         var pickedProducts = [];
         var update_price = true;
         $.each(selectedItems, function (index, item) {
+            pickedProducts.push({ productId: item, price: $('.parentChk[productid=' + item + ']').parents('tr').find('.updatedParentPrice').val(), SKUModels: [] });
             var innerTableLength = $(".innertable").find("tr.skuRow[data-for='" + item + "']").length;
             if (innerTableLength > 0) {
 
