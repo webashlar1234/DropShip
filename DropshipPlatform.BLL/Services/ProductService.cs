@@ -45,9 +45,9 @@ namespace DropshipPlatform.BLL.Services
 
                     products = (from p in datacontext.Products
                                 join c in datacontext.Categories on p.CategoryID equals c.CategoryID
-                                from sp in datacontext.SellersPickedProducts.Where(x => x.ParentProductID == p.ProductID.ToString() && x.UserID == UserID).DefaultIfEmpty()
+                                from sp in datacontext.SellersPickedProducts.Where(x => x.ParentProductID == p.ProductID && x.UserID == UserID).DefaultIfEmpty()
                                     //from spsku in datacontext.SellerPickedProductSKUs.Where(x => x.ProductId == p.ProductID && x.UserId == UserID).DefaultIfEmpty()
-                                where p.ParentProductID == null || p.ParentProductID == ""
+                                where p.ParentProductID == null
                                 select new ProductViewModel
                                 {
                                     ProductID = p.ProductID,
@@ -58,7 +58,7 @@ namespace DropshipPlatform.BLL.Services
                                     Cost = p.Cost,
                                     Inventory = p.Inventory,
                                     ShippingWeight = p.ShippingWeight,
-                                    SellerPickedCount = datacontext.SellersPickedProducts.Where(x => x.ParentProductID == p.ProductID.ToString() && x.UserID != UserID).Count(),
+                                    SellerPickedCount = datacontext.SellersPickedProducts.Where(x => x.ParentProductID == p.ProductID && x.UserID != UserID).Count(),
                                     IsActive = p.IsActive,
                                     UserID = sp.UserID,
                                     AliExpressCategoryID = c.AliExpressCategoryId.Value
@@ -69,7 +69,7 @@ namespace DropshipPlatform.BLL.Services
                         foreach (ProductViewModel productViewModel in products)
                         {
                             ProductGroupModel productGroup = new ProductGroupModel();
-                            SellersPickedProduct sellersPickedProduct = datacontext.SellersPickedProducts.Where(x => x.ParentProductID == productViewModel.ProductID.ToString() && x.UserID == UserID).FirstOrDefault();
+                            SellersPickedProduct sellersPickedProduct = datacontext.SellersPickedProducts.Where(x => x.ParentProductID == productViewModel.ProductID && x.UserID == UserID).FirstOrDefault();
                             if (sellersPickedProduct != null)
                             {
                                 productViewModel.hasProductSkuSync =  true;
@@ -79,7 +79,7 @@ namespace DropshipPlatform.BLL.Services
                                     productViewModel.isProductPicked = true;
                                 }
                             }
-                            List<Product> childProducts = datacontext.Products.Where(x => x.ParentProductID.ToString() == productViewModel.OriginalProductID).ToList();
+                            List<Product> childProducts = datacontext.Products.Where(x => x.ParentProductID == productViewModel.ProductID).ToList();
                             productGroup.ParentProduct = productViewModel;
                             productGroup.ChildProductList = new List<ProductViewModel>();
                             //long parentInvetoryTotal = 0;
@@ -121,12 +121,12 @@ namespace DropshipPlatform.BLL.Services
                         SellersPickedProduct obj = datacontext.SellersPickedProducts.Where(x => x.UserID == UserID && x.ParentProductID == product.productId).FirstOrDefault();
                         if (obj == null)
                         {
-                            Product ParentProduct = datacontext.Products.Where(m => m.OriginalProductID == product.productId.ToString()).FirstOrDefault();
+                            Product ParentProduct = datacontext.Products.Where(m => m.ProductID == product.productId).FirstOrDefault();
                             if (ParentProduct != null)
                             {
                                 obj = new SellersPickedProduct();
                                 obj.UserID = UserID;
-                                obj.ParentProductID = ParentProduct.ProductID.ToString();
+                                obj.ParentProductID = ParentProduct.ProductID;
                                 obj.SellerPrice = Convert.ToDouble(product.price);
                                 obj.ItemCreatedBy = UserID;
                                 obj.ItemCreatedWhen = DateTime.UtcNow;
@@ -137,7 +137,7 @@ namespace DropshipPlatform.BLL.Services
                                     {
                                         obj.SellerPickedProductSKUs.Add(new SellerPickedProductSKU()
                                         {
-                                            ProductId = ParentProduct.ProductID,
+                                            ProductId = productSKUModel.childproductId,
                                             SKUCode = productSKUModel.skuCode,
                                             UpdatedPrice = Convert.ToDecimal(productSKUModel.price),
                                             UserId = UserID
@@ -248,14 +248,14 @@ namespace DropshipPlatform.BLL.Services
                     {
                         foreach (SellersPickedProduct item in dbSellerPickedProducts)
                         {
-                            List<Product> dbParentProducts = datacontext.Products.Where(x => x.ProductID == Convert.ToInt32(item.ParentProductID)).ToList();
+                            List<Product> dbParentProducts = datacontext.Products.Where(x => x.ProductID == item.ParentProductID).ToList();
                             if (dbParentProducts.Count > 0)
                             {
                                 foreach (Product dbParentProduct in dbParentProducts)
                                 {
                                     ProductGroupModel productGroup = new ProductGroupModel();
 
-                                    List<Product> childProducts = datacontext.Products.Where(x => x.ParentProductID.ToString() == dbParentProduct.OriginalProductID).ToList();
+                                    List<Product> childProducts = datacontext.Products.Where(x => x.ParentProductID == dbParentProduct.ProductID).ToList();
 
                                     productGroup.ParentProduct = GenerateProductViewModel(dbParentProduct);
                                     productGroup.ParentProduct.IsOnline = item.IsOnline;
@@ -307,7 +307,7 @@ namespace DropshipPlatform.BLL.Services
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    SellerPickedProductSKU dbPickedProductSKU = datacontext.SellerPickedProductSKUs.Where(m => m.SKUCode == productModel.OriginalProductID).FirstOrDefault();
+                    SellerPickedProductSKU dbPickedProductSKU = datacontext.SellerPickedProductSKUs.Where(m => m.SKUCode == productModel.SkuID).FirstOrDefault();
                     if (dbPickedProductSKU != null)
                     {
                         //productModel.UpdatedInvetory = dbPickedProduct.UpdatedInventory.Value;
@@ -351,6 +351,7 @@ namespace DropshipPlatform.BLL.Services
             productModel.Color = dbChildProduct.Color;
             productModel.SourceWebsite = dbChildProduct.SourceWebsite;
             productModel.IsActive = dbChildProduct.IsActive;
+            productModel.SkuID = dbChildProduct.SkuID;
 
             if (productModel.CategoryID > 0)
             {
@@ -478,7 +479,7 @@ namespace DropshipPlatform.BLL.Services
                             ContentId = obj3.ItemContentId,
                             SuccessItemCount = fqRsp.SuccessItemCount,
                             UserID = user.UserID,
-                            ProductID = scProduct.productId,
+                            ProductID = scProduct.productId.ToString(),
                             ProductDetails = obj3.ItemContent,
                             Result = result
                         });
@@ -517,7 +518,7 @@ namespace DropshipPlatform.BLL.Services
                     List<AliexpressSolutionBatchProductPriceUpdateRequest.SynchronizeProductRequestDtoDomain> list2 = new List<AliexpressSolutionBatchProductPriceUpdateRequest.SynchronizeProductRequestDtoDomain>();
                     AliexpressSolutionBatchProductPriceUpdateRequest.SynchronizeProductRequestDtoDomain obj3 = new AliexpressSolutionBatchProductPriceUpdateRequest.SynchronizeProductRequestDtoDomain();
 
-                    obj3.ProductId = int.Parse(scproductModel.productId);
+                    obj3.ProductId = scproductModel.productId;
                     List<AliexpressSolutionBatchProductPriceUpdateRequest.SynchronizeSkuRequestDtoDomain> list5 = new List<AliexpressSolutionBatchProductPriceUpdateRequest.SynchronizeSkuRequestDtoDomain>();
 
                     foreach (ProductSKUModel productSKUModel in scproductModel.SKUModels)
@@ -585,10 +586,10 @@ namespace DropshipPlatform.BLL.Services
                         using (DropshipDataEntities datacontext = new DropshipDataEntities())
                         {
                             string parent_SKUCOde = (from p in datacontext.Products
-                                        from sp in datacontext.SellersPickedProducts.Where(x => x.ParentProductID == p.ProductID.ToString() && x.UserID == userId && x.AliExpressProductID == scproductModel.aliExpressProductId.ToString())
+                                        from sp in datacontext.SellersPickedProducts.Where(x => x.ParentProductID == p.ProductID && x.UserID == userId && x.AliExpressProductID == scproductModel.aliExpressProductId.ToString())
                                         select new 
                                         {
-                                           parent_SKUCOde = p.OriginalProductID
+                                           parent_SKUCOde = p.ProductID.ToString()
                                         }).Select(x => x.parent_SKUCOde).FirstOrDefault();
 
                             skus.Add("{\"sku_code\": \"" + parent_SKUCOde + "\",\"price\": " +  (100000 + scproductModel.price) + "}");
@@ -623,7 +624,7 @@ namespace DropshipPlatform.BLL.Services
                             ContentId = obj3.ItemContentId,
                             SuccessItemCount = fqRsp.SuccessItemCount,
                             UserID = userId,
-                            ProductID = scproductModel.productId,
+                            ProductID = scproductModel.productId.ToString(),
                             ProductDetails = obj3.ItemContent,
                             Result = result
                         });
@@ -746,7 +747,7 @@ namespace DropshipPlatform.BLL.Services
 
             using (DropshipDataEntities datacontext = new DropshipDataEntities())
             {
-                Product dbProduct = datacontext.Products.Where(x => x.OriginalProductID == scproduct.productId.ToString()).FirstOrDefault();
+                Product dbProduct = datacontext.Products.Where(x => x.ProductID == scproduct.productId).FirstOrDefault();
                 string CategorySchema = GetSchemaByCategory(AliCategoryID);
                 CategorySchemaModel categorySchemaModel = JsonConvert.DeserializeObject<CategorySchemaModel>(CategorySchema);
                 List<PropertyModel> colors = new List<PropertyModel>();
@@ -813,7 +814,7 @@ namespace DropshipPlatform.BLL.Services
                         ali_SKUModel ali_SKUModel = new ali_SKUModel();
                         ali_SKUModel.inventory = dbProduct.Inventory != null ? dbProduct.Inventory : "0";
                         ali_SKUModel.price = scproduct.price + 100000;
-                        ali_SKUModel.sku_code = dbProduct.OriginalProductID;
+                        ali_SKUModel.sku_code = dbProduct.ProductID.ToString();
                         ali_SKUModel.sku_attributes = getSKUattrStr(categorySchemaModel, Size, color, StaticValues.sampleImage);
 
                         string jsonstr = JsonConvert.SerializeObject(ali_SKUModel,Newtonsoft.Json.Formatting.None,new JsonSerializerSettings{NullValueHandling = NullValueHandling.Ignore});
@@ -827,14 +828,14 @@ namespace DropshipPlatform.BLL.Services
                     {
                         foreach (ProductSKUModel productSKU in scproduct.SKUModels)
                         {
-                            Product originalSKU = datacontext.Products.Where(x => x.OriginalProductID == productSKU.skuCode).FirstOrDefault();
+                            Product originalSKU = datacontext.Products.Where(x => x.SkuID == productSKU.skuCode).FirstOrDefault();
                             string Size = sizes.Where(x => x.PropertyName == originalSKU.Size).Select(x => x.PropertyID).FirstOrDefault();
                             string color = colors.Where(x => x.PropertyName == originalSKU.Color).Select(x => x.PropertyID).FirstOrDefault();
 
                             ali_SKUModel ali_SKUModel = new ali_SKUModel();
                             ali_SKUModel.inventory = productSKU.inventory.ToString();
                             ali_SKUModel.price = productSKU.price + 100000;
-                            ali_SKUModel.sku_code = productSKU.skuCode;
+                            ali_SKUModel.sku_code = originalSKU.SkuID;
                             ali_SKUModel.sku_attributes = getSKUattrStr(categorySchemaModel, Size, color, StaticValues.sampleImage);
 
                             string jsonstr = JsonConvert.SerializeObject(ali_SKUModel,Newtonsoft.Json.Formatting.None,new JsonSerializerSettings{NullValueHandling = NullValueHandling.Ignore});

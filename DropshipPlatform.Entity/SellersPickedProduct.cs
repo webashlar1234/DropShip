@@ -22,7 +22,7 @@ namespace DropshipPlatform.Entity
     
         public int SellersPickedID { get; set; }
         public Nullable<int> UserID { get; set; }
-        public string ParentProductID { get; set; }
+        public Nullable<long> ParentProductID { get; set; }
         public Nullable<double> SellerPrice { get; set; }
         public string AliExpressProductID { get; set; }
         public Nullable<bool> IsOnline { get; set; }

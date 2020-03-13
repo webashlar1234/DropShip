@@ -108,10 +108,10 @@ function FormatData(json) {
             "manufacturerName": json[i].ParentProduct.ManufacturerName,
             "origin": json[i].ParentProduct.CountryOfOrigin,
             "website": json[i].ParentProduct.SourceWebsite,
-            "OriginalProductID": json[i].ParentProduct.OriginalProductID,
+            "ProductID": json[i].ParentProduct.ProductID,
             "ParentProductID": json[i].ParentProduct.ParentProductID,
             "SellerPrice": json[i].ParentProduct.SellerPrice,
-            "check": "<label class='mt-checkbox'><input type='checkbox' class='parentChk' aliexpressproductid=" + json[i].ParentProduct.AliExpressProductID + " data-SKU=" + json[i].ParentProduct.OriginalProductID + " value='1'><span></span></label>",
+            "check": "<label class='mt-checkbox'><input type='checkbox' class='parentChk' aliexpressproductid=" + json[i].ParentProduct.AliExpressProductID + " data-SKU=" + json[i].ParentProduct.ProductID + " value='1'><span></span></label>",
             "IsOnline": json[i].ParentProduct.IsOnline ? '<a class="btn btn-info btn-sm" href="#" onclick=updateStatus("' + json[i].ParentProduct.AliExpressProductID + '","' + json[i].ParentProduct.IsOnline + '")>' + 'Online' + '</a>' : '<a class="btn btn-info btn-sm" href="#" onclick=updateStatus("' + json[i].ParentProduct.AliExpressProductID + '","' + json[i].ParentProduct.IsOnline + '")>' + 'Offline' + '</a>',
             "ChildProductList": json[i].ChildProductList,
             "AliExpressProductID": json[i].ParentProduct.AliExpressProductID
@@ -151,7 +151,7 @@ function format(d) {
             '</td><td>' + value.Inventory +
             '</td><td>' + "$" + value.Cost +
             '</td>' +
-            '<td>' + "<input name='updatedPrice' data-isUpdated='false' onkeypress='return IsNumeric(event);' disabled data-sku='" + value.OriginalProductID + "' type='text' value=" + value.UpdatedPrice + " class='updatedPrice txtEdit_" + value.ParentProductID + "'>" +
+        '<td>' + "<input name='updatedPrice' data-isUpdated='false' onkeypress='return IsNumeric(event);' disabled data-sku='" + value.SkuID + "' type='text' value=" + value.UpdatedPrice + " class='updatedPrice txtEdit_" + value.ParentProductID + "'>" +
             //'</td><td>' + value.Description +
             '</td></tr>';
     })
@@ -213,7 +213,7 @@ function BindData(jsonProducts) {
             "data": "SellerPrice", "render": function (data, type, full) {
                 if (!(full.ChildProductList.length > 0)) {
                     full.cost > 0 ? full.cost : 0;
-                    return "<input name='updatedPrice' disabled dataSKU='" + full.OriginalProductID + "' type='number' value=" + full.SellerPrice + " class='updatedParentPrice txtParent_" + full.OriginalProductID + "'>";
+                    return "<input name='updatedPrice' disabled dataSKU='" + full.ProductID + "' type='number' value=" + full.SellerPrice + " class='updatedParentPrice txtParent_" + full.ProductID + "'>";
                 }
                 else {
                     return "";
@@ -241,12 +241,34 @@ function SavePickedProducts() {
     var update_price = true;
     $.each(selectedItems, function (index, item) {
         updatedProducts.push({ aliExpressProductId: item, price: $('.parentChk[aliexpressproductid=' + item + ']').parents('tr').find('.updatedParentPrice').val(), SKUModels: [] });
-        if ($(".innertable").find("tr.skuRow[data-for='" + item + "']")) {
-            $.each($(".innertable").find("tr.skuRow[data-for='" + item + "']"), function (i, data) {
-                if ($(data).find(".updatedPrice").data("isupdated")) {
-                    updatedProducts[updatedProducts.length - 1].SKUModels.push({ skuCode: $(data).find(".updatedPrice").data("sku"), price: $(data).find(".updatedPrice").val(), discount_price: 1 });
+        var innerTableLength = $(".innertable").find("tr.skuRow[data-for='" + item + "']").length;
+        if (innerTableLength > 0) {
+
+            if ($(".innertable").find("tr.skuRow[data-for='" + item + "']")) {
+                $.each($(".innertable").find("tr.skuRow[data-for='" + item + "']"), function (i, data) {
+                    if ($(data).find(".updatedPrice").data("isupdated")) {
+                        updatedProducts[updatedProducts.length - 1].SKUModels.push({ skuCode: $(data).find(".updatedPrice").data("sku"), price: $(data).find(".updatedPrice").val(), discount_price: 1 });
+                    }
+                    else {
+                        updatedProducts[updatedProducts.length - 1].SKUModels.push({ skuCode: $(data).find(".updatedPrice").data("sku"), inventory: $(data).data("inventory"), price: $(data).find(".updatedPrice").val(), discount_price: 1 })
+                    }
+                });
+            }
+        }
+        else {
+            var parentItem = jsonData.filter(m => m.AliExpressProductID == selectedItems);
+            if (parentItem.length > 0) {
+                parentItem = parentItem[0];
+                var childrens = parentItem.ChildProductList;
+                for (var i = 0; i < childrens.length; i++) {
+                    if (childrens[i].UpdatedPrice > 0) {
+                        updatedProducts[updatedProducts.length - 1].SKUModels.push({ skuCode: childrens[i].SkuID, inventory: childrens[i].Inventory, price: childrens[i].UpdatedPrice, childproductId: childrens[i].ProductID });
+                    }
+                    else {
+                        updatedProducts[updatedProducts.length - 1].SKUModels.push({ skuCode: childrens[i].SkuID, inventory: childrens[i].Inventory, price: parentItem.cost, childproductId: childrens[i].ProductID });
+                    }
                 }
-            });
+            }
         }
     });
     $.each(updatedProducts, function (j, result) {

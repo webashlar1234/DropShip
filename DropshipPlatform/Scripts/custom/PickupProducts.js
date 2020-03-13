@@ -32,7 +32,7 @@ var product = {
         });
     },
     AddPickedProducts: function () {
-        
+
         var selectedItems = global.getSelectedCheckboxList('.chkProducts', 'productid');
         var pickedProducts = [];
         var update_price = true;
@@ -44,25 +44,25 @@ var product = {
                 if ($(".innertable").find("tr.skuRow[data-for='" + item + "']")) {
                     $.each($(".innertable").find("tr.skuRow[data-for='" + item + "']"), function (i, data) {
                         if ($(data).find(".updatedPrice").val() > 0) {
-                            pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: $(data).data("sku"), inventory: $(data).data("inventory"), price: $(data).find(".updatedPrice").val(), discount_price: 1 })
+                            pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: $(data).data("sku"), inventory: $(data).data("inventory"), price: $(data).find(".updatedPrice").val(), discount_price: 1, childproductId: $(data).data("childproductid")})
                         }
                         else {
-                            pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: $(data).data("sku"), inventory: $(data).data("inventory"), price: $('.parentChk[productid=' + item + ']').parents('tr').find('td:eq(3)').text(), discount_price: 1 })
+                            pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: $(data).data("sku"), inventory: $(data).data("inventory"), price: $('.parentChk[productid=' + item + ']').parents('tr').find('td:eq(3)').text(), discount_price: 1, childproductId: $(data).data("childproductid")})
                         }
                     });
                 }
             }
             else {
-                var parentItem = jsonData.filter(m => m.OriginalProductID == selectedItems);
+                var parentItem = jsonData.filter(m => m.ProductID == selectedItems);
                 if (parentItem.length > 0) {
                     parentItem = parentItem[0];
                     var childrens = parentItem.ChildProductList;
                     for (var i = 0; i < childrens.length; i++) {
                         if (childrens[i].UpdatedPrice > 0) {
-                            pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: childrens[i].OriginalProductID, inventory: childrens[i].Inventory, price: childrens[i].UpdatedPrice, discount_price: 1 });
+                            pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: childrens[i].SkuID, inventory: childrens[i].Inventory, price: childrens[i].UpdatedPrice, discount_price: 1, childproductId: childrens[i].ProductID });
                         }
                         else {
-                            pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: childrens[i].OriginalProductID, inventory: childrens[i].Inventory, price: parentItem.cost, discount_price: 1 });
+                            pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: childrens[i].SkuID, inventory: childrens[i].Inventory, price: parentItem.cost, discount_price: 1, childproductId: childrens[i].ProductID });
                         }
                     }
                 }
@@ -336,12 +336,12 @@ function FormatData(json) {
             "manufacturerName": json[i].ParentProduct.ManufacturerName,
             "origin": json[i].ParentProduct.CountryOfOrigin,
             "website": json[i].ParentProduct.SourceWebsite,
-            "OriginalProductID": json[i].ParentProduct.OriginalProductID,
+            "ProductID": json[i].ParentProduct.ProductID,
             "ParentProductID": json[i].ParentProduct.ParentProductID,
             "SellerPrice": json[i].ParentProduct.SellerPrice,
             "hasProductSkuSync": json[i].ParentProduct.hasProductSkuSync,
             "isProductPicked": json[i].ParentProduct.isProductPicked,
-            "check": "<label class='mt-checkbox'><input type='checkbox' class='parentChk' data-SKU=" + json[i].ParentProduct.OriginalProductID + " value='1'><span></span></label>",
+            "check": "<label class='mt-checkbox'><input type='checkbox' class='parentChk' data-SKU=" + json[i].ParentProduct.ProductID + " value='1'><span></span></label>",
             "ChildProductList": json[i].ChildProductList,
             "SellerPickedCount": json[i].ParentProduct.SellerPickedCount,
             "IsActive": json[i].ParentProduct.IsActive
@@ -359,14 +359,14 @@ function format(d) {
     $.each($(d.ChildProductList), function (key, value) {
 
         trs +=
-            '<tr class="skuRow" data-for="' + value.ParentProductID + '" data-inventory="' + value.Inventory + '" data-sku="' + value.OriginalProductID + '"><td>' + value.Title +
+            '<tr class="skuRow" data-for="' + value.ParentProductID + '" data-inventory="' + value.Inventory + '" data-sku="' + value.SkuID + '" data-childProductId="' + value.ProductID + '"><td>' + value.Title +
             '</td> <td>' + value.Brand +
             '</td><td>' + value.NetWeight +
             '</td><td>' + value.Color +
             '</td><td>' + value.Size +
             '</td><td>' + value.Inventory +
             '</td><td>' + "$" + value.Cost +
-            '</td><td>' + "<input name='updatedPrice'  disabled dataSKU='" + value.OriginalProductID + "' type='number' value=" + value.UpdatedPrice + " class='updatedPrice txtEdit_" + value.ParentProductID + "'>" +
+        '</td><td>' + "<input name='updatedPrice'  disabled dataSKU='" + value.SkuID + "' type='number' value=" + value.UpdatedPrice + " class='updatedPrice txtEdit_" + value.ParentProductID + "'>" +
             //'</td><td>' + value.Description +
             '</td></tr>';
     })
@@ -423,7 +423,7 @@ function BindData(jsonProducts) {
             "data": "UpdatedPrice", "render": function (data, type, full) {
                 if (!(full.ChildProductList.length > 0)) {
                     full.cost > 0 ? full.cost : 0;
-                    return "<input name='updatedPrice' disabled dataSKU='" + full.OriginalProductID + "' type='number' value=" + full.cost + " class='updatedParentPrice txtParent_" + full.OriginalProductID + "'>";
+                    return "<input name='updatedPrice' disabled dataSKU='" + full.ProductID + "' type='number' value=" + full.cost + " class='updatedParentPrice txtParent_" + full.ProductID + "'>";
                 }
                 else {
                     return "";
@@ -437,10 +437,10 @@ function BindData(jsonProducts) {
                     rawHTML = "Picked";
                 }
                 else if (full.hasProductSkuSync) {
-                    rawHTML = '<label class="mt-checkbox mt-checkbox-outline disabled"><input disabled type="checkbox" productid=' + full.OriginalProductID + ' id="chk_prod_' + full.OriginalProductID + '" class="chkProducts parentChk"><span></span></label>';
+                    rawHTML = '<label class="mt-checkbox mt-checkbox-outline disabled"><input disabled type="checkbox" productid=' + full.ProductID + ' id="chk_prod_' + full.ProductID + '" class="chkProducts parentChk"><span></span></label>';
                 }
                 else {
-                    rawHTML = '<label class="mt-checkbox mt-checkbox-outline"><input type="checkbox" productid=' + full.OriginalProductID + ' id="chk_prod_' + full.OriginalProductID + '" class="chkProducts parentChk"><span></span></label>';
+                    rawHTML = '<label class="mt-checkbox mt-checkbox-outline"><input type="checkbox" productid=' + full.ProductID + ' id="chk_prod_' + full.ProductID + '" class="chkProducts parentChk"><span></span></label>';
                 }
                 return rawHTML;
             }

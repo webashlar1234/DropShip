@@ -14,7 +14,7 @@ namespace DropshipPlatform.Entity
     
     public partial class Product
     {
-        public int ProductID { get; set; }
+        public long ProductID { get; set; }
         public string Title { get; set; }
         public Nullable<int> CategoryID { get; set; }
         public Nullable<double> Cost { get; set; }
@@ -26,7 +26,7 @@ namespace DropshipPlatform.Entity
         public string ManufacturerName { get; set; }
         public string ExternalCode { get; set; }
         public string ExternalCodeType { get; set; }
-        public string ParentProductID { get; set; }
+        public Nullable<long> ParentProductID { get; set; }
         public Nullable<double> NoOfCustomerReviews { get; set; }
         public Nullable<int> CustomerReviewRating { get; set; }
         public string NetWeight { get; set; }
@@ -36,6 +36,7 @@ namespace DropshipPlatform.Entity
         public string Color { get; set; }
         public string SourceWebsite { get; set; }
         public string Unit { get; set; }
+        public string SkuID { get; set; }
         public Nullable<bool> IsActive { get; set; }
         public Nullable<int> ItemCreatedBy { get; set; }
         public Nullable<System.DateTime> ItemCreatedWhen { get; set; }

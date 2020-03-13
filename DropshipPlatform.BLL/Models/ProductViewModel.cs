@@ -8,7 +8,7 @@ namespace DropshipPlatform.BLL.Models
 {
     public class ProductViewModel
     {
-        public int ProductID { get; set; }
+        public long ProductID { get; set; }
         public string Title { get; set; }
         public Nullable<int> CategoryID { get; set; }
         public string CategoryName { get; set; }
@@ -23,7 +23,7 @@ namespace DropshipPlatform.BLL.Models
         public string ManufacturerName { get; set; }
         public string ExternalCode { get; set; }
         public string ExternalCodeType { get; set; }
-        public string ParentProductID { get; set; }
+        public Nullable<long> ParentProductID { get; set; }
         public Nullable<double> NoOfCustomerReviews { get; set; }
         public Nullable<int> CustomerReviewRating { get; set; }
         public string NetWeight { get; set; }
@@ -44,6 +44,7 @@ namespace DropshipPlatform.BLL.Models
         public  bool hasProductSkuSync { get; set; } 
         public bool isProductPicked { get; set; }
         public string AliExpressProductID { get; set; }
+        public string SkuID { get; set; }
 
     }
 

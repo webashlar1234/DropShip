@@ -61,11 +61,11 @@ namespace DropshipPlatform.BLL.Services
                                 {
                                     var result = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(fqRsp.ResultList.FirstOrDefault().ItemExecutionResult);
 
-                                    string productOriginalId = item.ProductID.ToString();
-                                    Product prodObj = datacontext.Products.Where(x => x.OriginalProductID == productOriginalId).FirstOrDefault();
+                                    int productOriginalId = int.Parse(item.ProductID);
+                                    Product prodObj = datacontext.Products.Where(x => x.ProductID == productOriginalId).FirstOrDefault();
                                     if (prodObj != null)
                                     {
-                                        SellersPickedProduct obj = datacontext.SellersPickedProducts.Where(x => x.UserID == userid && x.ParentProductID == prodObj.ProductID.ToString()).FirstOrDefault();
+                                        SellersPickedProduct obj = datacontext.SellersPickedProducts.Where(x => x.UserID == userid && x.ParentProductID == prodObj.ProductID).FirstOrDefault();
                                         if (obj != null)
                                         {
                                             if (result.success == true)

@@ -39,9 +39,9 @@ namespace DropshipPlatform.Entity
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<MembershipType> MembershipTypes { get; set; }
         public virtual DbSet<ApplicationLog> ApplicationLogs { get; set; }
-        public virtual DbSet<SellerPickedProductSKU> SellerPickedProductSKUs { get; set; }
-        public virtual DbSet<SellersPickedProduct> SellersPickedProducts { get; set; }
         public virtual DbSet<AliExpressJobLog> AliExpressJobLogs { get; set; }
         public virtual DbSet<Product> Products { get; set; }
+        public virtual DbSet<SellerPickedProductSKU> SellerPickedProductSKUs { get; set; }
+        public virtual DbSet<SellersPickedProduct> SellersPickedProducts { get; set; }
     }
 }

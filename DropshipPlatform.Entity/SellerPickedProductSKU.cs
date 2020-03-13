@@ -15,7 +15,7 @@ namespace DropshipPlatform.Entity
     public partial class SellerPickedProductSKU
     {
         public int Id { get; set; }
-        public Nullable<int> ProductId { get; set; }
+        public Nullable<long> ProductId { get; set; }
         public string SKUCode { get; set; }
         public Nullable<decimal> UpdatedPrice { get; set; }
         public int SellerPickedId { get; set; }

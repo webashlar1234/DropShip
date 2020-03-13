@@ -32,7 +32,7 @@ namespace DropshipPlatform.BLL.Models
 
     public class scproductModel
     {
-        public string productId { get; set; }
+        public int productId { get; set; }
         public long aliExpressProductId { get; set; }
         public List<ProductSKUModel> SKUModels { get; set; }
         public double price { get; set; }
@@ -41,6 +41,7 @@ namespace DropshipPlatform.BLL.Models
     public class ProductSKUModel
     {
         public string skuCode { get; set; }
+        public int childproductId { get; set; }
         public int inventory { get; set; }
         public double price { get; set; }
         public double discount_price { get; set; }
