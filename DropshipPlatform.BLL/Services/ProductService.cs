@@ -117,7 +117,6 @@ namespace DropshipPlatform.BLL.Services
                 {
                     foreach (scproductModel product in products)
                     {
-                        List<SellersPickedProduct> sellerProducts = datacontext.SellersPickedProducts.ToList();
                         SellersPickedProduct obj = datacontext.SellersPickedProducts.Where(x => x.UserID == UserID && x.ParentProductID == product.productId).FirstOrDefault();
                         if (obj == null)
                         {
@@ -396,7 +395,7 @@ namespace DropshipPlatform.BLL.Services
                             {
                                 foreach (ProductSKUModel productSKUModel in productModel.SKUModels)
                                 {
-                                    SellerPickedProductSKU dbPickedProduct = datacontext.SellerPickedProductSKUs.Where(p => p.SKUCode == productSKUModel.skuCode).FirstOrDefault();
+                                    SellerPickedProductSKU dbPickedProduct = datacontext.SellerPickedProductSKUs.Where(p => p.ProductId == productSKUModel.childproductId).FirstOrDefault();
                                     if (dbPickedProduct != null)
                                     {
                                         //long existingInventory = dbPickedProduct.UpdatedInventory.Value > 0 ? dbPickedProduct.UpdatedInventory.Value : 0;

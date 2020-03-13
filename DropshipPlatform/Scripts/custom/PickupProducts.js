@@ -53,7 +53,7 @@ var product = {
                 }
             }
             else {
-                var parentItem = jsonData.filter(m => m.ProductID == selectedItems);
+                var parentItem = jsonData.filter(m => m.ProductID == item);
                 if (parentItem.length > 0) {
                     parentItem = parentItem[0];
                     var childrens = parentItem.ChildProductList;
@@ -62,7 +62,7 @@ var product = {
                             pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: childrens[i].SkuID, inventory: childrens[i].Inventory, price: childrens[i].UpdatedPrice, discount_price: 1, childproductId: childrens[i].ProductID });
                         }
                         else {
-                            pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: childrens[i].SkuID, inventory: childrens[i].Inventory, price: parentItem.cost, discount_price: 1, childproductId: childrens[i].ProductID });
+                            pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: childrens[i].SkuID, inventory: childrens[i].Inventory, price: childrens[i].Cost, discount_price: 1, childproductId: childrens[i].ProductID });
                         }
                     }
                 }

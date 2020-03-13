@@ -169,17 +169,26 @@ namespace DropshipPlatform.BLL.Services
                             AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain obj3 = new AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain();
                             scproductModel productObj = new scproductModel();
                             productObj.SKUModels = (from pp in datacontext.SellerPickedProductSKUs.Where(x => x.SellerPickedId == scproductModel.SellersPickedID)
-                                                    from p in datacontext.Products.Where(x => x.OriginalProductID == pp.SKUCode)
-                                                    select new { OriginalProductID = p.OriginalProductID, Inventory = p.Inventory }
+                                                    from p in datacontext.Products.Where(x => x.ProductID == pp.ProductId)
+                                                    select new { skuCode = p.SkuID, Inventory = p.Inventory }
                                                                 ).ToList().Select(x => new ProductSKUModel
                                                                 {
-                                                                    skuCode = x.OriginalProductID,
+                                                                    skuCode = x.skuCode,
                                                                     inventory = x.Inventory != null ? Int32.Parse(x.Inventory) : 0
                                                                 }).ToList();
-                            foreach (ProductSKUModel productSKUModel in productObj.SKUModels)
+                            if(productObj.SKUModels.Count > 0)
                             {
-                                skus.Add("{\"sku_code\": \"" + productSKUModel.skuCode + "\",\"inventory\": " + productSKUModel.inventory + "}");
+                                foreach (ProductSKUModel productSKUModel in productObj.SKUModels)
+                                {
+                                    skus.Add("{\"sku_code\": \"" + productSKUModel.skuCode + "\",\"inventory\": " + productSKUModel.inventory + "}");
+                                }
                             }
+                            else
+                            {
+                                Product productOrg = datacontext.Products.Where(x => x.ProductID == scproductModel.ParentProductID).FirstOrDefault();
+                                skus.Add("{\"sku_code\": \"" + productOrg.ProductID + "\",\"inventory\": " + productOrg.Inventory + "}");
+                            }
+                            
                             obj3.ItemContentId = Guid.NewGuid().ToString();
                             obj3.ItemContent = "{\"aliexpress_product_id\":" + scproductModel.AliExpressProductID + ",\"multiple_sku_update_list\":[" + string.Join(",", skus.ToArray()) + "]}";
 

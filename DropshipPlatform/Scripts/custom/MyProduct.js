@@ -151,7 +151,7 @@ function format(d) {
             '</td><td>' + value.Inventory +
             '</td><td>' + "$" + value.Cost +
             '</td>' +
-        '<td>' + "<input name='updatedPrice' data-isUpdated='false' onkeypress='return IsNumeric(event);' disabled data-sku='" + value.SkuID + "' type='text' value=" + value.UpdatedPrice + " class='updatedPrice txtEdit_" + value.ParentProductID + "'>" +
+        '<td>' + "<input name='updatedPrice' data-isUpdated='false' onkeypress='return IsNumeric(event);' disabled data-sku='" + value.SkuID + "' data-productid='" + value.ProductID + "' type='text' value=" + value.UpdatedPrice + " class='updatedPrice txtEdit_" + value.ParentProductID + "'>" +
             //'</td><td>' + value.Description +
             '</td></tr>';
     })
@@ -247,16 +247,16 @@ function SavePickedProducts() {
             if ($(".innertable").find("tr.skuRow[data-for='" + item + "']")) {
                 $.each($(".innertable").find("tr.skuRow[data-for='" + item + "']"), function (i, data) {
                     if ($(data).find(".updatedPrice").data("isupdated")) {
-                        updatedProducts[updatedProducts.length - 1].SKUModels.push({ skuCode: $(data).find(".updatedPrice").data("sku"), price: $(data).find(".updatedPrice").val(), discount_price: 1 });
+                        updatedProducts[updatedProducts.length - 1].SKUModels.push({ childproductId: $(data).find(".updatedPrice").data("productid"), skuCode: $(data).find(".updatedPrice").data("sku"), price: $(data).find(".updatedPrice").val(), discount_price: 1 });
                     }
                     else {
-                        updatedProducts[updatedProducts.length - 1].SKUModels.push({ skuCode: $(data).find(".updatedPrice").data("sku"), inventory: $(data).data("inventory"), price: $(data).find(".updatedPrice").val(), discount_price: 1 })
+                        updatedProducts[updatedProducts.length - 1].SKUModels.push({ childproductId: $(data).find(".updatedPrice").data("productid"), skuCode: $(data).find(".updatedPrice").data("sku"), inventory: $(data).data("inventory"), price: $(data).find(".updatedPrice").val(), discount_price: 1 })
                     }
                 });
             }
         }
         else {
-            var parentItem = jsonData.filter(m => m.AliExpressProductID == selectedItems);
+            var parentItem = jsonData.filter(m => m.AliExpressProductID == item);
             if (parentItem.length > 0) {
                 parentItem = parentItem[0];
                 var childrens = parentItem.ChildProductList;
@@ -265,7 +265,7 @@ function SavePickedProducts() {
                         updatedProducts[updatedProducts.length - 1].SKUModels.push({ skuCode: childrens[i].SkuID, inventory: childrens[i].Inventory, price: childrens[i].UpdatedPrice, childproductId: childrens[i].ProductID });
                     }
                     else {
-                        updatedProducts[updatedProducts.length - 1].SKUModels.push({ skuCode: childrens[i].SkuID, inventory: childrens[i].Inventory, price: parentItem.cost, childproductId: childrens[i].ProductID });
+                        updatedProducts[updatedProducts.length - 1].SKUModels.push({ skuCode: childrens[i].SkuID, inventory: childrens[i].Inventory, price: childrens[i].Cost, childproductId: childrens[i].ProductID });
                     }
                 }
             }
