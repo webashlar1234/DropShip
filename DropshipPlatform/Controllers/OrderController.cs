@@ -36,34 +36,29 @@ namespace DropshipPlatform.Controllers
             string search = Request.Form.GetValues("search[value]").FirstOrDefault();
             int pageSize = length != null ? Convert.ToInt32(length) : 0;
             int skip = start != null ? Convert.ToInt32(start) : 0;
-            ResultData resultList = _orderService.getAllOrders();
+            List<Order> resultList = _orderService.getAllOrdersFromDatabase();
             List<OrderData> retvalue = new List<OrderData>();
-            if (resultList.TargetList != null)
+            if (resultList != null)
             {
-                foreach (var item in resultList.TargetList)
+                foreach (var item in resultList)
                 {
                     OrderData orderData = new OrderData();
-                    orderData.AliExpressOrderNumber = item.OrderId.ToString();
-                    orderData.AliExpressProductId = item.ProductList[0].SkuCode;
-                    List<Product> productData = _orderService.GetProductById(orderData.AliExpressProductId);
-                    orderData.OrignalProductId = productData[0].OriginalProductID;
-                    //orderData.OrignalProductLink = "https://www.abc.com/xyz";
-                    orderData.OrignalProductLink = productData[0].SourceWebsite;
-                    orderData.ProductTitle = item.ProductList[0].ProductName;
-                    orderData.OrderAmount = item.ProductList[0].TotalProductAmount.Amount;
-                    orderData.DeleveryCountry = null;
-                    orderData.ShippingWeight = productData[0].ShippingWeight;
-                    orderData.OrderStatus = "New Order";
-                    orderData.PaymentStatus = "UnPaid";
-                    orderData.SellerID = item.SellerLoginId;
-                    orderData.SellerEmail = null;
-                    orderData.productExist = false;
-                    if (productData.Count > 0)
-                    {
-                        orderData.productExist = true;
-                    }
-                    orderData.LogisticName = item.ProductList[0].LogisticsServiceName;
-                    orderData.LogisticType = item.ProductList[0].LogisticsType;
+                    //orderData.AliExpressOrderNumber = item.AliExpressOrderID;
+                    //orderData.AliExpressProductId = item.AliExpressProductId;
+                    //orderData.OrignalProductId = item.OrignalProductId;
+                    //orderData.OrignalProductLink = item.OrignalProductLink;
+                    //orderData.ProductTitle = item.ProductTitle;
+                    //orderData.OrderAmount = item.OrderAmount;
+                    //orderData.DeleveryCountry = item.DeliveryCountry;
+                    //orderData.ShippingWeight = item.ShippingWeight;
+                    //orderData.OrderStatus = item.OrderStatus;
+                    //orderData.PaymentStatus = item.PaymentStatus;
+                    //orderData.SellerID = item.SellerID;
+                    //orderData.SellerEmail = item.SellerEmail;
+                    //orderData.LogisticName = item.LogisticName;
+                    //orderData.LogisticType = item.LogisticType;
+                    //orderData.productExist = item.productExist;
+
                     retvalue.Add(orderData);
                 }
             }

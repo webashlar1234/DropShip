@@ -63,10 +63,18 @@ namespace DropshipPlatform.BLL.Services
                     dbUser.Name = model.Username;
                     dbUser.Password = model.Password;
                     dbUser.Phone = model.Phone;
+                    dbUser.Country = model.Country;
                     dbUser.EmailID = model.Email;
                     dbUser.IsActive = true;
                     dbUser.IsPolicyAccepted = true;
                     datacontext.Users.Add(dbUser);
+                    datacontext.SaveChanges();
+
+                    User_Roles dbUserRoles = new User_Roles();
+                    dbUserRoles.UserID = dbUser.UserID;
+                    dbUserRoles.RoleID = model.RoleID;
+                    datacontext.User_Roles.Add(dbUserRoles);
+
                     datacontext.SaveChanges();
 
                     response.Data = dbUser;
@@ -124,6 +132,84 @@ namespace DropshipPlatform.BLL.Services
                 logger.Error(ex.ToString());
             }
             return dbUser;
+        }
+
+        public int GetLoginUserRoleID(int UserID)
+        {
+            int RoleID = 0;
+            try
+            {
+                using (DropshipDataEntities datacontext = new DropshipDataEntities())
+                {
+                    RoleID = datacontext.User_Roles.Where(m => m.UserID == UserID).Select(x => x.RoleID).FirstOrDefault();
+                }
+            }
+            catch (Exception ex)
+            {
+                RoleID = 0;
+                logger.Error(ex.ToString());
+            }
+            return RoleID;
+        }
+
+
+        public List<User> getOperationalUsers()
+        {
+            List<User> operationalUsers = new List<User>();
+            try
+            {
+                using (DropshipDataEntities datacontext = new DropshipDataEntities())
+                {
+                    List<User_Roles> userList = datacontext.User_Roles.Where(x => x.RoleID == 2).ToList();
+                    foreach (var item in userList)
+                    {
+                        User Obj = datacontext.Users.Where(x => x.UserID == item.UserID).FirstOrDefault();
+                        if (Obj != null)
+                        {
+                            User users = new User();
+                            users.UserID = Obj.UserID;
+                            users.Name = Obj.Name;
+                            users.EmailID = Obj.EmailID;
+                            users.Phone = Obj.Phone;
+                            users.Country = Obj.Country;
+
+                            operationalUsers.Add(users);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString());
+            }
+            return operationalUsers;
+        }
+
+        public bool deleteOperationalManager(int UserID)
+        {
+            bool result = false;
+
+            try
+            {
+                using (DropshipDataEntities datacontext = new DropshipDataEntities())
+                {
+                    var userList = datacontext.Users.Where(x => x.UserID == UserID).FirstOrDefault();
+                    if(userList != null)
+                    {
+                        datacontext.Users.Remove(userList);
+                        datacontext.SaveChanges();
+                        result = true;
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                logger.Info(ex.ToString());
+            }
+
+            return result;
         }
     }
 }

@@ -634,7 +634,7 @@ table.dataTable.no-footer {
 }
 
 
-select.error, textarea.error, input.error {
+select.error, textarea.error, input.error ,.error {
     color: #FF0000;
 }
 

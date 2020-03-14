@@ -24,5 +24,8 @@ namespace DropshipPlatform.Entity
         public Nullable<System.DateTime> ItemCreatedWhen { get; set; }
         public Nullable<int> ItemModifyBy { get; set; }
         public Nullable<System.DateTime> ItemModifyWhen { get; set; }
+        public Nullable<long> AliExpressOrderId { get; set; }
+        public Nullable<long> AliExpressProductOrderId { get; set; }
+        public Nullable<int> SCOrderId { get; set; }
     }
 }

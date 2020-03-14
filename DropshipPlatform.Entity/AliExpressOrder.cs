@@ -15,19 +15,23 @@ namespace DropshipPlatform.Entity
     public partial class AliExpressOrder
     {
         public int ID { get; set; }
+        public Nullable<long> AliExpressOrderID { get; set; }
         public string BuyerLoginId { get; set; }
         public string AliExpressSellerID { get; set; }
         public string DeliveryCountry { get; set; }
-        public Nullable<int> PaymentStatus { get; set; }
+        public string PaymentStatus { get; set; }
         public string TrackingNo { get; set; }
         public string ShippingWeight { get; set; }
         public string OrderAmount { get; set; }
         public string CurrencyCode { get; set; }
         public string OrderStatus { get; set; }
+        public Nullable<bool> ProductExist { get; set; }
         public Nullable<int> NoOfOrderItems { get; set; }
         public Nullable<int> ItemCreatedBy { get; set; }
         public Nullable<System.DateTime> ItemCreatedWhen { get; set; }
         public Nullable<int> ItemModifyBy { get; set; }
         public Nullable<System.DateTime> ItemModifyWhen { get; set; }
+        public Nullable<System.DateTime> AliExpressOrderCreatedTime { get; set; }
+        public Nullable<System.DateTime> AliExpressOrderUpdatedTime { get; set; }
     }
 }
