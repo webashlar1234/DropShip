@@ -6,37 +6,6 @@
 <link href="~/Content/custom/user-management.css" rel="stylesheet" />
 <script src="~/Scripts/bootstrap-toggle.min.js"></script>
 <script src="~/Scripts/custom/userManagement.js"></script>
-<section class="mt-3">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-12">
-                <p class="tbl-title">
-                    Operations Management - User Management
-                </p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-12 col-12 text-lg-left text-right">
-                <div class="header_search">
-                    <div class="header_search_content">
-                        <div class="header_search_form_container">
-                            <form action="#" class="header_search_form clearfix">
-                                <input type="search" required="required" class="header_search_input" placeholder="Search Here...">
-                                <div class="custom_dropdown" style="display: none;">
-                                </div> <button type="submit" class="header_search_button trans_300" value="Submit"><i class="fa fa-search search-icon" aria-hidden="true"></i></button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 
 <!-- Add New User Modal -->
 <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -49,45 +18,46 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form>
+                <form role="form" method="post" action="@Url.Action("Index","Registration")" novalidate="" class="mb-lg form-horizontal" id="frmOperationalRegistration">
+                    <input name="RoleID" type="hidden" value="2" />
                     <div class="form-group">
-                        <label for="exampleInputEmail1">Name</label>
-                        <input type="text" class="form-control" id="#" aria-describedby="emailHelp" placeholder="Enter Name">
+                        <label>UserName</label>
+                        <input id="TxtUserName" value="" type="text" placeholder="UserName" autocomplete="off" required="required" class="form-control" name="UserName" maxlength="30" />
                     </div>
                     <div class="form-group">
-                        <label for="exampleInputEmail1">Email</label>
-                        <input type="email" class="form-control" id="#" aria-describedby="emailHelp" placeholder="Enter Email">
+                        <label>Email</label>
+                        <input id="TxtEmail" value="" type="email" placeholder="Email" autocomplete="off" required="required" class="form-control" name="Email" maxlength="50" />
                     </div>
                     <div class="form-group">
-                        <label for="exampleInputEmail1">Phone Number</label>
-                        <input type="number" class="form-control" id="#" aria-describedby="emailHelp" placeholder="Enter Phone Number">
+                        <label>Password</label>
+                        <input type="password" value="" id="TxtPassword" placeholder="Password" required="required" class="form-control" name="Password" maxlength="15" />
                     </div>
                     <div class="form-group">
-                        <label for="inputEmail3">Country</label>
-                        <div>
-                            <select class="form-control" id="#">
-                                <option>Select Country</option>
-                                <option>1</option>
-                                <option>2</option>
-                                <option>3</option>
-                                <option>4</option>
-                                <option>5</option>
-                            </select>
-                        </div>
+                        <label>Password:</label>
+                        <input type="password" value="" id="TxtConfirmPassword" placeholder="Confirm Password" class="form-control" name="ConfirmPassword" maxlength="15" />
                     </div>
                     <div class="form-group">
-                        <label for="exampleInputPassword1">Password</label>
-                        <input type="password" class="form-control" id="#" placeholder="Enter Password">
+                        <label>Phone</label>
+                        <input type="text" value="" id="TxtPhone" placeholder="Phone" class="form-control" name="Phone" maxlength="10" onkeypress='return event.charCode >= 48 && event.charCode <= 57' />
                     </div>
                     <div class="form-group">
-                        <label for="exampleInputPassword1">Confirm  Password</label>
-                        <input type="password" class="form-control" id="#" placeholder="Enter Confirm  Password">
+                        <label>Address</label>
+                        <input type="text" value="" id="TxtAddress" placeholder="Address" class="form-control" name="Address" maxlength="100" />
                     </div>
-                </form>
+                    <div class="form-group">
+                        <label>Country</label>
+                        <select id="LstCountry" class="form-control" name="Country">
+                            <option value="" selected disabled>Select a Country</option>
+                            <option value="India">India</option>
+                            <option value="USA">USA</option>
+                            <option value="Russia">Russia</option>
+                        </select>
+                    </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary btn-submit">Submit</button>
-            </div>
+                <div class="modal-footer">
+                    <button type="submit" onclick="operationalRegisterUser()" class="btn btn-submit col-lg-6 pull-right">Submit</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -97,84 +67,7 @@
         <div class="row">
             <div class="col-lg-12 table-responsive  mb-5">
                 <button type="button" class="btn btn-primary btn-add-new" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-plus-circle" aria-hidden="true"></i> &nbsp;Add New</button>
-                <table id="example" class="display mt-2" style="width:100%">
-                    <thead>
-                        <tr>
-                            <th scope="col">Name</th>
-                            <th scope="col"> Email</th>
-                            <th scope="col">Cell Phone</th>
-                            <th scope="col"> Country</th>
-                            <th scope="col"> Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Rembo</td>
-                            <td>123@gmail.com</td>
-                            <td>+91 99988 55555</td>
-                            <td>USA</td>
-                            <td><input type="checkbox" data-toggle="toggle" data-on="Active " data-off="Inactive "></td>
-                        </tr>
-                        <tr>
-                            <td>Rembo</td>
-                            <td>123@gmail.com</td>
-                            <td>+91 99988 55555</td>
-                            <td>USA</td>
-                            <td><input type="checkbox" data-toggle="toggle" data-on="Active " data-off="Inactive "></td>
-                        </tr>
-                        <tr>
-                            <td>Rembo</td>
-                            <td>123@gmail.com</td>
-                            <td>+91 99988 55555</td>
-                            <td>USA</td>
-                            <td><input type="checkbox" data-toggle="toggle" data-on="Active " data-off="Inactive "></td>
-                        </tr>
-                        <tr>
-                            <td>Rembo</td>
-                            <td>123@gmail.com</td>
-                            <td>+91 99988 55555</td>
-                            <td>USA</td>
-                            <td><input type="checkbox" data-toggle="toggle" data-on="Active " data-off="Inactive "></td>
-                        </tr>
-                        <tr>
-                            <td>Rembo</td>
-                            <td>123@gmail.com</td>
-                            <td>+91 99988 55555</td>
-                            <td>USA</td>
-                            <td><input type="checkbox" data-toggle="toggle" data-on="Active " data-off="Inactive "></td>
-                        </tr>
-                        <tr>
-                            <td>Rembo</td>
-                            <td>123@gmail.com</td>
-                            <td>+91 99988 55555</td>
-                            <td>USA</td>
-                            <td><input type="checkbox" data-toggle="toggle" data-on="Active " data-off="Inactive "></td>
-                        </tr>
-                        <tr>
-                            <td>Rembo</td>
-                            <td>123@gmail.com</td>
-                            <td>+91 99988 55555</td>
-                            <td>USA</td>
-                            <td><input type="checkbox" data-toggle="toggle" data-on="Active " data-off="Inactive "></td>
-                        </tr>
-                        <tr>
-                            <td>Rembo</td>
-                            <td>123@gmail.com</td>
-                            <td>+91 99988 55555</td>
-                            <td>USA</td>
-                            <td><input type="checkbox" data-toggle="toggle" data-on="Active " data-off="Inactive "></td>
-                        </tr>
-                        <tr>
-                            <td>Rembo</td>
-                            <td>123@gmail.com</td>
-                            <td>+91 99988 55555</td>
-                            <td>USA</td>
-                            <td><input type="checkbox" data-toggle="toggle" data-on="Active " data-off="Inactive "></td>
-                        </tr>
-
-
-
-                    </tbody>
+                <table id="operationalUserDT" class="display mt-2" style="width:100%">
                 </table>
             </div>
         </div>

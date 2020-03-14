@@ -26,9 +26,11 @@ namespace DropshipPlatform.BLL.Services
 
                 AliexpressSolutionOrderGetRequest.OrderQueryDomain obj1 = new AliexpressSolutionOrderGetRequest.OrderQueryDomain();
                 var todayDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                obj1.CreateDateEnd = todayDate;
-                obj1.CreateDateStart = "2020-03-01 00:00:00";
-                obj1.ModifiedDateStart = "2020-03-01 00:00:00";
+                obj1.CreateDateEnd = DateTime.Now.AddDays(1).ToString("yyyy-MM-dd HH:mm:ss");
+                // obj1.CreateDateStart = "2020-03-01 00:00:00";
+                obj1.CreateDateStart = todayDate;
+                //  obj1.ModifiedDateStart = "2020-03-01 00:00:00";
+                obj1.ModifiedDateStart = todayDate;
                 obj1.OrderStatusList = new List<string> { "SELLER_PART_SEND_GOODS", "PLACE_ORDER_SUCCESS", "IN_CANCEL", "WAIT_SELLER_SEND_GOODS", "WAIT_BUYER_ACCEPT_GOODS", "FUND_PROCESSING" , "IN_ISSUE", "IN_FROZEN", "WAIT_SELLER_EXAMINE_MONEY", "RISK_CONTROL", "FINISH" };
                 obj1.BuyerLoginId = "edacan0107@aol.com";
                 obj1.PageSize = 20L;
@@ -115,6 +117,102 @@ namespace DropshipPlatform.BLL.Services
             }
 
             return result;
+        }
+
+        public void InsertOrUpdateOrderData(ResultData orders)
+        {
+            try
+            {
+                if (orders.TargetList != null)
+                {
+                    using (DropshipDataEntities datacontext = new DropshipDataEntities())
+                    {
+                        foreach (var item in orders.TargetList)
+                        {
+                            AliExpressOrder AliExpressOrderData = new AliExpressOrder();
+                            var AliiExpressOrderId = datacontext.AliExpressOrders.Where(x => x.AliExpressOrderID == item.OrderId).Any();
+                            //if (!AliiExpressOrderId)
+                            //{
+                            //    AliExpressOrderData.BuyerLoginId = item.BuyerLoginId;
+                            //    AliExpressOrderData.AliExpressOrderID = item.OrderId;
+                            //    AliExpressOrderData.AliExpressProductId = item.ProductList[0].SkuCode;
+                            //    List<Product> productData = GetProductById(AliExpressOrderData.AliExpressProductId);
+                            //    AliExpressOrderData.OrignalProductId = productData[0].OriginalProductID;
+                            //    AliExpressOrderData.OrignalProductLink = productData[0].SourceWebsite;
+                            //    AliExpressOrderData.ProductTitle = item.ProductList[0].ProductName;
+                            //    AliExpressOrderData.OrderAmount = item.ProductList[0].TotalProductAmount.Amount;
+                            //    AliExpressOrderData.CurrencyCode = item.ProductList[0].TotalProductAmount.CurrencyCode;
+                            //    AliExpressOrderData.DeliveryCountry = null;
+                            //    AliExpressOrderData.ShippingWeight = productData[0].ShippingWeight;
+                            //    AliExpressOrderData.OrderStatus = "New Order";
+                            //    AliExpressOrderData.PaymentStatus = "UnPaid";
+                            //    AliExpressOrderData.SellerID = item.SellerLoginId;
+                            //    AliExpressOrderData.SellerEmail = null;
+                            //    AliExpressOrderData.ProductExist = false;
+                            //    if (productData.Count > 0)
+                            //    {
+                            //        AliExpressOrderData.ProductExist = true;
+                            //    }
+                            //    AliExpressOrderData.LogisticName = item.ProductList[0].LogisticsServiceName;
+                            //    AliExpressOrderData.LogisticType = item.ProductList[0].LogisticsType;
+                            //    AliExpressOrderData.NoOfOrderItems = null;
+
+                            //    datacontext.AliExpressOrders.Add(AliExpressOrderData);
+                            //}
+                            //else
+                            //{
+                            //    AliExpressOrder AliExpressOrderDataList = new AliExpressOrder();
+                            //    AliExpressOrderDataList = datacontext.AliExpressOrders.Where(x => x.AliExpressOrderID == item.OrderId.ToString()).FirstOrDefault();
+                            //    AliExpressOrderDataList.BuyerLoginId = item.BuyerLoginId;
+                            //    AliExpressOrderDataList.AliExpressOrderID = item.OrderId.ToString();
+                            //    AliExpressOrderDataList.AliExpressProductId = item.ProductList[0].SkuCode;
+                            //    List<Product> productData = GetProductById(AliExpressOrderDataList.AliExpressProductId);
+                            //    AliExpressOrderDataList.OrignalProductId = productData[0].OriginalProductID;
+                            //    AliExpressOrderDataList.OrignalProductLink = productData[0].SourceWebsite;
+                            //    AliExpressOrderDataList.ProductTitle = item.ProductList[0].ProductName;
+                            //    AliExpressOrderDataList.OrderAmount = item.ProductList[0].TotalProductAmount.Amount;
+                            //    AliExpressOrderDataList.CurrencyCode = item.ProductList[0].TotalProductAmount.CurrencyCode;
+                            //    AliExpressOrderDataList.DeliveryCountry = null;
+                            //    AliExpressOrderDataList.ShippingWeight = productData[0].ShippingWeight;
+                            //    AliExpressOrderDataList.OrderStatus = "New Order";
+                            //    AliExpressOrderDataList.PaymentStatus = "UnPaid";
+                            //    AliExpressOrderDataList.SellerID = item.SellerLoginId;
+                            //    AliExpressOrderDataList.SellerEmail = null;
+                            //    AliExpressOrderDataList.ProductExist = false;
+                            //    if (productData.Count > 0)
+                            //    {
+                            //        AliExpressOrderDataList.ProductExist = true;
+                            //    }
+                            //    AliExpressOrderDataList.LogisticName = item.ProductList[0].LogisticsServiceName;
+                            //    AliExpressOrderDataList.LogisticType = item.ProductList[0].LogisticsType;
+                            //    AliExpressOrderDataList.NoOfOrderItems = null;
+                            //}
+                            datacontext.SaveChanges();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString());
+            }
+        }
+
+        public List<Order> getAllOrdersFromDatabase()
+        {
+            List<Order> Orders = new List<Order>();
+            try
+            {
+                using (DropshipDataEntities datacontext = new DropshipDataEntities())
+                {
+                    Orders = datacontext.Orders.ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString());
+            }
+            return Orders;
         }
     }
 }

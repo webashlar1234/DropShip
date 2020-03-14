@@ -25,6 +25,7 @@ namespace DropshipPlatform.Entity
         public string OrderAmount { get; set; }
         public string CurrencyCode { get; set; }
         public string OrderStatus { get; set; }
+        public Nullable<bool> ProductExist { get; set; }
         public Nullable<int> NoOfOrderItems { get; set; }
         public Nullable<int> ItemCreatedBy { get; set; }
         public Nullable<System.DateTime> ItemCreatedWhen { get; set; }

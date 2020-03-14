@@ -32,7 +32,7 @@ namespace DropshipPlatform.BLL.Models
         public string PaymentStatus { get; set; }
         public string SellerID { get; set; }
         public string SellerEmail { get; set; }
-        public bool productExist { get; set; }
+        public Nullable<bool> productExist { get; set; }
         public string LogisticType { get; set; }
         public string LogisticName { get; set; }
     }

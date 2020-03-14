@@ -228,6 +228,7 @@
     <Compile Include="Controllers\MyAccountController.cs" />
     <Compile Include="Controllers\OrderController.cs" />
     <Compile Include="Controllers\ProductsController.cs" />
+    <Compile Include="Controllers\RegistrationController.cs" />
     <Compile Include="Controllers\StripeController.cs" />
     <Compile Include="Controllers\SubscriptionsController.cs" />
     <Compile Include="Global.asax.cs">
@@ -318,6 +319,7 @@
     <Content Include="Scripts\custom\Order.js" />
     <Content Include="Scripts\custom\PickupProducts.js" />
     <Content Include="Scripts\custom\ProductPlan.js" />
+    <Content Include="Scripts\custom\Registration.js" />
     <Content Include="Scripts\custom\Subscription.js" />
     <Content Include="Scripts\custom\site.js" />
     <Content Include="Scripts\custom\stripe_custom.js" />
@@ -375,7 +377,6 @@
     <Content Include="Views\MyAccount\Index.cshtml" />
     <Content Include="Views\Shared\_LoginLayout.cshtml" />
     <Content Include="Views\Login\Index.cshtml" />
-    <Content Include="Views\Login\Registration.cshtml" />
     <Content Include="Views\Subscriptions\Index.cshtml" />
     <Content Include="Views\Subscriptions\Plan.cshtml" />
     <Content Include="Views\Home\UserManagement.cshtml" />
@@ -383,6 +384,7 @@
     <Content Include="Views\AliExpress\jobLog.cshtml" />
     <Content Include="Views\Order\getOrders.cshtml" />
     <Content Include="Views\Order\Index.cshtml" />
+    <Content Include="Views\Registration\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

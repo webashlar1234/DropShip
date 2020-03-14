@@ -39,37 +39,8 @@ namespace DropshipPlatform.Controllers
                     }
                     Session["UserName"] = user.Name;
                     Session["UserID"] = user.UserID;
+                    Session["RoleID"] = userService.GetLoginUserRoleID(user.UserID);
                     return RedirectToAction("Index", "AliExpress");
-                }
-            }
-            catch (Exception ex)
-            {
-                logger.Error(ex.ToString());
-            }
-            ViewBag.Message = response.Message;
-            return View();
-        }
-
-        public ActionResult Registration()
-        {
-            return View();
-        }
-
-       
-
-        [HttpPost]
-        public ActionResult Registration(RegisterUserModel model)
-        {
-            ResponseModel response = new ResponseModel();
-            ViewBag.Message = String.Empty;
-
-            try
-            {
-                UserService userService = new UserService();
-                response = userService.RegisterUser(model);
-                if (response.IsSuccess)
-                {
-                    return RedirectToAction("Index", "Login");
                 }
             }
             catch (Exception ex)

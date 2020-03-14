@@ -51,7 +51,10 @@
                                 <!-- End Level one -->
                                 <li class="nav-item"><a href="/AliExpress" class="nav-link">Connect to AliExpress</a></li>
                                 <li class="nav-item"><a href="/Category" class="nav-link">Category Mapping</a></li>
-                                <li class="nav-item"><a href="@Url.Action("UserManagement","Home")" class="nav-link">User Management</a></li>
+                                @if (Session["RoleID"] != null && Session["RoleID"].ToString() == "1")
+                                {
+                                <li class="nav-item"><a href="@Url.Action("UserManagement", "Home")" class="nav-link">User Management</a></li>
+                                }
                                 <li class="nav-item"><a href="#" class="nav-link">Fulfillment</a></li>
                                 <li class="nav-item"><a href="@Url.Action("Membership","Home")" class="nav-link">Membership</a></li>
                                 <!-- Level one dropdown -->

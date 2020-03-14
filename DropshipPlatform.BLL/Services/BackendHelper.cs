@@ -231,5 +231,11 @@ namespace DropshipPlatform.BLL.Services
             }
             return result;
         }
+
+        public void RefreshAliExpressOrders()
+        {
+            OrderService obj = new OrderService();
+            obj.getAllOrders();
+        }
     }
 }

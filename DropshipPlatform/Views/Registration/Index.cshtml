@@ -1,8 +1,7 @@
 ﻿
 @{
     ViewBag.Title = "Registration";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-    <script src="~/Scripts/custom/Login.js"></script>
+    <script src="~/Scripts/custom/Registration.js"></script>
 }
 
 <div class="panel panel-default">
@@ -12,7 +11,8 @@
                 <div class="row justify-content-center">
                     <div class="col-lg-5">
                         <div class="registration-form">
-                            <form role="form" method="post" action="@Url.Action("Registration","Login")" novalidate="" class="mb-lg form-horizontal" id="frmRegistration">
+                            <form role="form" method="post" action="@Url.Action("Index","Registration")" novalidate="" class="mb-lg form-horizontal" id="frmRegistration">
+                                <input name="RoleID" type="hidden" value="3"  />
                                 <div class="form-group">
                                     <label>UserName</label>
                                     <input id="TxtUserName" value="" type="text" placeholder="UserName" autocomplete="off" required="required" class="form-control" name="UserName" maxlength="30" />
@@ -41,9 +41,9 @@
                                     <label>Country</label>
                                     <select id="LstCountry" class="form-control" name="Country">
                                         <option value="" selected disabled>Select a Country</option>
-                                        <option value="1">India</option>
-                                        <option value="2">USA</option>
-                                        <option value="3">Russia</option>
+                                        <option value="India">India</option>
+                                        <option value="USA">USA</option>
+                                        <option value="Russia">Russia</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
