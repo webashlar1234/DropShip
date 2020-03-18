@@ -19,7 +19,11 @@ namespace DropshipPlatform.BLL.Models
 
         public static string stripeTestSecretKey = System.Web.Configuration.WebConfigurationManager.AppSettings["Stripe_testSecretKey"].ToString();
 
-        public static string sampleImage = "https://www.begorgeousstylesandbeauty.com/wp-content/uploads/2016/01/2015-100-High-Quality-Mens-Dress-Shirts-Blue-Shirt-Men-Causal-Striped-Shirt-Men-Camisa-Social.jpg";
+        //public static string sampleImage = "https://www.begorgeousstylesandbeauty.com/wp-content/uploads/2016/01/2015-100-High-Quality-Mens-Dress-Shirts-Blue-Shirt-Men-Causal-Striped-Shirt-Men-Camisa-Social.jpg";
+        public static string sampleImage = "http://img1.how01.com/imgs/71/f7/0/4aec0005dcbc40cd378b.jpg";
+        public static string serviceTemplateID = "0";
+        public static int shippingPreparationTime = 20;
+        public static string shippingTemplateID = "1013213014";
 
     }
 }

@@ -38,6 +38,9 @@ namespace DropshipPlatform.Entity
         public string Unit { get; set; }
         public string SkuID { get; set; }
         public Nullable<bool> IsActive { get; set; }
+        public Nullable<double> PackageHeight { get; set; }
+        public Nullable<double> PackageLength { get; set; }
+        public Nullable<double> PackageWidth { get; set; }
         public Nullable<int> ItemCreatedBy { get; set; }
         public Nullable<System.DateTime> ItemCreatedWhen { get; set; }
         public Nullable<int> ItemModifyBy { get; set; }

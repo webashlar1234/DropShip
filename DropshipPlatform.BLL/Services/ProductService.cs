@@ -72,7 +72,7 @@ namespace DropshipPlatform.BLL.Services
                             SellersPickedProduct sellersPickedProduct = datacontext.SellersPickedProducts.Where(x => x.ParentProductID == productViewModel.ProductID && x.UserID == UserID).FirstOrDefault();
                             if (sellersPickedProduct != null)
                             {
-                                productViewModel.hasProductSkuSync =  true;
+                                productViewModel.hasProductSkuSync = true;
                                 if (!string.IsNullOrEmpty(sellersPickedProduct.AliExpressProductID))
                                 {
                                     productViewModel.SellerPrice = sellersPickedProduct.SellerPrice;
@@ -130,7 +130,7 @@ namespace DropshipPlatform.BLL.Services
                                 obj.ItemCreatedBy = UserID;
                                 obj.ItemCreatedWhen = DateTime.UtcNow;
                                 obj.IsOnline = true;
-                                if(product.SKUModels != null)
+                                if (product.SKUModels != null)
                                 {
                                     foreach (ProductSKUModel productSKUModel in product.SKUModels)
                                     {
@@ -378,7 +378,7 @@ namespace DropshipPlatform.BLL.Services
                     {
                         using (DropshipDataEntities datacontext = new DropshipDataEntities())
                         {
-                            if(productModel.SKUModels == null)
+                            if (productModel.SKUModels == null)
                             {
                                 SellersPickedProduct dbPickedProduct = datacontext.SellersPickedProducts.Where(p => p.AliExpressProductID == productModel.aliExpressProductId.ToString() && p.UserID == userId).FirstOrDefault();
                                 if (dbPickedProduct != null)
@@ -580,18 +580,18 @@ namespace DropshipPlatform.BLL.Services
                 List<string> skus = new List<string>();//"[{\"sku_code\": \"" + dbProduct[0].OriginalProductID + "\",\"price\": " + dbProduct[0].Cost + "}]";
                 foreach (scproductModel scproductModel in scProducts)
                 {
-                    if(scproductModel.SKUModels == null)
+                    if (scproductModel.SKUModels == null)
                     {
                         using (DropshipDataEntities datacontext = new DropshipDataEntities())
                         {
                             string parent_SKUCOde = (from p in datacontext.Products
-                                        from sp in datacontext.SellersPickedProducts.Where(x => x.ParentProductID == p.ProductID && x.UserID == userId && x.AliExpressProductID == scproductModel.aliExpressProductId.ToString())
-                                        select new 
-                                        {
-                                           parent_SKUCOde = p.ProductID.ToString()
-                                        }).Select(x => x.parent_SKUCOde).FirstOrDefault();
+                                                     from sp in datacontext.SellersPickedProducts.Where(x => x.ParentProductID == p.ProductID && x.UserID == userId && x.AliExpressProductID == scproductModel.aliExpressProductId.ToString())
+                                                     select new
+                                                     {
+                                                         parent_SKUCOde = p.ProductID.ToString()
+                                                     }).Select(x => x.parent_SKUCOde).FirstOrDefault();
 
-                            skus.Add("{\"sku_code\": \"" + parent_SKUCOde + "\",\"price\": " +  (100000 + scproductModel.price) + "}");
+                            skus.Add("{\"sku_code\": \"" + parent_SKUCOde + "\",\"price\": " + (100000 + scproductModel.price) + "}");
                         }
                     }
                     else
@@ -601,13 +601,13 @@ namespace DropshipPlatform.BLL.Services
                             skus.Add("{\"sku_code\": \"" + productSKUModel.skuCode + "\",\"price\": " + (100000 + productSKUModel.price) + "}");
                         }
                     }
-                    
+
                     obj3.ItemContentId = Guid.NewGuid().ToString();
-                    obj3.ItemContent = "{\"aliexpress_product_id\":"+ scproductModel.aliExpressProductId + ",\"multiple_sku_update_list\":["+ string.Join(",", skus.ToArray()) + "]}";
+                    obj3.ItemContent = "{\"aliexpress_product_id\":" + scproductModel.aliExpressProductId + ",\"multiple_sku_update_list\":[" + string.Join(",", skus.ToArray()) + "]}";
 
                     list2.Add(obj3);
                     req.ItemList_ = list2;
-                    
+
 
                     if (SessionManager.GetAccessToken().access_token != null)
                     {
@@ -755,7 +755,7 @@ namespace DropshipPlatform.BLL.Services
                 List<PropertyModel> units = new List<PropertyModel>();
                 if (categorySchemaModel != null)
                 {
-                    if(categorySchemaModel.properties.sku_info_list.items.properties.sku_attributes.properties.Color != null)
+                    if (categorySchemaModel.properties.sku_info_list.items.properties.sku_attributes.properties.Color != null)
                     {
                         foreach (OneOf19 item in categorySchemaModel.properties.sku_info_list.items.properties.sku_attributes.properties.Color.properties.value.oneOf)
                         {
@@ -765,7 +765,7 @@ namespace DropshipPlatform.BLL.Services
                             colors.Add(propertyModel);
                         }
                     }
-                    
+
                     if (categorySchemaModel.properties.sku_info_list.items.properties.sku_attributes.properties.Size != null)
                     {
                         foreach (OneOf18 item in categorySchemaModel.properties.sku_info_list.items.properties.sku_attributes.properties.Size.properties.value.oneOf)
@@ -776,7 +776,7 @@ namespace DropshipPlatform.BLL.Services
                             sizes.Add(propertyModel);
                         }
                     }
-                    
+
                     if (categorySchemaModel.properties.category_attributes.properties.BrandName != null)
                     {
                         foreach (OneOf7 item in categorySchemaModel.properties.category_attributes.properties.BrandName.properties.value.oneOf)
@@ -787,7 +787,7 @@ namespace DropshipPlatform.BLL.Services
                             brands.Add(propertyModel);
                         }
                     }
-                    
+
                     if (categorySchemaModel.properties.product_units_type != null)
                     {
                         foreach (OneOf6 item in categorySchemaModel.properties.product_units_type.oneOf)
@@ -809,14 +809,15 @@ namespace DropshipPlatform.BLL.Services
                         string Size = sizes.Where(x => x.PropertyName == dbProduct.Size).Select(x => x.PropertyID).FirstOrDefault();
                         string dbProductColor = dbProduct.Color != null ? dbProduct.Color.ToLower() : dbProduct.Color;
                         string color = colors.Where(x => x.PropertyName.ToLower() == dbProductColor).Select(x => x.PropertyID).FirstOrDefault();
-                        
+
                         ali_SKUModel ali_SKUModel = new ali_SKUModel();
                         ali_SKUModel.inventory = dbProduct.Inventory != null ? dbProduct.Inventory : "0";
                         ali_SKUModel.price = scproduct.price + 100000;
                         ali_SKUModel.sku_code = dbProduct.ProductID.ToString();
-                        ali_SKUModel.sku_attributes = getSKUattrStr(categorySchemaModel, Size, color, StaticValues.sampleImage);
+                        //string skuIMage = datacontext.ProductMedias.Where(x => x.ProductID == dbProduct.ProductID && x.IsMainImage == true).Select(x => x.MediaLink).FirstOrDefault();
+                        ali_SKUModel.sku_attributes = getSKUattrStr(categorySchemaModel, Size, color);
 
-                        string jsonstr = JsonConvert.SerializeObject(ali_SKUModel,Newtonsoft.Json.Formatting.None,new JsonSerializerSettings{NullValueHandling = NullValueHandling.Ignore});
+                        string jsonstr = JsonConvert.SerializeObject(ali_SKUModel, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
                         skuStr.Add(jsonstr);
                         //only required
                         //skuStr.Add("{\"inventory\":" + dbProduct.Inventory + ",\"price\":" + scproduct.price + ",\"sku_attributes\":{\"Color\":{\"alias\":\"32\",\"sku_image_url\":\"" + StaticValues.sampleImage + "\",\"value\":\"" + color + "\"}},\"sku_code\":\"" + dbProduct.OriginalProductID + "\"}");
@@ -829,15 +830,16 @@ namespace DropshipPlatform.BLL.Services
                         {
                             Product originalSKU = datacontext.Products.Where(x => x.SkuID == productSKU.skuCode).FirstOrDefault();
                             string Size = sizes.Where(x => x.PropertyName == originalSKU.Size).Select(x => x.PropertyID).FirstOrDefault();
-                            string color = colors.Where(x => x.PropertyName == originalSKU.Color).Select(x => x.PropertyID).FirstOrDefault();
+                            string color = colors.Where(x => x.PropertyName.ToLower() == originalSKU.Color.ToLower()).Select(x => x.PropertyID).FirstOrDefault();
 
                             ali_SKUModel ali_SKUModel = new ali_SKUModel();
                             ali_SKUModel.inventory = productSKU.inventory.ToString();
                             ali_SKUModel.price = productSKU.price + 100000;
                             ali_SKUModel.sku_code = originalSKU.SkuID;
-                            ali_SKUModel.sku_attributes = getSKUattrStr(categorySchemaModel, Size, color, StaticValues.sampleImage);
+                            //string skuIMage = datacontext.ProductMedias.Where(x => x.ProductID == productSKU.childproductId).Select(x => x.MediaLink).FirstOrDefault();
+                            ali_SKUModel.sku_attributes = getSKUattrStr(categorySchemaModel, Size, color);
 
-                            string jsonstr = JsonConvert.SerializeObject(ali_SKUModel,Newtonsoft.Json.Formatting.None,new JsonSerializerSettings{NullValueHandling = NullValueHandling.Ignore});
+                            string jsonstr = JsonConvert.SerializeObject(ali_SKUModel, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
                             skuStr.Add(jsonstr);
 
                             //only requred
@@ -846,11 +848,31 @@ namespace DropshipPlatform.BLL.Services
                             //skuStr.Add("{\"discount_price\":" + productSKU.discount_price + ",\"inventory\":" + productSKU.inventory + ",\"price\":" + productSKU.price + ",\"sku_attributes\":{\"Size\":{\"value\":\"" + Size + "\"},\"Color\":{\"alias\":\"32\",\"sku_image_url\":\"" + StaticValues.sampleImage + "\",\"value\":\"" + color + "\"}},\"sku_code\":\"" + productSKU.skuCode + "\"}");
                         }
                     }
-                    
+
                     string brandname = brands.Where(x => x.PropertyName == dbProduct.Brand).Select(x => x.PropertyID).FirstOrDefault();
                     string unit = units.Where(x => x.PropertyName == dbProduct.Unit).Select(x => x.PropertyID).FirstOrDefault();
+                    List<string> productImages = datacontext.ProductMedias.Where(x => x.ProductID == dbProduct.ProductID && x.IsMainImage == true).Select(x => x.MediaLink).ToList();
+                    if (productImages == null || productImages.Count ==0)
+                    {
+                        productImages = new List<string>();
+                        productImages.Add(StaticValues.sampleImage);
+                    }
+                    List<string> uploadImages = new List<string>();
+                    foreach (string img in productImages)
+                    {
+                        uploadImages.Add("\"" + img + "\"");
+                    }
+                    //long? serviceTemplateID = dbProduct.ServiceTemplateID;
+                    //int? shippingPreparationTime = dbProduct.ShippingPreparationTime;
+                    //long? shippingTemplateID = dbProduct.ShippingTemplateID;
+                    double? packageHeight = dbProduct.PackageHeight ?? 1;
+                    double? packageLength = dbProduct.PackageLength ?? 1;
+                    double? packageWidth = dbProduct.PackageWidth ?? 1;
+                    string productWeight = dbProduct.NetWeight != null ?dbProduct.NetWeight.Split(' ')[0] : "234";
+
                     //only requred
-                    result = "{\"category_id\":" + AliCategoryID + ",\"brand_name\":" + (brandname ?? "201470514") + ",\"description_multi_language_list\":[{\"locale\":\"en_US\",\"module_list\":[{\"html\":{\"content\":\"" + dbProduct.Description + "\"},\"type\":\"html\"}]}],\"image_url_list\":[\"" + StaticValues.sampleImage + "\"],\"inventory_deduction_strategy\":\"place_order_withhold\",\"locale\":\"en_US\",\"package_height\":234,\"package_length\":234,\"package_weight\":234.00,\"package_width\":234,\"product_units_type\":\""+ (unit ?? "100000015") + "\",\"service_template_id\":\"0\",\"shipping_preparation_time\":20,\"shipping_template_id\":\"1013213014\",\"sku_info_list\":[" + string.Join(",", skuStr) + "],\"title_multi_language_list\":[{\"locale\":\"en_US\",\"title\":\"" + dbProduct.Title +" " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "\"}]}";
+                    //result = "{\"category_id\":" + AliCategoryID + ",\"brand_name\":" + (brandname ?? "201470514") + ",\"description_multi_language_list\":[{\"locale\":\"" + locale + "\",\"module_list\":[{\"html\":{\"content\":\"" + dbProduct.Description + "\"},\"type\":\"html\"}]}],\"image_url_list\":[" + string.Join(",", uploadImages.ToArray()) + "],\"inventory_deduction_strategy\":\""+ inventoryDeductionStrategy + "\",\"locale\":\"" + locale + "\",\"package_height\":" + packageHeight + ",\"package_length\":" + packageLength + ",\"package_weight\":" + productWeight + ",\"package_width\":" + packageWidth + ",\"product_units_type\":\"" + (unit ?? "100000015") + "\",\"service_template_id\":"+ serviceTemplateID + ",\"shipping_preparation_time\":"+ shippingPreparationTime + ",\"shipping_template_id\":"+ shippingTemplateID + ",\"sku_info_list\":[" + string.Join(",", skuStr) + "],\"title_multi_language_list\":[{\"locale\":\"" + locale + "\",\"title\":\"" + dbProduct.Title + "\"}]}";
+                    result = "{\"category_id\":" + AliCategoryID + ",\"brand_name\":" + (brandname ?? "201512802") + ",\"description_multi_language_list\":[{\"locale\":\"en_US\",\"module_list\":[{\"html\":{\"content\":\"" + dbProduct.Description + "\"},\"type\":\"html\"}]}],\"image_url_list\":[" + string.Join(",", uploadImages.ToArray()) + "],\"inventory_deduction_strategy\":\"place_order_withhold\",\"locale\":\"en_US\",\"package_height\":" + packageHeight+ ",\"package_length\":" + packageLength + ",\"package_weight\":" + productWeight + ",\"package_width\":" + packageWidth + ",\"product_units_type\":\"" + (unit ?? "100000015") + "\",\"service_template_id\":\""+ StaticValues.serviceTemplateID + "\",\"shipping_preparation_time\":"+ StaticValues.shippingPreparationTime +",\"shipping_template_id\":\"" + StaticValues.shippingTemplateID + "\",\"sku_info_list\":[" + string.Join(",", skuStr) + "],\"title_multi_language_list\":[{\"locale\":\"en_US\",\"title\":\"" + dbProduct.Title + "\"}]}";
                     //all
                     //result = "{\"category_attributes\":{\"Brand Name\":{\"value\":\"201470514\"},\"Material\":{\"value\":[\"47\",\"49\"]}},\"category_id\":" + AliCategoryID + ",\"description_multi_language_list\":[{\"locale\":\"en_US\",\"module_list\":[{\"html\":{\"content\":\"" + dbProduct.Description + "\"},\"type\":\"html\"}]}],\"image_url_list\":[\"" + StaticValues.sampleImage + "\"],\"inventory_deduction_strategy\":\"place_order_withhold\",\"locale\":\"en_US\",\"package_height\":234,\"package_length\":234,\"package_weight\":234.00,\"package_width\":234,\"product_units_type\":\"100000015\",\"service_template_id\":\"0\",\"shipping_preparation_time\":20,\"shipping_template_id\":\"1013213014\",\"sku_info_list\":[" + string.Join(",", skuStr) + "],\"title_multi_language_list\":[{\"locale\":\"en_US\",\"title\":\"" + dbProduct.Title + "\"}]}";
                 }
@@ -858,7 +880,7 @@ namespace DropshipPlatform.BLL.Services
             return result;
         }
 
-        public custom_sku_attributes getSKUattrStr(CategorySchemaModel categorySchemaModel, string size, string color, string imgURL)
+        public custom_sku_attributes getSKUattrStr(CategorySchemaModel categorySchemaModel, string size, string color)
         {
             string skuStr = string.Empty;
 
@@ -872,9 +894,9 @@ namespace DropshipPlatform.BLL.Services
             {
                 sku_attributes_obj.Color = new custom_color();
                 sku_attributes_obj.Color.value = color;
-                sku_attributes_obj.Color.sku_image_url = imgURL;
+                //sku_attributes_obj.Color.sku_image_url = imgURL;
             }
-            if(sku_attributes_obj.Size == null && sku_attributes_obj.Color == null)
+            if (sku_attributes_obj.Size == null && sku_attributes_obj.Color == null)
             {
                 sku_attributes_obj = null;
             }
@@ -1054,7 +1076,7 @@ namespace DropshipPlatform.BLL.Services
                     AliexpressPostproductRedefiningOfflineaeproductRequest req = new AliexpressPostproductRedefiningOfflineaeproductRequest();
                     req.ProductIds = id;
                     AliexpressPostproductRedefiningOfflineaeproductResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
-                    if(rsp.Result.Success)
+                    if (rsp.Result.Success)
                     {
                         isStatusSync = true;
                     }
@@ -1078,7 +1100,7 @@ namespace DropshipPlatform.BLL.Services
                         SellersPickedProduct obj = datacontext.SellersPickedProducts.Where(x => x.AliExpressProductID == id).FirstOrDefault();
                         if (obj != null)
                         {
-                            obj.IsOnline = !status; 
+                            obj.IsOnline = !status;
                             datacontext.Entry(obj).State = System.Data.Entity.EntityState.Modified;
                             datacontext.SaveChanges();
                             result = true;

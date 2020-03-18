@@ -17,7 +17,6 @@ namespace DropshipPlatform.Entity
         public int ProductMediaID { get; set; }
         public Nullable<int> ProductID { get; set; }
         public Nullable<bool> MediaType { get; set; }
-        public string MediaExt { get; set; }
         public string MediaLink { get; set; }
         public Nullable<bool> IsMainImage { get; set; }
         public Nullable<int> ItemCreatedBy { get; set; }
