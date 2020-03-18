@@ -41,6 +41,21 @@ namespace DropshipPlatform.Entity
         public Nullable<double> PackageHeight { get; set; }
         public Nullable<double> PackageLength { get; set; }
         public Nullable<double> PackageWidth { get; set; }
+        public Nullable<int> LayoutID { get; set; }
+        public string Seller { get; set; }
+        public string ShippingLocation { get; set; }
+        public string ListingPage { get; set; }
+        public Nullable<int> TypeProductLevel { get; set; }
+        public Nullable<System.DateTime> DateCreated { get; set; }
+        public Nullable<System.DateTime> LastUpdateDate { get; set; }
+        public Nullable<System.DateTime> TokenUpdateDate { get; set; }
+        public string DurationScrapping { get; set; }
+        public string TokenPositionScrapping { get; set; }
+        public string ResponseStatusApi { get; set; }
+        public string SubTitle { get; set; }
+        public string UrlListingPageScrapped { get; set; }
+        public Nullable<int> WebsiteID { get; set; }
+        public string StatusScrapper { get; set; }
         public Nullable<int> ItemCreatedBy { get; set; }
         public Nullable<System.DateTime> ItemCreatedWhen { get; set; }
         public Nullable<int> ItemModifyBy { get; set; }

@@ -16,7 +16,7 @@ namespace DropshipPlatform.Entity
     {
         public int ID { get; set; }
         public string AliExpressProductID { get; set; }
-        public Nullable<int> ProductID { get; set; }
+        public Nullable<long> ProductID { get; set; }
         public string ProductName { get; set; }
         public string Price { get; set; }
         public string CurrencyCode { get; set; }
@@ -24,5 +24,8 @@ namespace DropshipPlatform.Entity
         public Nullable<System.DateTime> ItemCreatedWhen { get; set; }
         public Nullable<int> ItemModifyBy { get; set; }
         public Nullable<System.DateTime> ItemModifyWhen { get; set; }
+        public Nullable<long> AliExpressOrderId { get; set; }
+        public Nullable<long> AliExpressProductOrderId { get; set; }
+        public Nullable<int> SCOrderId { get; set; }
     }
 }

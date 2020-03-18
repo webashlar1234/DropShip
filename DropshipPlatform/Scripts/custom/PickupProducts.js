@@ -254,10 +254,12 @@ $(document).ready(function () {
         if (event.target.checked) {
             parentCheckboxes.prop('checked', true);
             $('#btnSave').prop('disabled', false);
+            $('input[name=updatedPrice]').prop("disabled", false);
         }
         else {
             parentCheckboxes.prop('checked', false);
             $('#btnSave').prop('disabled', true);
+            $('input[name=updatedPrice]').prop("disabled", true);
         }
     });
 

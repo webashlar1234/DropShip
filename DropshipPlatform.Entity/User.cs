@@ -18,16 +18,16 @@ namespace DropshipPlatform.Entity
         public string Name { get; set; }
         public string EmailID { get; set; }
         public string Phone { get; set; }
-        public Nullable<int> CountryID { get; set; }
+        public string Country { get; set; }
         public string Password { get; set; }
         public string AliExpressSellerID { get; set; }
+        public string AliExpressAccessToken { get; set; }
+        public string StripeCustomerID { get; set; }
         public Nullable<bool> IsActive { get; set; }
         public Nullable<int> ItemCreatedBy { get; set; }
         public Nullable<System.DateTime> ItemCreatedWhen { get; set; }
         public Nullable<int> ItemModifyBy { get; set; }
         public Nullable<System.DateTime> ItemModifyWhen { get; set; }
         public Nullable<bool> IsPolicyAccepted { get; set; }
-        public string StripeCustomerID { get; set; }
-        public string AliExpressAccessToken { get; set; }
     }
 }

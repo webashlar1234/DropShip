@@ -49,6 +49,7 @@ namespace DropshipPlatform.BLL.Models
 
     public class custom_Size
     {
+        public string alias { get; set; }
         public string value { get; set; }
     }
     public class custom_color
