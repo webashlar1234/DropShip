@@ -426,7 +426,7 @@ namespace DropshipPlatform.BLL.Services
         }
 
         public string SyncWithAliExpress(scproductModel scProduct, int AliCategoryID, User user)
-        {
+            {
             string result = String.Empty;
             try
             {
@@ -804,10 +804,30 @@ namespace DropshipPlatform.BLL.Services
                 if (dbProduct != null)
                 {
                     List<string> skuStr = new List<string>();
+                    List<int> listSizeDefaultNumbers = new List<int>();
+                    List<int> listColorDefaultNumbers = new List<int>();
                     if (scproduct.SKUModels == null)
                     {
                         //string Size = sizes.Where(x => x.PropertyName == dbProduct.Size).Select(x => x.PropertyID).FirstOrDefault();
-                        string defaultSize = sizes.FirstOrDefault().PropertyID;
+                        var rnd = new Random();
+                        string rnddefaultSize = "";
+                        do
+                        {
+                            rnddefaultSize = sizes.OrderBy(w => rnd.Next()).Select(x => x.PropertyID).FirstOrDefault();
+                        } while (listSizeDefaultNumbers.Contains(Convert.ToInt32(rnddefaultSize)));
+                        listSizeDefaultNumbers.Add(Convert.ToInt32(rnddefaultSize));
+                        //string defaultSize = sizes.OrderBy(w => rnd.Next()).Select(x => x.PropertyID).FirstOrDefault();
+                        string defaultSize = rnddefaultSize;
+
+                        string rnddefaultColor = "";
+                        do
+                        {
+                            rnddefaultColor = colors.OrderBy(w => rnd.Next()).Select(x => x.PropertyID).FirstOrDefault();
+                        } while (listColorDefaultNumbers.Contains(Convert.ToInt32(rnddefaultColor)));
+                        listColorDefaultNumbers.Add(Convert.ToInt32(rnddefaultColor));
+                        //string color = colors.Where(x => x.PropertyName.ToLower() == originalSKU.Color.ToLower()).Select(x => x.PropertyID).FirstOrDefault();
+                        //string defaultColor = colors.OrderBy(w => rnd.Next()).Select(x => x.PropertyID).FirstOrDefault();
+                        string defaultColor = rnddefaultColor;
                         string Size = dbProduct.Size;
                         string dbProductColor = dbProduct.Color != null ? dbProduct.Color.ToLower() : dbProduct.Color;
                         //string color = colors.Where(x => x.PropertyName.ToLower() == dbProductColor).Select(x => x.PropertyID).FirstOrDefault();
@@ -818,7 +838,7 @@ namespace DropshipPlatform.BLL.Services
                         ali_SKUModel.price = scproduct.price + 100000;
                         ali_SKUModel.sku_code = dbProduct.ProductID.ToString();
                         //string skuIMage = datacontext.ProductMedias.Where(x => x.ProductID == dbProduct.ProductID && x.IsMainImage == true).Select(x => x.MediaLink).FirstOrDefault();
-                        ali_SKUModel.sku_attributes = getSKUattrStr(categorySchemaModel, Size, color, defaultSize);
+                        ali_SKUModel.sku_attributes = getSKUattrStr(categorySchemaModel, Size, color, defaultSize, defaultColor);
 
                         string jsonstr = JsonConvert.SerializeObject(ali_SKUModel, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
                         skuStr.Add(jsonstr);
@@ -829,13 +849,33 @@ namespace DropshipPlatform.BLL.Services
                     }
                     else
                     {
+                        List<int> listSizeNumbers = new List<int>();
+                        List<int> listColorNumbers = new List<int>();
                         foreach (ProductSKUModel productSKU in scproduct.SKUModels)
                         {
                             Product originalSKU = datacontext.Products.Where(x => x.SkuID == productSKU.skuCode).FirstOrDefault();
                             //string Size = sizes.Where(x => x.PropertyName == originalSKU.Size).Select(x => x.PropertyID).FirstOrDefault();
-                            string defaultSize = sizes.FirstOrDefault().PropertyID;
+                            var rnd = new Random();
+                            string rnddefaultSize = "";
+                            do
+                            {
+                                rnddefaultSize = sizes.OrderBy(w => rnd.Next()).Select(x => x.PropertyID).FirstOrDefault();
+                            } while (listSizeNumbers.Contains(Convert.ToInt32(rnddefaultSize)));
+                            listSizeNumbers.Add(Convert.ToInt32(rnddefaultSize));
+                            //string defaultSize = sizes.OrderBy(w => rnd.Next()).Select(x=>x.PropertyID).FirstOrDefault();
+                            string defaultSize = rnddefaultSize;
                             string Size = originalSKU.Size;
+
+
+                            string rnddefaultColor = "";
+                            do
+                            {
+                                rnddefaultColor = colors.OrderBy(w => rnd.Next()).Select(x => x.PropertyID).FirstOrDefault();
+                            } while (listColorNumbers.Contains(Convert.ToInt32(rnddefaultColor)));
+                            listColorNumbers.Add(Convert.ToInt32(rnddefaultColor));
                             //string color = colors.Where(x => x.PropertyName.ToLower() == originalSKU.Color.ToLower()).Select(x => x.PropertyID).FirstOrDefault();
+                            //string defaultColor = colors.OrderBy(w => rnd.Next()).Select(x => x.PropertyID).FirstOrDefault();
+                            string defaultColor = rnddefaultColor;
                             string color = originalSKU.Color;
 
                             ali_SKUModel ali_SKUModel = new ali_SKUModel();
@@ -843,7 +883,7 @@ namespace DropshipPlatform.BLL.Services
                             ali_SKUModel.price = productSKU.price + 100000;
                             ali_SKUModel.sku_code = originalSKU.SkuID;
                             //string skuIMage = datacontext.ProductMedias.Where(x => x.ProductID == productSKU.childproductId).Select(x => x.MediaLink).FirstOrDefault();
-                            ali_SKUModel.sku_attributes = getSKUattrStr(categorySchemaModel, Size, color, defaultSize);
+                            ali_SKUModel.sku_attributes = getSKUattrStr(categorySchemaModel, Size, color, defaultSize, defaultColor);
 
                             string jsonstr = JsonConvert.SerializeObject(ali_SKUModel, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
                             skuStr.Add(jsonstr);
@@ -886,7 +926,7 @@ namespace DropshipPlatform.BLL.Services
                     }
                     if(productImages.Count > 6)
                     {
-                        productImages.Take(6);
+                        productImages = productImages.Take(6).ToList();
                     }
                     List<string> uploadImages = new List<string>();
                     foreach (string img in productImages)
@@ -911,7 +951,7 @@ namespace DropshipPlatform.BLL.Services
             return result;
         }
 
-        public custom_sku_attributes getSKUattrStr(CategorySchemaModel categorySchemaModel, string size, string color,string defaultSize)
+        public custom_sku_attributes getSKUattrStr(CategorySchemaModel categorySchemaModel, string size, string color,string defaultSize, string defaultColor)
         {
             string skuStr = string.Empty;
 
@@ -926,7 +966,7 @@ namespace DropshipPlatform.BLL.Services
             if (categorySchemaModel.properties.sku_info_list.items.properties.sku_attributes.properties.Color != null && color != null)
             {
                 sku_attributes_obj.Color = new custom_color();
-                sku_attributes_obj.Color.value = "10";
+                sku_attributes_obj.Color.value = defaultColor;
                 sku_attributes_obj.Color.alias = color;
             }
             if (sku_attributes_obj.Size == null && sku_attributes_obj.Color == null)
