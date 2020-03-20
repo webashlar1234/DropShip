@@ -865,32 +865,26 @@ namespace DropshipPlatform.BLL.Services
                     string brandname = brands.Where(x => x.PropertyName == dbProduct.Brand).Select(x => x.PropertyID).FirstOrDefault();
                     string unit = units.Where(x => x.PropertyName == dbProduct.Unit).Select(x => x.PropertyID).FirstOrDefault();
                     List<string> productImages = datacontext.ProductMedias.Where(x => x.ProductID == dbProduct.ProductID && x.IsMainImage == true).Select(x => x.MediaLink).ToList();
-                    if (productImages == null || productImages.Count == 0)
+
+                    if (productImages.Count < 6)
                     {
-                        productImages = new List<string>();
-                        //productImages.Add(StaticValues.sampleImage);
-                    }
-                    else
-                    {
-                        if (productImages.Count < 6)
+                        if (scproduct.SKUModels == null)
                         {
-                            if (scproduct.SKUModels == null)
+                        }
+                        else
+                        {
+                            foreach (ProductSKUModel productSKU in scproduct.SKUModels)
                             {
-                            }
-                            else
-                            {
-                                foreach (ProductSKUModel productSKU in scproduct.SKUModels)
+                                if (productImages.Count < 6)
                                 {
-                                    if (productImages.Count < 6)
-                                    {
-                                        Product originalSKU = datacontext.Products.Where(x => x.SkuID == productSKU.skuCode).FirstOrDefault();
-                                        List<string> childproductImages = datacontext.ProductMedias.Where(x => x.ProductID == originalSKU.ProductID && x.IsMainImage == true).Select(x => x.MediaLink).ToList();
-                                        productImages.AddRange(childproductImages);
-                                    }
+                                    Product originalSKU = datacontext.Products.Where(x => x.SkuID == productSKU.skuCode).FirstOrDefault();
+                                    List<string> childproductImages = datacontext.ProductMedias.Where(x => x.ProductID == originalSKU.ProductID && x.IsMainImage == true).Select(x => x.MediaLink).ToList();
+                                    productImages.AddRange(childproductImages);
                                 }
                             }
                         }
                     }
+
                     if (productImages.Count > 6)
                     {
                         productImages = productImages.Take(6).ToList();
