@@ -17,13 +17,22 @@ $(document).ready(function () {
             // Open this row
             row.child(format(row.data())).show();
             tr.addClass('shown');
+
+            if ($('.parentChk').is(":checked")) {
+                $('input[name=updatedPrice]', row.child().eq(0)).prop("disabled", false);
+            }
+            else {
+                $('input[name=updatedPrice]', row.child().eq(0)).prop("disabled", true);
+            }
         }
     });
 
     $('#chkAllProduct').change(function () {
+
         var parentCheckboxes = $('.parentChk');
-        ProductFormValidate();
-        if (this.checked) {
+        // ProductFormValidate();
+
+        if (event.target.checked) {
             parentCheckboxes.prop('checked', true);
             $('#btnSave').prop('disabled', false);
         }
@@ -34,7 +43,7 @@ $(document).ready(function () {
     });
 
     $("#TblPickedProduct tbody").on("change", ".parentChk", function () {
-        ProductFormValidate();
+        // ProductFormValidate();
         console.log($(this).text());
         var parentProductID = $(this).attr('data-SKU');
         if (this.checked) {

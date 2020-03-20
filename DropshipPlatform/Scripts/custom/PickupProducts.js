@@ -44,10 +44,10 @@ var product = {
                 if ($(".innertable").find("tr.skuRow[data-for='" + item + "']")) {
                     $.each($(".innertable").find("tr.skuRow[data-for='" + item + "']"), function (i, data) {
                         if ($(data).find(".updatedPrice").val() > 0) {
-                            pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: $(data).data("sku"), inventory: $(data).data("inventory"), price: $(data).find(".updatedPrice").val(), discount_price: 1, childproductId: $(data).data("childproductid")})
+                            pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: $(data).data("sku"), inventory: $(data).data("inventory"), price: $(data).find(".updatedPrice").val(), discount_price: 1, childproductId: $(data).data("childproductid") })
                         }
                         else {
-                            pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: $(data).data("sku"), inventory: $(data).data("inventory"), price: $('.parentChk[productid=' + item + ']').parents('tr').find('td:eq(3)').text(), discount_price: 1, childproductId: $(data).data("childproductid")})
+                            pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: $(data).data("sku"), inventory: $(data).data("inventory"), price: $('.parentChk[productid=' + item + ']').parents('tr').find('td:eq(3)').text(), discount_price: 1, childproductId: $(data).data("childproductid") })
                         }
                     });
                 }
@@ -233,6 +233,27 @@ $(document).ready(function () {
     product.init();
     GetData();
 
+    function SetPickedDisable() {
+        var chkUpdatedPriceList = $('input[name=updatedPrice]');
+        if (chkUpdatedPriceList && chkUpdatedPriceList.length > 0) {
+            for (var i = 0; i < chkUpdatedPriceList.length; i++) {
+                var ParentID = $(chkUpdatedPriceList[i]).attr("dataparentid");
+                if (ParentID && parseInt(ParentID) > 0) {
+                    ParentID = parseInt(ParentID);
+                    var ParentProduct = jsonProducts.filter(m => m.ProductID === ParentID);
+                    if (ParentProduct != null && ParentProduct.length > 0) {
+                        ParentProduct = ParentProduct[0];
+                    }
+                    if (ParentProduct.hasProductSkuSync || ParentProduct.isProductPicked) {
+                        $(chkUpdatedPriceList[i]).prop("disabled", true);
+                    }
+                }
+            }
+        }
+    }
+
+
+
     $('#ProductsDt tbody').on('click', 'td.details-control', function () {
         var tr = $(this).closest('tr');
         var row = ProductsDt.row(tr);
@@ -241,10 +262,20 @@ $(document).ready(function () {
             // This row is already open - close it
             row.child.hide();
             tr.removeClass('shown');
+            //$('input[name=updatedPrice]').prop("disabled", true);
+            $('input[name=updatedPrice]', row.child().eq(0)).prop("disabled", true);
         } else {
             // Open this row
             row.child(format(row.data())).show();
             tr.addClass('shown');
+
+            if ($('.parentChk').is(":checked")) {
+                $('input[name=updatedPrice]', row.child().eq(0)).prop("disabled", false);
+                SetPickedDisable();
+            }
+            else {
+                $('input[name=updatedPrice]', row.child().eq(0)).prop("disabled", true);
+            }
         }
     });
 
@@ -255,6 +286,26 @@ $(document).ready(function () {
             parentCheckboxes.prop('checked', true);
             $('#btnSave').prop('disabled', false);
             $('input[name=updatedPrice]').prop("disabled", false);
+            SetPickedDisable();
+            //var chkUpdatedPriceList = $('input[name=updatedPrice]');
+            //if (chkUpdatedPriceList && chkUpdatedPriceList.length > 0)
+            //{
+            //    debugger
+            //    for (var i = 0; i < chkUpdatedPriceList.length; i++)
+            //    {
+            //        var ParentID = $(chkUpdatedPriceList[i]).attr("dataparentid");
+            //        if (ParentID && parseInt(ParentID) > 0) {
+            //            ParentID = parseInt(ParentID);
+            //            var ParentProduct = jsonProducts.filter(m => m.ProductID === ParentID);
+            //            if (ParentProduct != null && ParentProduct.length > 0) {
+            //                ParentProduct = ParentProduct[0];
+            //            }
+            //            if (ParentProduct.hasProductSkuSync || ParentProduct.isProductPicked) {
+            //                $(chkUpdatedPriceList[i]).prop("disabled", true);
+            //            }
+            //        }
+            //    }
+            //}
         }
         else {
             parentCheckboxes.prop('checked', false);
@@ -360,6 +411,11 @@ function format(d) {
     var trs = '';
     $.each($(d.ChildProductList), function (key, value) {
 
+        var isPicked = false;
+        if (value.isProductPicked) {
+            isPicked = true;
+        }
+        console.log(value);
         trs +=
             '<tr class="skuRow" data-for="' + value.ParentProductID + '" data-inventory="' + value.Inventory + '" data-sku="' + value.SkuID + '" data-childProductId="' + value.ProductID + '"><td>' + value.Title +
             '</td> <td>' + value.Brand +
@@ -368,7 +424,7 @@ function format(d) {
             '</td><td>' + value.Size +
             '</td><td>' + value.Inventory +
             '</td><td>' + "$" + value.Cost +
-        '</td><td>' + "<input name='updatedPrice'  disabled dataSKU='" + value.SkuID + "' type='number' value=" + value.UpdatedPrice + " class='updatedPrice txtEdit_" + value.ParentProductID + "'>" +
+            '</td><td>' + "<input name='updatedPrice'  disabled dataParentID=" + value.ParentProductID + "  dataSKU='" + value.SkuID + "' type='number' value=" + value.UpdatedPrice + " class='updatedPrice txtEdit_" + value.ParentProductID + "'>" +
             //'</td><td>' + value.Description +
             '</td></tr>';
     })
@@ -468,4 +524,8 @@ function BindData(jsonProducts) {
             }
         }
     });
+
+
+
+
 }
