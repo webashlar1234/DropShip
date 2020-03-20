@@ -426,7 +426,7 @@ namespace DropshipPlatform.BLL.Services
         }
 
         public string SyncWithAliExpress(scproductModel scProduct, int AliCategoryID, User user)
-            {
+        {
             string result = String.Empty;
             try
             {
@@ -809,25 +809,10 @@ namespace DropshipPlatform.BLL.Services
                     if (scproduct.SKUModels == null)
                     {
                         //string Size = sizes.Where(x => x.PropertyName == dbProduct.Size).Select(x => x.PropertyID).FirstOrDefault();
-                        var rnd = new Random();
-                        string rnddefaultSize = "";
-                        do
-                        {
-                            rnddefaultSize = sizes.OrderBy(w => rnd.Next()).Select(x => x.PropertyID).FirstOrDefault();
-                        } while (listSizeDefaultNumbers.Contains(Convert.ToInt32(rnddefaultSize)));
-                        listSizeDefaultNumbers.Add(Convert.ToInt32(rnddefaultSize));
-                        //string defaultSize = sizes.OrderBy(w => rnd.Next()).Select(x => x.PropertyID).FirstOrDefault();
-                        string defaultSize = rnddefaultSize;
+                        string defaultSize = sizes.Count() > 0 ? sizes[0].PropertyID : null;
 
-                        string rnddefaultColor = "";
-                        do
-                        {
-                            rnddefaultColor = colors.OrderBy(w => rnd.Next()).Select(x => x.PropertyID).FirstOrDefault();
-                        } while (listColorDefaultNumbers.Contains(Convert.ToInt32(rnddefaultColor)));
-                        listColorDefaultNumbers.Add(Convert.ToInt32(rnddefaultColor));
                         //string color = colors.Where(x => x.PropertyName.ToLower() == originalSKU.Color.ToLower()).Select(x => x.PropertyID).FirstOrDefault();
-                        //string defaultColor = colors.OrderBy(w => rnd.Next()).Select(x => x.PropertyID).FirstOrDefault();
-                        string defaultColor = rnddefaultColor;
+                        string defaultColor = colors.Count() > 0 ? colors[0].PropertyID : null;
                         string Size = dbProduct.Size;
                         string dbProductColor = dbProduct.Color != null ? dbProduct.Color.ToLower() : dbProduct.Color;
                         //string color = colors.Where(x => x.PropertyName.ToLower() == dbProductColor).Select(x => x.PropertyID).FirstOrDefault();
@@ -849,33 +834,16 @@ namespace DropshipPlatform.BLL.Services
                     }
                     else
                     {
-                        List<int> listSizeNumbers = new List<int>();
-                        List<int> listColorNumbers = new List<int>();
+                        int sizecount = 0, colorcount = 0;
                         foreach (ProductSKUModel productSKU in scproduct.SKUModels)
                         {
                             Product originalSKU = datacontext.Products.Where(x => x.SkuID == productSKU.skuCode).FirstOrDefault();
                             //string Size = sizes.Where(x => x.PropertyName == originalSKU.Size).Select(x => x.PropertyID).FirstOrDefault();
-                            var rnd = new Random();
-                            string rnddefaultSize = "";
-                            do
-                            {
-                                rnddefaultSize = sizes.OrderBy(w => rnd.Next()).Select(x => x.PropertyID).FirstOrDefault();
-                            } while (listSizeNumbers.Contains(Convert.ToInt32(rnddefaultSize)));
-                            listSizeNumbers.Add(Convert.ToInt32(rnddefaultSize));
-                            //string defaultSize = sizes.OrderBy(w => rnd.Next()).Select(x=>x.PropertyID).FirstOrDefault();
-                            string defaultSize = rnddefaultSize;
+                            string defaultSize = sizes.Count() > 0 ? sizes[sizecount].PropertyID : null;
                             string Size = originalSKU.Size;
 
-
-                            string rnddefaultColor = "";
-                            do
-                            {
-                                rnddefaultColor = colors.OrderBy(w => rnd.Next()).Select(x => x.PropertyID).FirstOrDefault();
-                            } while (listColorNumbers.Contains(Convert.ToInt32(rnddefaultColor)));
-                            listColorNumbers.Add(Convert.ToInt32(rnddefaultColor));
                             //string color = colors.Where(x => x.PropertyName.ToLower() == originalSKU.Color.ToLower()).Select(x => x.PropertyID).FirstOrDefault();
-                            //string defaultColor = colors.OrderBy(w => rnd.Next()).Select(x => x.PropertyID).FirstOrDefault();
-                            string defaultColor = rnddefaultColor;
+                            string defaultColor = colors.Count() > 0 ? colors[colorcount].PropertyID : null;
                             string color = originalSKU.Color;
 
                             ali_SKUModel ali_SKUModel = new ali_SKUModel();
@@ -888,10 +856,9 @@ namespace DropshipPlatform.BLL.Services
                             string jsonstr = JsonConvert.SerializeObject(ali_SKUModel, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
                             skuStr.Add(jsonstr);
 
-                            //only requred
-                            //skuStr.Add("{\"inventory\":" + productSKU.inventory + ",\"price\":" + (productSKU.price + 100000) + ",\"sku_attributes\":{\"Color\":{\"alias\":\"32\",\"sku_image_url\":\"" + StaticValues.sampleImage + "\",\"value\":\"" + color + "\"}},\"sku_code\":\"" + productSKU.skuCode + "\"}");
-                            //all
-                            //skuStr.Add("{\"discount_price\":" + productSKU.discount_price + ",\"inventory\":" + productSKU.inventory + ",\"price\":" + productSKU.price + ",\"sku_attributes\":{\"Size\":{\"value\":\"" + Size + "\"},\"Color\":{\"alias\":\"32\",\"sku_image_url\":\"" + StaticValues.sampleImage + "\",\"value\":\"" + color + "\"}},\"sku_code\":\"" + productSKU.skuCode + "\"}");
+                            sizecount++; colorcount++;
+                            if (sizes.Count() <= sizecount) { sizecount = 0; }
+                            if (colors.Count() <= colorcount) { colorcount = 0; }
                         }
                     }
 
@@ -924,7 +891,7 @@ namespace DropshipPlatform.BLL.Services
                             }
                         }
                     }
-                    if(productImages.Count > 6)
+                    if (productImages.Count > 6)
                     {
                         productImages = productImages.Take(6).ToList();
                     }
@@ -951,7 +918,7 @@ namespace DropshipPlatform.BLL.Services
             return result;
         }
 
-        public custom_sku_attributes getSKUattrStr(CategorySchemaModel categorySchemaModel, string size, string color,string defaultSize, string defaultColor)
+        public custom_sku_attributes getSKUattrStr(CategorySchemaModel categorySchemaModel, string size, string color, string defaultSize, string defaultColor)
         {
             string skuStr = string.Empty;
 
@@ -961,7 +928,7 @@ namespace DropshipPlatform.BLL.Services
                 sku_attributes_obj.Size = new custom_Size();
                 sku_attributes_obj.Size.value = defaultSize;
                 sku_attributes_obj.Size.alias = size;
-                
+
             }
             if (categorySchemaModel.properties.sku_info_list.items.properties.sku_attributes.properties.Color != null && color != null)
             {
