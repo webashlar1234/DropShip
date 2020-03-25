@@ -34,33 +34,33 @@ namespace DropshipPlatform.Controllers
             int recordsTotal = 0;
             string sortOrder = "";
 
-            List<Category> Categorylist = _categoryService.getCategories();
+            List<category> Categorylist = _categoryService.getCategories();
 
-            List<CategoryData> result = Categorylist.Where(x => x.IsLeafCategory == true).Select(x => new CategoryData() {
+            List<CategoryData> result = Categorylist.Where(x => x.Isleafcategory == "true" || x.Isleafcategory == "1").Select(x => new CategoryData() {
                 CategoryID = x.CategoryID,
                 Name = x.Name,
                 CategoryLevel = x.CategoryLevel,
                 ParentCategoryID = x.ParentCategoryID,
-                IsLeafCategory = x.IsLeafCategory,
-                AliExpressCategoryName = x.AliExpressCategoryName,
-                AliExpressCategoryId = x.AliExpressCategoryId,
-                categoryFullPath = x.Name + getCategoryFullPath(Categorylist, x.ParentCategoryID, x.CategoryLevel)
+                Isleafcategory = x.Isleafcategory,
+                AliExpresscategoryName = x.AliExpresscategoryName,
+                AliExpressCategoryID = x.AliExpressCategoryID,
+                categoryFullPath = x.Name + getCategoryFullPath(Categorylist, x.ParentCategoryID.ToString(), Int32.Parse(x.CategoryLevel))
             }).ToList();
             
             if(ddlMappingValue == "mapped")
             {
-                result = result.Where(x => x.AliExpressCategoryId > 0).ToList();
+                result = result.Where(x => x.AliExpressCategoryID > 0).ToList();
             }
             else if (ddlMappingValue == "unmapped")
             {
-                result = result.Where(x => x.AliExpressCategoryId == null).ToList();
+                result = result.Where(x => x.AliExpressCategoryID == null).ToList();
             }
             var retvalue = result;
 
             if (!string.IsNullOrEmpty(search))
             {
                 retvalue = retvalue.Where(x => x.Name != null && x.Name.ToLower().Contains(search.ToLower()) ||
-                x.AliExpressCategoryName != null && x.AliExpressCategoryName.ToString().ToLower().Contains(search.ToLower())
+                x.AliExpresscategoryName != null && x.AliExpresscategoryName.ToString().ToLower().Contains(search.ToLower())
                 ).ToList();
             }
             if ((!string.IsNullOrEmpty(sortColumn)) && (!string.IsNullOrEmpty(sortColumnDir)))
@@ -84,9 +84,9 @@ namespace DropshipPlatform.Controllers
                 data = retvalue.ToList();
             }
 
-            List<AliExpressCategory> AliCategory = _categoryService.getlocalAliExpressCategories();
-            List<AliExpressCategory> list = AliCategory.Where(x =>  x.AliExpressCategoryIsLeaf == true).ToList();
-            foreach (AliExpressCategory item in list) {
+            List<aliexpresscategory> AliCategory = _categoryService.getlocalAliExpressCategories();
+            List<aliexpresscategory> list = AliCategory.Where(x =>  x.AliExpressCategoryIsLeaf == true).ToList();
+            foreach (aliexpresscategory item in list) {
                 item.AliCategoryFullPath = item.AliExpressCategoryName +  getAliCategoryFullPath(AliCategory, item.AliExpressParentCategoryID, item.AliExpressCategoryLevel);
             }
 
@@ -102,27 +102,27 @@ namespace DropshipPlatform.Controllers
             //}, JsonRequestBehavior.AllowGet);
         }
 
-        public string getCategoryFullPath(List<Category> list, string categoryID, int? level) {
+        public string getCategoryFullPath(List<category> list, string categoryID, int? level) {
 
             string fullCategoryPath = "";
             do
             {
-                Category obj = list.Where(x => x.CategoryID == Int32.Parse(categoryID)).FirstOrDefault();
-                level = obj.CategoryLevel;
-                categoryID = obj.ParentCategoryID;
+                category obj = list.Where(x => x.CategoryID == Int32.Parse(categoryID)).FirstOrDefault();
+                level = Int32.Parse(obj.CategoryLevel);
+                categoryID = obj.ParentCategoryID.ToString();
                 fullCategoryPath += " --> "+ obj.Name;
             }
             while (level > 1);
             
             return fullCategoryPath;
         }
-        public string getAliCategoryFullPath(List<AliExpressCategory> list, long? categoryID, long level)
+        public string getAliCategoryFullPath(List<aliexpresscategory> list, long? categoryID, long level)
         {
 
             string fullCategoryPath = "";
             do
             {
-                AliExpressCategory obj = list.Where(x => x.AliExpressCategoryID == categoryID).FirstOrDefault();
+                aliexpresscategory obj = list.Where(x => x.AliExpressCategoryID == categoryID).FirstOrDefault();
                 level = obj.AliExpressCategoryLevel;
                 categoryID = obj.AliExpressParentCategoryID;
                 fullCategoryPath += " --> " + obj.AliExpressCategoryName;
@@ -133,7 +133,7 @@ namespace DropshipPlatform.Controllers
         }
 
         [HttpPost]
-        public JsonResult MapCategory(Category category) {
+        public JsonResult MapCategory(category category) {
             return Json(_categoryService.MapCategory(category), JsonRequestBehavior.AllowGet);
         }
     }

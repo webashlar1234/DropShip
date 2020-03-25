@@ -104,10 +104,11 @@ var category = {
                     sortable: false,
                     width: "15%",
                     "render": function (data, type, full, meta) {
+                        debugger
                         var options = '<select title="Map Category" data-live-search="true" class="selectpicker dllAliExpressCat form-control">';
                         var selected;
                         $.each(meta.settings.json.aliCategory, function () {
-                            selected = this.AliExpressCategoryID === full.AliExpressCategoryId ? "selected" : "";
+                            selected = this.AliExpressCategoryID === full.AliExpressCategoryID ? "selected" : "";
                             options += '<option ' + selected + ' data-subtext="(' + this.AliCategoryFullPath + ')" value="' + this.AliExpressCategoryID + '">' + this.AliExpressCategoryName + '</option>';
                         });
                         options += '</select>';
@@ -120,9 +121,9 @@ var category = {
                 { "title": 'Category Name', "mData": 'Name', sDefaultContent: "", className: "Name" },
                 { "sTitle": 'Category Level', "mData": 'CategoryLevel', sDefaultContent: "", className: "CategoryLevel" },
                 { "sTitle": 'Parent CategoryID', "mData": 'ParentCategoryID', sDefaultContent: "", className: "ParentCategoryID" },
-                { "sTitle": 'IsLeaf Category', "mData": 'IsLeafCategory', sDefaultContent: "", className: "IsLeafCategory" },
-                { "sTitle": 'AliExpress Category Name', "mData": 'AliExpressCategoryName', sDefaultContent: "", className: "AliExpressCategoryName" },
-                { "sTitle": 'AliExpress CategoryId', "mData": 'AliExpressCategoryId', sDefaultContent: "", className: "AliExpressCategoryId" },
+                { "sTitle": 'IsLeaf Category', "mData": 'Isleafcategory', sDefaultContent: "", className: "IsLeafCategory" },
+                { "sTitle": 'AliExpress Category Name', "mData": 'AliExpresscategoryName', sDefaultContent: "", className: "AliExpressCategoryName" },
+                { "sTitle": 'AliExpress CategoryId', "mData": 'AliExpressCategoryID', sDefaultContent: "", className: "AliExpressCategoryId" },
                 { "sTitle": 'Map Category', "mData": '', sDefaultContent: "", className: "MapCat" }
             ]
         });

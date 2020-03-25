@@ -10,12 +10,12 @@ namespace DropshipPlatform.BLL.Services
     public class AliExpressJobLogService
     {
 
-        public long? AddAliExpressJobLog(AliExpressJobLog aliExpressJobLog)
+        public long? AddAliExpressJobLog(aliexpressjoblog aliExpressJobLog)
         {
             using (DropshipDataEntities datacontext = new DropshipDataEntities())
             {
                 aliExpressJobLog.CreatedOn = DateTime.Now;
-                datacontext.AliExpressJobLogs.Add(aliExpressJobLog);
+                datacontext.aliexpressjoblogs.Add(aliExpressJobLog);
                 datacontext.SaveChanges();
                 return aliExpressJobLog.JobId;
             }

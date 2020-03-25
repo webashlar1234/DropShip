@@ -31,7 +31,7 @@ namespace DropshipPlatform.Controllers
                 response = userService.LoginUser(model);
                 if (response.IsSuccess)
                 {
-                    User user = (User)response.Data;
+                    user user = (user)response.Data;
                     SessionManager.SetUserSession(user);
                     if (!string.IsNullOrEmpty(user.AliExpressAccessToken))
                     {
@@ -53,7 +53,7 @@ namespace DropshipPlatform.Controllers
 
         public void UpdateUserSession()
         {
-            User user = new UserService().GetUser(SessionManager.GetUserSession().UserID);
+            user user = new UserService().GetUser(SessionManager.GetUserSession().UserID);
             if (user != null)
             {
                 SessionManager.SetUserSession(user);

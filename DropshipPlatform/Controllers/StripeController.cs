@@ -90,7 +90,7 @@ namespace DropshipPlatform.Controllers
         public JsonResult AddCardToCustomer(SetupIntent intent)
         {
             bool result = true;
-            User user = SessionManager.GetUserSession();
+            user user = SessionManager.GetUserSession();
             if (string.IsNullOrEmpty(user.StripeCustomerID))
             {
                 result = _stripeService.stripe_CreateCustomer(user, intent.PaymentMethodId);
@@ -105,14 +105,14 @@ namespace DropshipPlatform.Controllers
         
         public ActionResult ChargeSavedCard()
         {
-            User user = SessionManager.GetUserSession();
+            user user = SessionManager.GetUserSession();
             _stripeService.ChargeSavedCard(user.StripeCustomerID, 1000);
             return View();
         }
 
         public JsonResult getStripePaymentMethodsList()
         {
-            User user = SessionManager.GetUserSession();
+            user user = SessionManager.GetUserSession();
             StripeList<PaymentMethod> list = _stripeService.ListPaymentMethods(user.StripeCustomerID);
             return Json(new
             {
@@ -123,7 +123,7 @@ namespace DropshipPlatform.Controllers
         [HttpPost]
         public JsonResult DeletePaymentMethod(string paymentMethodID)
         {
-            User user = SessionManager.GetUserSession();
+            user user = SessionManager.GetUserSession();
             return Json(_stripeService.DeletePaymentMethod(paymentMethodID), JsonRequestBehavior.AllowGet);
         }
     }

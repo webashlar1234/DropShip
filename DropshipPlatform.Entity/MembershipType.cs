@@ -12,7 +12,7 @@ namespace DropshipPlatform.Entity
     using System;
     using System.Collections.Generic;
     
-    public partial class MembershipType
+    public partial class membershiptype
     {
         public int MembershipID { get; set; }
         public string Name { get; set; }

@@ -12,14 +12,14 @@ namespace DropshipPlatform.Entity
     using System;
     using System.Collections.Generic;
     
-    public partial class ProductMedia
+    public partial class productmedia
     {
         public int ProductMediaID { get; set; }
-        public Nullable<int> ProductID { get; set; }
-        public Nullable<bool> MediaType { get; set; }
-        public string MediaLink { get; set; }
-        public Nullable<bool> IsMainImage { get; set; }
-        public Nullable<int> ItemCreatedBy { get; set; }
-        public Nullable<System.DateTime> ItemCreatedWhen { get; set; }
+        public Nullable<long> ProductID { get; set; }
+        public string MediaType { get; set; }
+        public string MediTaext { get; set; }
+        public string IsMainImage { get; set; }
+        public string ItemCreatedBy { get; set; }
+        public string ItemCreatedWhen { get; set; }
     }
 }

@@ -12,12 +12,12 @@ namespace DropshipPlatform.Entity
     using System;
     using System.Collections.Generic;
     
-    public partial class SellersPickedProduct
+    public partial class sellerspickedproduct
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public SellersPickedProduct()
+        public sellerspickedproduct()
         {
-            this.SellerPickedProductSKUs = new HashSet<SellerPickedProductSKU>();
+            this.sellerpickedproductskus = new HashSet<sellerpickedproductsku>();
         }
     
         public int SellersPickedID { get; set; }
@@ -32,6 +32,6 @@ namespace DropshipPlatform.Entity
         public Nullable<System.DateTime> ItemModifyWhen { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<SellerPickedProductSKU> SellerPickedProductSKUs { get; set; }
+        public virtual ICollection<sellerpickedproductsku> sellerpickedproductskus { get; set; }
     }
 }

@@ -60,7 +60,7 @@ namespace DropshipPlatform.Controllers
             string search = Request.Form.GetValues("search[value]").FirstOrDefault();
             int pageSize = length != null ? Convert.ToInt32(length) : 0;
             int skip = start != null ? Convert.ToInt32(start) : 0;
-            List<User> resultList = userService.getOperationalUsers();
+            List<user> resultList = userService.getOperationalUsers();
             List<RegisterUserModel> retvalue = new List<RegisterUserModel>();
             if (resultList != null)
             {

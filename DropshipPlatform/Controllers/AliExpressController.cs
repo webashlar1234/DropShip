@@ -81,7 +81,7 @@ namespace DropshipPlatform.Controllers
             var length = Request.Form.GetValues("length") != null ? Request.Form.GetValues("length").FirstOrDefault() : null;
             int pageSize = length != null ? Convert.ToInt32(length) : 0;
             int skip = start != null ? Convert.ToInt32(start) : 0;
-            List<AliExpressJobLog> resultList = _productService.getJobLogData();
+            List<aliexpressjoblog> resultList = _productService.getJobLogData();
             List<JobLog> retvalue = resultList.Select(x => new JobLog()
             {
                 Id = x.Id,
@@ -109,7 +109,7 @@ namespace DropshipPlatform.Controllers
         }
 
         [HttpPost]
-        public JsonResult updateJobLogResult(AliExpressJobLog aliExpressJobLog)
+        public JsonResult updateJobLogResult(aliexpressjoblog aliExpressJobLog)
         {
             ProductService _productService = new ProductService();
             return Json(_productService.updateJobLogResult(aliExpressJobLog), JsonRequestBehavior.AllowGet);

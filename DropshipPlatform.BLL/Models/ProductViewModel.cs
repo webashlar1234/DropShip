@@ -13,33 +13,33 @@ namespace DropshipPlatform.BLL.Models
         public Nullable<int> CategoryID { get; set; }
         public string CategoryName { get; set; }
 
-        public Nullable<double> Cost { get; set; }
+        public string Cost { get; set; }
         public Nullable<double> SellerPrice { get; set; }
         public string SellingPriceCurrency { get; set; }
         public string OriginalProductID { get; set; }
         public string Brand { get; set; }
         public string Description { get; set; }
-        public string Inventory { get; set; }
+        public Nullable<int> Inventory { get; set; }
         public string ManufacturerName { get; set; }
-        public string ExternalCode { get; set; }
-        public string ExternalCodeType { get; set; }
+        public Nullable<int> ExternalCode { get; set; }
+        public Nullable<int> ExternalCodeType { get; set; }
         public Nullable<long> ParentProductID { get; set; }
-        public Nullable<double> NoOfCustomerReviews { get; set; }
-        public Nullable<int> CustomerReviewRating { get; set; }
+        public string NoOfCustomerReviews { get; set; }
+        public string CustomerReviewRating { get; set; }
         public string NetWeight { get; set; }
         public string ShippingWeight { get; set; }
         public string CountryOfOrigin { get; set; }
         public string Size { get; set; }
         public string Color { get; set; }
         public string SourceWebsite { get; set; }
-        public Nullable<bool> IsActive { get; set; }
+        public Nullable<int> IsActive { get; set; }
         public Nullable<bool> IsOnline { get; set; }
         public double UpdatedPrice { get; set; }
         public long UpdatedInvetory { get; set; }
 
         public int SellerPickedCount { get; set; }
         public int? UserID { get; set; }
-        public long AliExpressCategoryID { get; set; }
+        public Nullable<long> AliExpressCategoryID { get; set; }
         public SchemaProprtiesModel schemaProprtiesModel { get; set; }
         public  bool hasProductSkuSync { get; set; } 
         public bool isProductPicked { get; set; }

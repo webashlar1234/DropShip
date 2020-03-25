@@ -34,13 +34,13 @@ namespace DropshipPlatform.BLL.Services
         {
             try
             {
-                List<AliExpressJobLog> jobLogList = new List<AliExpressJobLog>();
+                List<aliexpressjoblog> jobLogList = new List<aliexpressjoblog>();
                 int userid = SessionManager.GetUserSession().UserID;
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    jobLogList = datacontext.AliExpressJobLogs.Where(x => x.UserID == userid && x.Result == "null" || x.Result == null || x.Result == string.Empty).ToList();
+                    jobLogList = datacontext.aliexpressjoblogs.Where(x => x.UserID == userid && x.Result == "null" || x.Result == null || x.Result == string.Empty).ToList();
 
-                    foreach (AliExpressJobLog item in jobLogList)
+                    foreach (aliexpressjoblog item in jobLogList)
                     {
                         ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret, "json");
 
@@ -62,10 +62,10 @@ namespace DropshipPlatform.BLL.Services
                                     var result = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(fqRsp.ResultList.FirstOrDefault().ItemExecutionResult);
 
                                     int productOriginalId = int.Parse(item.ProductID);
-                                    Product prodObj = datacontext.Products.Where(x => x.ProductID == productOriginalId).FirstOrDefault();
+                                    product prodObj = datacontext.products.Where(x => x.ProductID == productOriginalId).FirstOrDefault();
                                     if (prodObj != null)
                                     {
-                                        SellersPickedProduct obj = datacontext.SellersPickedProducts.Where(x => x.UserID == userid && x.ParentProductID == prodObj.ProductID).FirstOrDefault();
+                                        sellerspickedproduct obj = datacontext.sellerspickedproducts.Where(x => x.UserID == userid && x.ParentProductID == prodObj.ProductID).FirstOrDefault();
                                         if (obj != null)
                                         {
                                             if (result.success == true)
@@ -75,12 +75,12 @@ namespace DropshipPlatform.BLL.Services
                                             }
                                             else
                                             {
-                                                List<SellerPickedProductSKU> skulist = datacontext.SellerPickedProductSKUs.Where(x => x.SellerPickedId == obj.SellersPickedID).ToList();
+                                                List<sellerpickedproductsku> skulist = datacontext.sellerpickedproductskus.Where(x => x.SellerPickedId == obj.SellersPickedID).ToList();
                                                 foreach (var sku in skulist)
                                                 {
-                                                    datacontext.SellerPickedProductSKUs.Remove(sku);
+                                                    datacontext.sellerpickedproductskus.Remove(sku);
                                                 }
-                                                datacontext.SellersPickedProducts.Remove(obj);
+                                                datacontext.sellerspickedproducts.Remove(obj);
                                             }
                                         }
                                     }
@@ -106,25 +106,25 @@ namespace DropshipPlatform.BLL.Services
 
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    List<User> users = datacontext.Users.Where(x => x.IsActive == true && x.AliExpressSellerID != null).ToList();
+                    List<user> users = datacontext.users.Where(x => x.IsActive == true && x.AliExpressSellerID != null).ToList();
 
-                    foreach (User user in users)
+                    foreach (user user in users)
                     {
                         List<AliexpressSolutionBatchProductInventoryUpdateRequest.SynchronizeProductRequestDtoDomain> productList = new List<AliexpressSolutionBatchProductInventoryUpdateRequest.SynchronizeProductRequestDtoDomain>();
-                        List<SellersPickedProduct> sellerProducts = datacontext.SellersPickedProducts.Where(x => x.UserID == user.UserID && x.AliExpressProductID != null).ToList();
+                        List<sellerspickedproduct> sellerProducts = datacontext.sellerspickedproducts.Where(x => x.UserID == user.UserID && x.AliExpressProductID != null).ToList();
                         AliExpressAccessToken token = Newtonsoft.Json.JsonConvert.DeserializeObject<AliExpressAccessToken>(user.AliExpressAccessToken);
 
-                        foreach (SellersPickedProduct item in sellerProducts)
+                        foreach (sellerspickedproduct item in sellerProducts)
                         {
                             AliexpressSolutionBatchProductInventoryUpdateRequest.SynchronizeProductRequestDtoDomain productObj = new AliexpressSolutionBatchProductInventoryUpdateRequest.SynchronizeProductRequestDtoDomain();
                             productObj.ProductId = Int64.Parse(item.AliExpressProductID);
-                            productObj.MultipleSkuUpdateList = (from pp in datacontext.SellerPickedProductSKUs.Where(x => x.SellerPickedId == item.SellersPickedID)
-                                                                from p in datacontext.Products.Where(x => x.OriginalProductID == pp.SKUCode)
+                            productObj.MultipleSkuUpdateList = (from pp in datacontext.sellerpickedproductskus.Where(x => x.SellerPickedId == item.SellersPickedID)
+                                                                from p in datacontext.products.Where(x => x.OriginalProductID == pp.SKUCode)
                                                                 select new { OriginalProductID = p.OriginalProductID, Inventory = p.Inventory }
                                                                 ).ToList().Select(x => new AliexpressSolutionBatchProductInventoryUpdateRequest.SynchronizeSkuRequestDtoDomain
                                                                 {
                                                                     SkuCode = x.OriginalProductID,
-                                                                    Inventory = x.Inventory != null ? Int64.Parse(x.Inventory) : 0
+                                                                    Inventory = x.Inventory ?? 0
                                                                 }).ToList();
 
                             productList.Add(productObj);
@@ -159,22 +159,22 @@ namespace DropshipPlatform.BLL.Services
                 List<string> skus = new List<string>();
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    List<User> users = datacontext.Users.Where(x => x.IsActive == true && x.AliExpressSellerID != null).ToList();
-                    foreach (User user in users)
+                    List<user> users = datacontext.users.Where(x => x.IsActive == true && x.AliExpressSellerID != null).ToList();
+                    foreach (user user in users)
                     {
                         List<AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain> list2 = new List<AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain>();
-                        List<SellersPickedProduct> sellerProducts = datacontext.SellersPickedProducts.Where(x => x.UserID == user.UserID && x.AliExpressProductID != null).ToList();
-                        foreach (SellersPickedProduct scproductModel in sellerProducts)
+                        List<sellerspickedproduct> sellerProducts = datacontext.sellerspickedproducts.Where(x => x.UserID == user.UserID && x.AliExpressProductID != null).ToList();
+                        foreach (sellerspickedproduct scproductModel in sellerProducts)
                         {
                             AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain obj3 = new AliexpressSolutionFeedSubmitRequest.SingleItemRequestDtoDomain();
                             scproductModel productObj = new scproductModel();
-                            productObj.SKUModels = (from pp in datacontext.SellerPickedProductSKUs.Where(x => x.SellerPickedId == scproductModel.SellersPickedID)
-                                                    from p in datacontext.Products.Where(x => x.ProductID == pp.ProductId)
+                            productObj.SKUModels = (from pp in datacontext.sellerpickedproductskus.Where(x => x.SellerPickedId == scproductModel.SellersPickedID)
+                                                    from p in datacontext.products.Where(x => x.ProductID == pp.ProductId)
                                                     select new { skuCode = p.SkuID, Inventory = p.Inventory }
                                                                 ).ToList().Select(x => new ProductSKUModel
                                                                 {
                                                                     skuCode = x.skuCode,
-                                                                    inventory = x.Inventory != null ? Int32.Parse(x.Inventory) : 0
+                                                                    inventory = x.Inventory ?? 0
                                                                 }).ToList();
                             if(productObj.SKUModels.Count > 0)
                             {
@@ -185,7 +185,7 @@ namespace DropshipPlatform.BLL.Services
                             }
                             else
                             {
-                                Product productOrg = datacontext.Products.Where(x => x.ProductID == scproductModel.ParentProductID).FirstOrDefault();
+                                product productOrg = datacontext.products.Where(x => x.ProductID == scproductModel.ParentProductID).FirstOrDefault();
                                 skus.Add("{\"sku_code\": \"" + productOrg.ProductID + "\",\"inventory\": " + productOrg.Inventory + "}");
                             }
                             

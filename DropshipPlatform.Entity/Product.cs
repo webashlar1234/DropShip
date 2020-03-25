@@ -12,53 +12,52 @@ namespace DropshipPlatform.Entity
     using System;
     using System.Collections.Generic;
     
-    public partial class Product
+    public partial class product
     {
         public long ProductID { get; set; }
         public string Title { get; set; }
+        public string SourceWebsite { get; set; }
+        public Nullable<int> LayoutID { get; set; }
         public Nullable<int> CategoryID { get; set; }
-        public Nullable<double> Cost { get; set; }
+        public byte[] Description { get; set; }
+        public string Cost { get; set; }
         public string SellingPriceCurrency { get; set; }
         public string OriginalProductID { get; set; }
-        public string Brand { get; set; }
-        public string Description { get; set; }
-        public string Inventory { get; set; }
-        public string ManufacturerName { get; set; }
-        public string ExternalCode { get; set; }
-        public string ExternalCodeType { get; set; }
-        public Nullable<long> ParentProductID { get; set; }
-        public Nullable<double> NoOfCustomerReviews { get; set; }
-        public Nullable<int> CustomerReviewRating { get; set; }
-        public string NetWeight { get; set; }
-        public string ShippingWeight { get; set; }
-        public string CountryOfOrigin { get; set; }
-        public string Size { get; set; }
         public string Color { get; set; }
-        public string SourceWebsite { get; set; }
-        public string Unit { get; set; }
-        public string SkuID { get; set; }
-        public Nullable<bool> IsActive { get; set; }
-        public Nullable<double> PackageHeight { get; set; }
-        public Nullable<double> PackageLength { get; set; }
-        public Nullable<double> PackageWidth { get; set; }
-        public Nullable<int> LayoutID { get; set; }
+        public string Size { get; set; }
+        public string CustomerReviewRating { get; set; }
+        public string NoOfCustomerReviews { get; set; }
+        public string Brand { get; set; }
         public string Seller { get; set; }
+        public string ManufacturerName { get; set; }
+        public Nullable<int> Inventory { get; set; }
         public string ShippingLocation { get; set; }
         public string ListingPage { get; set; }
-        public Nullable<int> TypeProductLevel { get; set; }
+        public string TypeProductLevel { get; set; }
+        public Nullable<long> ParentProductID { get; set; }
+        public Nullable<int> ExternalCode { get; set; }
+        public Nullable<int> ExternalCodeType { get; set; }
         public Nullable<System.DateTime> DateCreated { get; set; }
         public Nullable<System.DateTime> LastUpdateDate { get; set; }
         public Nullable<System.DateTime> TokenUpdateDate { get; set; }
-        public string DurationScrapping { get; set; }
-        public string TokenPositionScrapping { get; set; }
-        public string ResponseStatusApi { get; set; }
+        public Nullable<System.DateTime> DurationScrapping { get; set; }
+        public Nullable<int> TokenPositionScrapping { get; set; }
+        public Nullable<int> IsActive { get; set; }
+        public string NetWeight { get; set; }
+        public string ShippingWeight { get; set; }
+        public string CountryOfOrigin { get; set; }
+        public string ItemCreatedBy { get; set; }
+        public Nullable<System.DateTime> ItemCreatedWhen { get; set; }
+        public string ItemModifyBy { get; set; }
+        public Nullable<System.DateTime> ItemModifyWhen { get; set; }
         public string SubTitle { get; set; }
         public string UrlListingPageScrapped { get; set; }
         public Nullable<int> WebsiteID { get; set; }
+        public string SkuID { get; set; }
         public string StatusScrapper { get; set; }
-        public Nullable<int> ItemCreatedBy { get; set; }
-        public Nullable<System.DateTime> ItemCreatedWhen { get; set; }
-        public Nullable<int> ItemModifyBy { get; set; }
-        public Nullable<System.DateTime> ItemModifyWhen { get; set; }
+        public string PackageHeight { get; set; }
+        public string PackageLength { get; set; }
+        public string PackageWidth { get; set; }
+        public string Unit { get; set; }
     }
 }

@@ -17,18 +17,18 @@ namespace DropshipPlatform.BLL.Services
     {
         readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         
-        public List<AliExpressCategory> getAliExpressCategory()
+        public List<aliexpresscategory> getAliExpressCategory()
         {
             string sessionKey = SessionManager.GetAccessToken().access_token;
             ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret);
-            List<AliExpressCategory> list = new List<AliExpressCategory>();
+            List<aliexpresscategory> list = new List<aliexpresscategory>();
 
             list = getAliExpressChildCategory(client, sessionKey, 0, list);
             addAliExpressCategories(list);
             return list;
         }
 
-        public List<AliExpressCategory> getAliExpressChildCategory(ITopClient client, string sessionKey, long? CategoryId, List<AliExpressCategory> list)
+        public List<aliexpresscategory> getAliExpressChildCategory(ITopClient client, string sessionKey, long? CategoryId, List<aliexpresscategory> list)
         {
             try
             {
@@ -53,7 +53,7 @@ namespace DropshipPlatform.BLL.Services
             return list;
         }
 
-        public bool addAliExpressCategories(List<AliExpressCategory> categories)
+        public bool addAliExpressCategories(List<aliexpresscategory> categories)
         {
             bool result = true;
 
@@ -61,9 +61,9 @@ namespace DropshipPlatform.BLL.Services
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    foreach (AliExpressCategory category in categories)
+                    foreach (aliexpresscategory category in categories)
                     {
-                        datacontext.AliExpressCategories.Add(category);
+                        datacontext.aliexpresscategories.Add(category);
                     }
                     datacontext.SaveChanges();
                 }
@@ -77,9 +77,9 @@ namespace DropshipPlatform.BLL.Services
             return result;
         }
 
-        public AliExpressCategory convertToCategoryObj(AeopPostCategoryDtoDomain obj, long? parentCategoryId)
+        public aliexpresscategory convertToCategoryObj(AeopPostCategoryDtoDomain obj, long? parentCategoryId)
         {
-            AliExpressCategory category = new AliExpressCategory();
+            aliexpresscategory category = new aliexpresscategory();
             category.AliExpressCategoryIsLeaf = obj.Isleaf;
             category.AliExpressCategoryLevel = (int)obj.Level;
             category.AliExpressCategoryID = (int)obj.Id;
@@ -88,15 +88,15 @@ namespace DropshipPlatform.BLL.Services
             return category;
         }
 
-        public List<AliExpressCategory> getlocalAliExpressCategories()
+        public List<aliexpresscategory> getlocalAliExpressCategories()
         {
-            List<AliExpressCategory> list = new List<AliExpressCategory>();
+            List<aliexpresscategory> list = new List<aliexpresscategory>();
 
             try
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    list = datacontext.AliExpressCategories.ToList();
+                    list = datacontext.aliexpresscategories.ToList();
                 }
             }
             catch (Exception ex)
@@ -107,16 +107,16 @@ namespace DropshipPlatform.BLL.Services
             return list;
         }
 
-        public List<Category> getCategories()
+        public List<category> getCategories()
         {
             logger.Info("Hi");
-            List<Category> list = new List<Category>();
+            List<category> list = new List<category>();
 
             try
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    list = datacontext.Categories.ToList();
+                    list = datacontext.categories.ToList();
                 }
             }
             catch (Exception ex)
@@ -127,7 +127,7 @@ namespace DropshipPlatform.BLL.Services
             return list;
         }
 
-        public bool MapCategory(Category category)
+        public bool MapCategory(category category)
         {
             bool result = true;
 
@@ -135,12 +135,12 @@ namespace DropshipPlatform.BLL.Services
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    Category obj = datacontext.Categories.Where(x => x.CategoryID == category.CategoryID).FirstOrDefault();
+                    category obj = datacontext.categories.Where(x => x.CategoryID == category.CategoryID).FirstOrDefault();
                     if (obj != null)
                     {
-                        obj.AliExpressCategoryName = category.AliExpressCategoryName;
-                        obj.AliExpressCategoryId = category.AliExpressCategoryId;
-                        obj.ItemModifyBy = 1;
+                        obj.AliExpresscategoryName = category.AliExpresscategoryName;
+                        obj.AliExpressCategoryID = category.AliExpressCategoryID;
+                        obj.ItemModifyBy = "1";
                         obj.ItemModifyWhen = DateTime.UtcNow;
                     }
                     datacontext.Entry(obj).State = System.Data.Entity.EntityState.Modified;

@@ -12,18 +12,32 @@ namespace DropshipPlatform.Entity
     using System;
     using System.Collections.Generic;
     
-    public partial class Category
+    public partial class category
     {
         public int CategoryID { get; set; }
         public string Name { get; set; }
-        public Nullable<int> CategoryLevel { get; set; }
-        public string ParentCategoryID { get; set; }
-        public Nullable<bool> IsLeafCategory { get; set; }
-        public string AliExpressCategoryName { get; set; }
-        public Nullable<long> AliExpressCategoryId { get; set; }
-        public Nullable<int> ItemCreatedBy { get; set; }
+        public string CategoryLevel { get; set; }
+        public Nullable<int> ParentCategoryID { get; set; }
+        public string Isleafcategory { get; set; }
+        public string Url { get; set; }
+        public Nullable<int> WebsiteID { get; set; }
+        public Nullable<int> LayoutID { get; set; }
+        public Nullable<int> FrequencyDateCode { get; set; }
+        public Nullable<int> IsActive { get; set; }
+        public Nullable<System.DateTime> DateCreated { get; set; }
+        public Nullable<System.DateTime> LastUpdateDate { get; set; }
+        public string AliExpresscategoryName { get; set; }
+        public Nullable<int> AliExpressCategoryID { get; set; }
+        public string ItemCreatedBy { get; set; }
         public Nullable<System.DateTime> ItemCreatedWhen { get; set; }
-        public Nullable<int> ItemModifyBy { get; set; }
+        public string ItemModifyBy { get; set; }
         public Nullable<System.DateTime> ItemModifyWhen { get; set; }
+        public string UrlParent { get; set; }
+        public Nullable<int> LimitProductScrap { get; set; }
+        public Nullable<System.DateTime> AllPagesScrapped { get; set; }
+    
+        public virtual website website { get; set; }
+        public virtual layout layout { get; set; }
+        public virtual frequencyupdate frequencyupdate { get; set; }
     }
 }

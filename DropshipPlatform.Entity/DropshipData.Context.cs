@@ -25,23 +25,28 @@ namespace DropshipPlatform.Entity
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<AliExpressCategory> AliExpressCategories { get; set; }
-        public virtual DbSet<Category> Categories { get; set; }
-        public virtual DbSet<Country> Countries { get; set; }
-        public virtual DbSet<PaymentProfile> PaymentProfiles { get; set; }
-        public virtual DbSet<Role> Roles { get; set; }
-        public virtual DbSet<Subscription> Subscriptions { get; set; }
-        public virtual DbSet<User_Roles> User_Roles { get; set; }
-        public virtual DbSet<MembershipType> MembershipTypes { get; set; }
-        public virtual DbSet<ApplicationLog> ApplicationLogs { get; set; }
-        public virtual DbSet<AliExpressJobLog> AliExpressJobLogs { get; set; }
-        public virtual DbSet<SellerPickedProductSKU> SellerPickedProductSKUs { get; set; }
-        public virtual DbSet<SellersPickedProduct> SellersPickedProducts { get; set; }
-        public virtual DbSet<User> Users { get; set; }
-        public virtual DbSet<AliExpressOrderItem> AliExpressOrderItems { get; set; }
-        public virtual DbSet<AliExpressOrder> AliExpressOrders { get; set; }
-        public virtual DbSet<ProductMedia> ProductMedias { get; set; }
-        public virtual DbSet<Order> Orders { get; set; }
-        public virtual DbSet<Product> Products { get; set; }
+        public virtual DbSet<activitylog> activitylogs { get; set; }
+        public virtual DbSet<aliexpresscategory> aliexpresscategories { get; set; }
+        public virtual DbSet<aliexpressorderitem> aliexpressorderitems { get; set; }
+        public virtual DbSet<aliexpressorder> aliexpressorders { get; set; }
+        public virtual DbSet<applicationlog> applicationlogs { get; set; }
+        public virtual DbSet<category> categories { get; set; }
+        public virtual DbSet<country> countries { get; set; }
+        public virtual DbSet<frequencyupdate> frequencyupdates { get; set; }
+        public virtual DbSet<layout> layouts { get; set; }
+        public virtual DbSet<membershiptype> membershiptypes { get; set; }
+        public virtual DbSet<order> orders { get; set; }
+        public virtual DbSet<orders1> orders1 { get; set; }
+        public virtual DbSet<paymentprofile> paymentprofiles { get; set; }
+        public virtual DbSet<product> products { get; set; }
+        public virtual DbSet<role> roles { get; set; }
+        public virtual DbSet<user_roles> user_roles { get; set; }
+        public virtual DbSet<user> users { get; set; }
+        public virtual DbSet<website> websites { get; set; }
+        public virtual DbSet<sellerspickedproduct> sellerspickedproducts { get; set; }
+        public virtual DbSet<productmedia> productmedias { get; set; }
+        public virtual DbSet<sellerpickedproductsku> sellerpickedproductskus { get; set; }
+        public virtual DbSet<subscription> subscriptions { get; set; }
+        public virtual DbSet<aliexpressjoblog> aliexpressjoblogs { get; set; }
     }
 }

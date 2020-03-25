@@ -26,7 +26,7 @@ namespace DropshipPlatform.Controllers
 
         public JsonResult getProductManagementDT(int? category, int? filterOptions)
         {
-            User user = SessionManager.GetUserSession();
+            user user = SessionManager.GetUserSession();
             List<ProductGroupModel> list = _productService.GetParentProducts(user.UserID);
             if (category > 0)
             {
@@ -55,7 +55,7 @@ namespace DropshipPlatform.Controllers
 
         public JsonResult pickSellerProducts(List<scproductModel> products)
         {
-            User user = SessionManager.GetUserSession();
+            user user = SessionManager.GetUserSession();
             
                 bool result = _productService.AddSellersPickedProducts(products, user.UserID);
             
@@ -94,7 +94,7 @@ namespace DropshipPlatform.Controllers
         //public JsonResult Up
         public JsonResult UpdatePickedProduct(List<scproductModel> products)
         {
-            User user = SessionManager.GetUserSession();
+            user user = SessionManager.GetUserSession();
 
             bool result = _productService.UpdatePickedProduct(products, user.UserID);
 

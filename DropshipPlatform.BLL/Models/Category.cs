@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DropshipPlatform.BLL.Models
 {
-    public class CategoryData : Category
+    public class CategoryData : category
     {
        public string categoryFullPath { get; set; }
     }

@@ -12,21 +12,20 @@ namespace DropshipPlatform.Entity
     using System;
     using System.Collections.Generic;
     
-    public partial class paymentprofile
+    public partial class orders1
     {
-        public int PaymentProfileID { get; set; }
-        public Nullable<int> UserID { get; set; }
-        public string CreditCardNumber { get; set; }
-        public string CreditCardType { get; set; }
-        public Nullable<System.DateTime> ExpiryDate { get; set; }
-        public string NameOnCard { get; set; }
-        public Nullable<sbyte> IsDefault { get; set; }
+        public int OrderID { get; set; }
+        public string AliExpressOrderID { get; set; }
+        public string DeliveryCountry { get; set; }
+        public Nullable<int> PaymentStatus { get; set; }
+        public Nullable<int> AliExpressSellerID { get; set; }
+        public string TrackingNo { get; set; }
+        public string ShippingWeight { get; set; }
+        public string OrderAmount { get; set; }
+        public string OrderStatus { get; set; }
         public Nullable<int> ItemCreatedBy { get; set; }
         public Nullable<System.DateTime> ItemCreatedWhen { get; set; }
         public Nullable<int> ItemModifyBy { get; set; }
         public Nullable<System.DateTime> ItemModifyWhen { get; set; }
-        public Nullable<sbyte> IsAgreedPaymentPolicy { get; set; }
-        public Nullable<System.DateTime> AgreedPaymentPolicyTime { get; set; }
-        public Nullable<long> AuthorizeNetProfileId { get; set; }
     }
 }

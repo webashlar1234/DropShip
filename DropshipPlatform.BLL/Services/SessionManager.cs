@@ -55,7 +55,7 @@ namespace DropshipPlatform.BLL.Services
             }
         }
 
-        public static void SetUserSession(User user)
+        public static void SetUserSession(user user)
         {
             if (user != null)
             {
@@ -63,15 +63,15 @@ namespace DropshipPlatform.BLL.Services
             }
         }
 
-        public static User GetUserSession()
+        public static user GetUserSession()
         {
-            User token = new User();
+            user token = new user();
             try
             {
                 if (HttpContext.Current.Session != null && HttpContext.Current.Session["userSession"] != null)
                 {
                     string data = HttpContext.Current.Session["userSession"].ToString();
-                    token = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(HttpUtility.UrlDecode(data));
+                    token = Newtonsoft.Json.JsonConvert.DeserializeObject<user>(HttpUtility.UrlDecode(data));
                 }
             }
             catch (Exception ex)

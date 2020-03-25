@@ -12,7 +12,7 @@ namespace DropshipPlatform.Entity
     using System;
     using System.Collections.Generic;
     
-    public partial class AliExpressJobLog
+    public partial class aliexpressjoblog
     {
         public int Id { get; set; }
         public Nullable<long> JobId { get; set; }

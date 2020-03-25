@@ -51,14 +51,14 @@ namespace DropshipPlatform.BLL.Services
 
         }
 
-        public List<Product> GetProductById(string Id)
+        public List<product> GetProductById(string Id)
         {
-            List<Product> products = new List<Product>();
+            List<product> products = new List<product>();
             try
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    products = datacontext.Products.Where(x=>x.OriginalProductID == Id).ToList();
+                    products = datacontext.products.Where(x=>x.OriginalProductID == Id).ToList();
                 }
             }
             catch (Exception ex)
@@ -129,8 +129,8 @@ namespace DropshipPlatform.BLL.Services
                     {
                         foreach (var item in orders.TargetList)
                         {
-                            AliExpressOrder AliExpressOrderData = new AliExpressOrder();
-                            var AliiExpressOrderId = datacontext.AliExpressOrders.Where(x => x.AliExpressOrderID == item.OrderId).Any();
+                            aliexpressorder AliExpressOrderData = new aliexpressorder();
+                            var AliiExpressOrderId = datacontext.aliexpressorders.Where(x => x.AliExpressOrderID == item.OrderId).Any();
                             //if (!AliiExpressOrderId)
                             //{
                             //    AliExpressOrderData.BuyerLoginId = item.BuyerLoginId;
@@ -198,14 +198,14 @@ namespace DropshipPlatform.BLL.Services
             }
         }
 
-        public List<Order> getAllOrdersFromDatabase()
+        public List<order> getAllOrdersFromDatabase()
         {
-            List<Order> Orders = new List<Order>();
+            List<order> Orders = new List<order>();
             try
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    Orders = datacontext.Orders.ToList();
+                    Orders = datacontext.orders.ToList();
                 }
             }
             catch (Exception ex)

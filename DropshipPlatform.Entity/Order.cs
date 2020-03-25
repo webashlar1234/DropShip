@@ -12,7 +12,7 @@ namespace DropshipPlatform.Entity
     using System;
     using System.Collections.Generic;
     
-    public partial class Order
+    public partial class order
     {
         public int OrderID { get; set; }
         public string AliExpressOrderID { get; set; }
@@ -27,7 +27,7 @@ namespace DropshipPlatform.Entity
         public string PaymentStatus { get; set; }
         public string SellerID { get; set; }
         public string SellerEmail { get; set; }
-        public Nullable<bool> productExist { get; set; }
+        public Nullable<sbyte> productExist { get; set; }
         public string LogisticName { get; set; }
         public string LogisticType { get; set; }
         public Nullable<int> ItemCreatedBy { get; set; }

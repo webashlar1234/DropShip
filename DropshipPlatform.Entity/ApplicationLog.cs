@@ -12,7 +12,7 @@ namespace DropshipPlatform.Entity
     using System;
     using System.Collections.Generic;
     
-    public partial class ApplicationLog
+    public partial class applicationlog
     {
         public int ApplicationLogID { get; set; }
         public Nullable<int> UserID { get; set; }

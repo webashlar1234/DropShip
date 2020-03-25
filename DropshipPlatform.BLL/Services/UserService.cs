@@ -24,7 +24,7 @@ namespace DropshipPlatform.BLL.Services
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    User dbUser = datacontext.Users.Where(m => m.EmailID == model.Email && m.Password == model.Password).FirstOrDefault();
+                    user dbUser = datacontext.users.Where(m => m.EmailID == model.Email && m.Password == model.Password).FirstOrDefault();
                     if (dbUser != null)
                     {
                         //UserModel userModel = new UserModel();
@@ -59,7 +59,7 @@ namespace DropshipPlatform.BLL.Services
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    User dbUser = new User();
+                    user dbUser = new user();
                     dbUser.Name = model.Username;
                     dbUser.Password = model.Password;
                     dbUser.Phone = model.Phone;
@@ -67,13 +67,13 @@ namespace DropshipPlatform.BLL.Services
                     dbUser.EmailID = model.Email;
                     dbUser.IsActive = true;
                     dbUser.IsPolicyAccepted = true;
-                    datacontext.Users.Add(dbUser);
+                    datacontext.users.Add(dbUser);
                     datacontext.SaveChanges();
 
-                    User_Roles dbUserRoles = new User_Roles();
+                    user_roles dbUserRoles = new user_roles();
                     dbUserRoles.UserID = dbUser.UserID;
                     dbUserRoles.RoleID = model.RoleID;
-                    datacontext.User_Roles.Add(dbUserRoles);
+                    datacontext.user_roles.Add(dbUserRoles);
 
                     datacontext.SaveChanges();
 
@@ -91,14 +91,14 @@ namespace DropshipPlatform.BLL.Services
             return response;
         }
 
-        public User GetUser(int UserID)
+        public user GetUser(int UserID)
         {
-            User dbUser = new User();
+            user dbUser = new user();
             try
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    dbUser = datacontext.Users.Where(m => m.UserID == UserID).FirstOrDefault();
+                    dbUser = datacontext.users.Where(m => m.UserID == UserID).FirstOrDefault();
                 }
             }
             catch (Exception ex)
@@ -109,14 +109,14 @@ namespace DropshipPlatform.BLL.Services
             return dbUser;
         }
 
-        public User UpdateUserForAliExpress(int UserID, AliExpressAccessToken AccessToken)
+        public user UpdateUserForAliExpress(int UserID, AliExpressAccessToken AccessToken)
         {
-            User dbUser = new User();
+            user dbUser = new user();
             try
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    User Obj = datacontext.Users.Where(x => x.UserID == UserID).FirstOrDefault();
+                    user Obj = datacontext.users.Where(x => x.UserID == UserID).FirstOrDefault();
                     if (Obj != null)
                     {
                         Obj.AliExpressSellerID = AccessToken.user_id;
@@ -141,7 +141,7 @@ namespace DropshipPlatform.BLL.Services
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    RoleID = datacontext.User_Roles.Where(m => m.UserID == UserID).Select(x => x.RoleID).FirstOrDefault();
+                    RoleID = datacontext.user_roles.Where(m => m.UserID == UserID).Select(x => x.RoleID).FirstOrDefault();
                 }
             }
             catch (Exception ex)
@@ -153,20 +153,20 @@ namespace DropshipPlatform.BLL.Services
         }
 
 
-        public List<User> getOperationalUsers()
+        public List<user> getOperationalUsers()
         {
-            List<User> operationalUsers = new List<User>();
+            List<user> operationalUsers = new List<user>();
             try
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    List<User_Roles> userList = datacontext.User_Roles.Where(x => x.RoleID == 2).ToList();
+                    List<user_roles> userList = datacontext.user_roles.Where(x => x.RoleID == 2).ToList();
                     foreach (var item in userList)
                     {
-                        User Obj = datacontext.Users.Where(x => x.UserID == item.UserID).FirstOrDefault();
+                        user Obj = datacontext.users.Where(x => x.UserID == item.UserID).FirstOrDefault();
                         if (Obj != null)
                         {
-                            User users = new User();
+                            user users = new user();
                             users.UserID = Obj.UserID;
                             users.Name = Obj.Name;
                             users.EmailID = Obj.EmailID;
@@ -193,10 +193,10 @@ namespace DropshipPlatform.BLL.Services
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    var userList = datacontext.Users.Where(x => x.UserID == UserID).FirstOrDefault();
+                    var userList = datacontext.users.Where(x => x.UserID == UserID).FirstOrDefault();
                     if(userList != null)
                     {
-                        datacontext.Users.Remove(userList);
+                        datacontext.users.Remove(userList);
                         datacontext.SaveChanges();
                         result = true;
                     }

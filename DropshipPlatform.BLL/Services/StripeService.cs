@@ -43,7 +43,7 @@ namespace DropshipPlatform.BLL.Services
             return result;
         }
 
-        public bool stripe_CreateCustomer(User user, string PaymentMethodId)
+        public bool stripe_CreateCustomer(user user, string PaymentMethodId)
         {
             bool result = true;
             try
@@ -64,7 +64,7 @@ namespace DropshipPlatform.BLL.Services
 
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    User Obj = datacontext.Users.Where(x => x.UserID == user.UserID).FirstOrDefault();
+                    user Obj = datacontext.users.Where(x => x.UserID == user.UserID).FirstOrDefault();
                     if(Obj != null)
                     {
                         Obj.StripeCustomerID = customer.Id;
@@ -214,14 +214,14 @@ namespace DropshipPlatform.BLL.Services
             return result;
         }
 
-        public bool SaveSubscriptionToDb(User user, SubscriptionModel subscription)
+        public bool SaveSubscriptionToDb(user user, SubscriptionModel subscription)
         {
             bool result = true;
             try
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    List<Entity.Subscription> list = datacontext.Subscriptions.Where(x => x.UserID == user.UserID).ToList();
+                    List<Entity.subscription> list = datacontext.subscriptions.Where(x => x.UserID == user.UserID).ToList();
 
                     foreach(var item in list)
                     {
@@ -229,17 +229,17 @@ namespace DropshipPlatform.BLL.Services
                         datacontext.Entry(item).State = System.Data.Entity.EntityState.Modified;
                     }
 
-                    Entity.Subscription obj = new Entity.Subscription();
+                    Entity.subscription obj = new Entity.subscription();
                     obj.UserID = user.UserID;
                     obj.StripeSubscriptionID = subscription.Id;
-                    obj.MembershipID = datacontext.MembershipTypes.Where(x => x.StripePlanID == subscription.Plan.Id).FirstOrDefault().MembershipID;
+                    obj.MembershipID = datacontext.membershiptypes.Where(x => x.StripePlanID == subscription.Plan.Id).FirstOrDefault().MembershipID;
                     obj.MembershipStartDate = subscription.CurrentPeriodStart;
                     obj.MembershipExpiredDate = subscription.CurrentPeriodEnd;
                     obj.MembershipCreatedOn = DateTime.Now;
                     obj.MembershipCreatedBy = user.UserID;
                     obj.IsActive = true;
 
-                    datacontext.Subscriptions.Add(obj);
+                    datacontext.subscriptions.Add(obj);
                     datacontext.SaveChanges();
                 }
             }
@@ -252,7 +252,7 @@ namespace DropshipPlatform.BLL.Services
             return result;
         }
 
-        public bool CreatePlan(User user, PlanViewModel planModel)
+        public bool CreatePlan(user user, PlanViewModel planModel)
         {
             bool result = true;
             try
@@ -274,7 +274,7 @@ namespace DropshipPlatform.BLL.Services
                 {
                     using (DropshipDataEntities datacontext = new DropshipDataEntities())
                     {
-                        MembershipType obj = new MembershipType();
+                        membershiptype obj = new membershiptype();
                         obj.Name = planModel.name;
                         obj.StripePlanID = plan.Id;
                         obj.Type = planModel.interval;
@@ -282,7 +282,7 @@ namespace DropshipPlatform.BLL.Services
                         obj.ItemCreatedBy = user.UserID;
                         obj.ItemCreatedWhen = DateTime.Now;
 
-                        datacontext.MembershipTypes.Add(obj);
+                        datacontext.membershiptypes.Add(obj);
                         datacontext.SaveChanges();
                     }
                 }

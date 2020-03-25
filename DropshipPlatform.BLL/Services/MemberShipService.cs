@@ -11,14 +11,14 @@ namespace DropshipPlatform.BLL.Services
     {
         readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public MembershipType GetMemberShipDetail(int PlanId)
+        public membershiptype GetMemberShipDetail(int PlanId)
         {
-            MembershipType obj = new MembershipType();
+            membershiptype obj = new membershiptype();
             try
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    obj = datacontext.MembershipTypes.Where(m => m.MembershipID == PlanId).FirstOrDefault();
+                    obj = datacontext.membershiptypes.Where(m => m.MembershipID == PlanId).FirstOrDefault();
                 }
             }
             catch (Exception ex)

@@ -12,7 +12,7 @@ namespace DropshipPlatform.Entity
     using System;
     using System.Collections.Generic;
     
-    public partial class AliExpressCategory
+    public partial class aliexpresscategory
     {
         public int ID { get; set; }
         public long AliExpressCategoryID { get; set; }

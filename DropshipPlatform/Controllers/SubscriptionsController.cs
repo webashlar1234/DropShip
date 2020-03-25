@@ -23,7 +23,7 @@ namespace DropshipPlatform.Controllers
 
         public ActionResult Index(int PlandID)
         {
-            MembershipType model = new MemberShipService().GetMemberShipDetail(PlandID);
+            membershiptype model = new MemberShipService().GetMemberShipDetail(PlandID);
             return View(model);
         }
 
@@ -42,7 +42,7 @@ namespace DropshipPlatform.Controllers
             bool hasPaymentMethod = true;
             try
             { 
-                User user = SessionManager.GetUserSession();
+                user user = SessionManager.GetUserSession();
                 if (string.IsNullOrEmpty(user.StripeCustomerID))
                 {
                     hasPaymentMethod = _stripeService.stripe_CreateCustomer(user, request.PaymentMethod);
@@ -102,7 +102,7 @@ namespace DropshipPlatform.Controllers
         public JsonResult SaveSubscriptionToDb(SubscriptionModel subscription)
         {
             bool result = true;
-            User user = SessionManager.GetUserSession();
+            user user = SessionManager.GetUserSession();
             if (user != null && subscription != null)
             {
                 result = _stripeService.SaveSubscriptionToDb(user, subscription);

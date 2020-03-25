@@ -12,10 +12,13 @@ namespace DropshipPlatform.Entity
     using System;
     using System.Collections.Generic;
     
-    public partial class country
+    public partial class activitylog
     {
-        public int CountryID { get; set; }
-        public string Name { get; set; }
-        public string CountryCode { get; set; }
+        public int ActivityLogID { get; set; }
+        public string Type { get; set; }
+        public string Event { get; set; }
+        public string Category { get; set; }
+        public string Description { get; set; }
+        public Nullable<System.DateTime> DateCreated { get; set; }
     }
 }

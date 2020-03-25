@@ -12,7 +12,7 @@ namespace DropshipPlatform.Entity
     using System;
     using System.Collections.Generic;
     
-    public partial class SellerPickedProductSKU
+    public partial class sellerpickedproductsku
     {
         public int Id { get; set; }
         public Nullable<long> ProductId { get; set; }
@@ -25,6 +25,6 @@ namespace DropshipPlatform.Entity
         public Nullable<int> CreatedBy { get; set; }
         public Nullable<System.DateTime> CreatedDate { get; set; }
     
-        public virtual SellersPickedProduct SellersPickedProduct { get; set; }
+        public virtual sellerspickedproduct sellerspickedproduct { get; set; }
     }
 }

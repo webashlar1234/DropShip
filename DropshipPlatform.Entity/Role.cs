@@ -12,7 +12,7 @@ namespace DropshipPlatform.Entity
     using System;
     using System.Collections.Generic;
     
-    public partial class Role
+    public partial class role
     {
         public int RoleID { get; set; }
         public string Name { get; set; }
