@@ -2,6 +2,7 @@
 using DropshipPlatform.BLL.Models;
 using DropshipPlatform.BLL.Services;
 using DropshipPlatform.Entity;
+using DropshipPlatform.Infrastructure;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -66,6 +67,7 @@ namespace DropshipPlatform.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
+        [CustomAuthorize("Admin", "Operational Manager")]
         public ActionResult jobLog()
         {
             return View();

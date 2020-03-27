@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using System.Linq.Dynamic;
 using DropshipPlatform.BLL.Models;
 using DropshipPlatform.Entity;
+using DropshipPlatform.Infrastructure;
 
 namespace DropshipPlatform.Controllers
 {
@@ -14,6 +15,8 @@ namespace DropshipPlatform.Controllers
     {
         UserService _userService = new UserService();
         // GET: User
+
+        [CustomAuthorize("Admin", "Operational Manager")]
         public ActionResult Index()
         {
             return View();

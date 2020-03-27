@@ -138,4 +138,16 @@ namespace DropshipPlatform.BLL.Models
         public int TotalCount { get; set; }
         public int TotalPage { get; set; }
     }
+
+    public class LogisticServiceData
+    {
+        public string DeliveryAddress { get; set; }
+        public bool ExpressLogisticsService { get; set; }
+        public string LogisticsServiceId { get; set; }
+        public string LogisticsServiceName { get; set; }
+        public object LogisticsTimeliness { get; set; }
+        public List<object> OtherFees { get; set; }
+        public string TrialResult { get; set; }
+        public string WarehouseName { get; set; }
+    }
 }

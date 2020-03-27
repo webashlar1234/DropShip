@@ -269,5 +269,208 @@ namespace DropshipPlatform.BLL.Services
             }
             return Orders;
         }
+
+
+        public bool getLogisticsServicByOrderId()
+        {
+            bool result = true;
+            List<LogisticServiceData> orderLogisticData = new List<LogisticServiceData>();
+            string resultdata = String.Empty;
+            try
+            {
+                ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret);
+                //Get Available Online Logistics Service List by order id
+                AliexpressLogisticsRedefiningGetonlinelogisticsservicelistbyorderidRequest req = new AliexpressLogisticsRedefiningGetonlinelogisticsservicelistbyorderidRequest();
+                req.GoodsWidth = 1L; //optional
+                req.GoodsHeight = 1L; //optional
+                req.GoodsWeight = "1.5"; //optional
+                req.GoodsLength = 1L; //optional
+                req.OrderId = 1000102673302508; //required OrderId
+                AliexpressLogisticsRedefiningGetonlinelogisticsservicelistbyorderidResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
+                resultdata = JsonConvert.SerializeObject(rsp.ResultList);
+                orderLogisticData = JsonConvert.DeserializeObject<List<LogisticServiceData>>(resultdata);
+                createWarehouseOrder();
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                logger.Info(ex.ToString());
+            }
+
+            return result;
+        }
+
+        public bool createWarehouseOrder()
+        {
+            bool result = true;
+            string resultdata = String.Empty;
+            try
+            {
+                ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret);
+
+                AliexpressSolutionOrderInfoGetRequest req1 = new AliexpressSolutionOrderInfoGetRequest();
+                AliexpressSolutionOrderInfoGetRequest.OrderDetailQueryDomain obj = new AliexpressSolutionOrderInfoGetRequest.OrderDetailQueryDomain();
+                obj.ExtInfoBitFlag = 11111L;
+                obj.OrderId = 1000102673302508;
+                req1.Param1_ = obj;
+                AliexpressSolutionOrderInfoGetResponse rsp1 = client.Execute(req1, SessionManager.GetAccessToken().access_token);
+
+                //Create Warehouse Order
+                AliexpressLogisticsCreatewarehouseorderRequest req = new AliexpressLogisticsCreatewarehouseorderRequest();
+                AliexpressLogisticsCreatewarehouseorderRequest.AddressdtosDomain obj1 = new AliexpressLogisticsCreatewarehouseorderRequest.AddressdtosDomain();
+                AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareAddressDtoDomain obj2 = new AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareAddressDtoDomain();
+                obj2.Phone = "098-234234";
+                obj2.Fax = "234234234";
+                obj2.MemberType = "类型";
+                obj2.TrademanageId = "cn234234234";
+                obj2.Street = "street";
+                obj2.Country = "RU";
+                obj2.City = "Moscow";
+                obj2.County = "county";
+                obj2.Email = "alibaba@alibaba.com";
+                obj2.AddressId = -1;
+                obj2.Name = "Linda";
+                obj2.Province = "Moscow";
+                obj2.StreetAddress = "street address";
+                obj2.Mobile = "18766234324";
+                obj2.PostCode = "056202";
+                obj1.Sender = obj2;
+                AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareAddressDtoDomain obj3 = new AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareAddressDtoDomain();
+                obj3.Phone = "098-234234";
+                obj3.Fax = "234234234";
+                obj3.MemberType = "类型";
+                obj3.TrademanageId = "cn234234234";
+                obj3.Street = "street";
+                obj3.Country = "RU";
+                obj3.City = "Moscow";
+                obj3.County = "county";
+                obj3.Email = "alibaba@alibaba.com";
+                obj3.AddressId = -1;
+                obj3.Name = "Linda";
+                obj3.Province = "Moscow";
+                obj3.StreetAddress = "street address";
+                obj3.Mobile = "18766234324";
+                obj3.PostCode = "056202";
+                obj1.Pickup = obj3;
+                AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareAddressDtoDomain obj4 = new AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareAddressDtoDomain();
+                obj4.Phone = "098-234234";
+                obj4.Fax = "234234234";
+                obj4.MemberType = "类型";
+                obj4.TrademanageId = "cn234234234";
+                obj4.Street = "street";
+                obj4.PostCode = "056202";
+                obj4.Country = "RU";
+                obj4.City = "Moscow";
+                obj4.County = "county";
+                obj4.Email = "alibaba@alibaba.com";
+                obj4.AddressId = -1;
+                obj4.Name = "Linda";
+                obj4.Province = "Moscow";
+                obj4.StreetAddress = "street address";
+                obj4.Mobile = "18766234324";
+                obj1.Receiver = obj4;
+                AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareAddressDtoDomain obj5 = new AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareAddressDtoDomain();
+                obj5.Phone = "098-234234";
+                obj5.Fax = "234234234";
+                obj5.MemberType = "类型";
+                obj5.TrademanageId = "cn234234234";
+                obj5.Street = "street";
+                obj5.Country = "RU";
+                obj5.City = "Moscow";
+                obj5.County = "county";
+                obj5.Email = "alibaba@alibaba.com";
+                obj5.AddressId = -1;
+                obj5.Name = "Linda";
+                obj5.Province = "Moscow";
+                obj5.StreetAddress = "street address";
+                obj5.Mobile = "18766234324";
+                obj5.PostCode = "056202";
+                obj1.Refund = obj5;
+                req.AddressDTOs_ = obj1;
+                List<AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareProductForTopDtoDomain> list7 = new List<AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareProductForTopDtoDomain>();
+                AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareProductForTopDtoDomain obj8 = new AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareProductForTopDtoDomain();
+                list7.Add(obj8);
+                obj8.AneroidMarkup = false;
+                obj8.Breakable = false;
+                obj8.CategoryCnDesc = "连衣裙";
+                obj8.CategoryEnDesc = "dress";
+                obj8.ContainsBattery = false;
+                obj8.HsCode = "77234";
+                obj8.OnlyBattery = false;
+                obj8.ProductDeclareAmount = "1.3";
+                obj8.ProductId = 1000L;
+                obj8.ProductNum = 2L;
+                obj8.ProductWeight = "1.5";
+                obj8.ScItemCode = "scItem code";
+                obj8.ScItemId = 1000L;
+                obj8.ScItemName = "scItem name";
+                obj8.SkuCode = "sku code";
+                obj8.SkuValue = "sku value";
+                req.DeclareProductDTOs_ = list7;
+                req.DomesticLogisticsCompany = "tiantiankuaidi";
+                req.DomesticLogisticsCompanyId = 505L;
+                req.DomesticTrackingNo = "none";
+                req.PackageNum = 1L;
+                req.TradeOrderFrom = "ESCROW";
+                req.TradeOrderId = 1000102673302508L;
+                req.UndeliverableDecision = 0L;
+                req.WarehouseCarrierService = "CPAM_WLB_FPXSZ;CPAM_WLB_CPHSH;CPAM_WLB_ZTOBJ;HRB_WLB_ZTOGZ;HRB_WLB_ZTOSH";
+                req.InvoiceNumber = "38577123";
+                //req.TopUserKey = "xxxxxxx";
+                AliexpressLogisticsCreatewarehouseorderResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
+                Console.WriteLine(rsp.Body);
+                getInternationalLogisticNoByOrderId();
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                logger.Info(ex.ToString());
+            }
+
+            return result;
+        }
+
+        public bool getInternationalLogisticNoByOrderId()
+        {
+            bool result = true;
+            string resultdata = String.Empty;
+            try
+            {
+                ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret);
+                AliexpressLogisticsQuerylogisticsorderdetailRequest req = new AliexpressLogisticsQuerylogisticsorderdetailRequest();
+                req.TradeOrderId = 1000102673302508; //required OrderId
+                AliexpressLogisticsQuerylogisticsorderdetailResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
+                resultdata = JsonConvert.SerializeObject(rsp.Result);
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                logger.Info(ex.ToString());
+            }
+
+            return result;
+        }
+
+        public bool getPrintInfo()
+        {
+            bool result = true;
+            string resultdata = String.Empty;
+            try
+            {
+                ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret);
+                AliexpressLogisticsRedefiningGetprintinfoRequest req = new AliexpressLogisticsRedefiningGetprintinfoRequest();
+                req.InternationalLogisticsId = "1000102673302508"; //required InternationalLogisticsId from getInternationalLogisticNoByOrderId result
+                AliexpressLogisticsRedefiningGetprintinfoResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
+                resultdata = JsonConvert.SerializeObject(rsp.Result);
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                logger.Info(ex.ToString());
+            }
+
+            return result;
+        }
+
     }
 }

@@ -46,17 +46,17 @@ namespace DropshipPlatform.Controllers
                 {
                     OrderData orderData = new OrderData();
                     orderData.AliExpressOrderNumber = item.AliExpressOrderID.ToString();
-                    //orderData.AliExpressProductId = item.AliExpressProductID;
-                    //orderData.OrignalProductId = item.OrignalProductId;
+                    orderData.ProductTitle = null;
+                    orderData.OrignalProductId = null;
                     //orderData.OrignalProductLink = item.OrignalProductLink;
                     //orderData.ProductTitle = item.ProductTitle;
                     orderData.OrderAmount = item.OrderAmount;
                     orderData.DeleveryCountry = item.DeliveryCountry;
                     orderData.ShippingWeight = item.ShippingWeight;
                     orderData.OrderStatus = item.OrderStatus;
-                    //orderData.PaymentStatus = item.PaymentStatus;
+                    orderData.PaymentStatus = item.PaymentStatus;
                     orderData.SellerID = item.AliExpressSellerID;
-                    //orderData.SellerEmail = item.SellerEmail;
+                    //orderData. = item.SellerEmail;
                     //orderData.LogisticName = item.LogisticName;
                     //orderData.LogisticType = item.LogisticType;
                     //orderData.ProductExist = item.productExist;

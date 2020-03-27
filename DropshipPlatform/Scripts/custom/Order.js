@@ -163,6 +163,7 @@ var order = {
             ]
         });
     },
+
     initCategoryTableSeller: function () {
         orderDTSeller = $('#orderDTSeller').DataTable({
             ajax: {
@@ -201,7 +202,7 @@ var order = {
                 {
                     targets: 0,
                     sortable: true,
-                    width: "10%",
+                    width: "12%",
                     "render": function (data, type, full) {
                         return data;
                     }
@@ -219,7 +220,7 @@ var order = {
                     sortable: true,
                     width: "10%",
                     "render": function (data, type, row) {
-                        return data;
+                        return data + '<label>$</label>';
                     }
                 },
                 {
@@ -235,7 +236,7 @@ var order = {
                     sortable: true,
                     width: "5%",
                     "render": function (data, type, full) {
-                        return data + '<label>$</label>';
+                        return data;
                     }
                 },
                 {
@@ -246,71 +247,32 @@ var order = {
                         return data;
                     }
                 },
-                //{
-                //    targets: 6,
-                //    sortable: true,
-                //    width: "10%",
-                //    "render": function (data, type, row) {
-                //        return data;
-                //    }
-                //},
-                //{
-                //    targets: 7,
-                //    sortable: true,
-                //    width: "5%",
-                //    "render": function (data, type, full) {
-                //        return data;
-                //    }
-                //},
-                //{
-                //    targets: 8,
-                //    sortable: true,
-                //    width: "10%",
-                //    "render": function (data, type, full) {
-                //        //return '<input data-role="switch" type="checkbox" data-toggle="toggle" data-on="Paid " data-off="Unpaid " />';
-                //        return data;
-                //    }
-                //},
-                //{
-                //    targets: 9,
-                //    sortable: true,
-                //    width: "10%",
-                //    "render": function (data, type, row) {
-                //        return data;
-                //    }
-                //},
-                //{
-                //    targets: 10,
-                //    sortable: true,
-                //    width: "5%",
-                //    "render": function (data, type, full) {
-                //        return data;
-                //    }
-                //},
                 {
                     targets: 6,
                     sortable: true,
                     width: "10%",
                     "render": function (data, type, row) {
-                        if (data) {
-                            return '<a class="btn btn-info btn-sm" href="#" onclick=updateStatus("' + row.OrignalProductLink + '",this,"' + row.AliExpressOrderNumber + '","' + row.LogisticType + '")>' + 'Buy Now' + '</a>';
-                        }
+                        return data;
+                    }
+                },
+                {
+                    targets: 7,
+                    sortable: true,
+                    width: "5%",
+                    "render": function (data, type, full) {
+                        return data;
                     }
                 },
             ],
             columns: [
                 { "sTitle": 'Ali Express Order Number', "mData": 'AliExpressOrderNumber', sDefaultContent: "", className: "AliExpressOrderNumber" },
-                //{ "sTitle": 'Orignal Product Id', "mData": 'OrignalProductId', sDefaultContent: "", className: "OrignalProductId" },
-                //{ "sTitle": 'Orignal Product Link', "mData": 'OrignalProductLink', sDefaultContent: "", className: "OrignalProductLink" },
                 { "sTitle": 'Product Title', "mData": 'ProductTitle', sDefaultContent: "", className: "ProductTitle" },
                 { "sTitle": 'Order Amount(USD)', "mData": 'OrderAmount', sDefaultContent: "", className: "OrderAmount" },
                 { "sTitle": 'Delevery Country', "mData": 'DeleveryCountry', sDefaultContent: "", className: "DeleveryCountry" },
                 { "sTitle": 'Shipping Weight(KG)', "mData": 'ShippingWeight', sDefaultContent: "", className: "ShippingWeight" },
-                //{ "sTitle": 'Order Status', "mData": 'OrderStatus', sDefaultContent: "", className: "OrderStatus" },
+                { "sTitle": 'Status', "mData": 'OrderStatus', sDefaultContent: "", className: "OrderStatus" },
+                { "sTitle": 'Tracking No', "mData": 'TrackingNo', sDefaultContent: "", className: "TrackingNo" },
                 { "sTitle": 'Payment Status', "mData": 'PaymentStatus', sDefaultContent: "", className: "PaymentStatus" },
-                //{ "sTitle": 'Seller ID', "mData": 'SellerID', sDefaultContent: "", className: "SellerID" },
-                //{ "sTitle": 'Seller Email', "mData": 'SellerEmail', sDefaultContent: "", className: "SellerEmail" },
-                { "sTitle": 'Actions', "mData": 'productExist', sDefaultContent: "", className: "Actions" }
             ]
         });
     }

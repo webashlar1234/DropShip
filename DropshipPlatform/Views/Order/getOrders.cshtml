@@ -13,10 +13,19 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">
-                <p class="tbl-title">
-                    Order Management
-                </p>
-                <div><b>Login User : <b>@Session["RoleName"].ToString()</b></b></div>
+
+                @if (Session["RoleName"] != null && Session["RoleName"].ToString() == "Operational Manager" || Session["RoleName"].ToString() == "Admin")
+                {
+                    <p class="tbl-title">
+                        Order Management - Operation Management
+                    </p>
+                }
+                @if (Session["RoleName"] != null && Session["RoleName"].ToString() == "Seller")
+                {
+                    <p class="tbl-title">
+                        Your Order List
+                    </p>
+                }
             </div>
 
         </div>
