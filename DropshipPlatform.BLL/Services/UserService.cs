@@ -187,7 +187,6 @@ namespace DropshipPlatform.BLL.Services
             }
             return operationalUsers;
         }
-
         public bool deleteOperationalManager(int UserID)
         {
             bool result = false;
@@ -196,8 +195,10 @@ namespace DropshipPlatform.BLL.Services
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
                     var userList = datacontext.users.Where(x => x.UserID == UserID).FirstOrDefault();
-                    if (userList != null)
+                    var userRoleList = datacontext.user_roles.Where(x => x.UserID == UserID).FirstOrDefault();
+                    if (userList != null && userRoleList != null)
                     {
+                        datacontext.user_roles.Remove(userRoleList);
                         datacontext.users.Remove(userList);
                         datacontext.SaveChanges();
                         result = true;
