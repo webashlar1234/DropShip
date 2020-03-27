@@ -1,15 +1,15 @@
 ﻿var ProductsDt = null;
 var table = '#ProductsDt';
+var jsonProducts = null;
 
 var product = {
     init: function () {
         product.initCheckSelection();
         product.change();
-        //product.initProductDT();
     },
     change: function () {
         $(document).on('change', '#ddlProductCat, #ddlPickupFilter', function () {
-            GetData();
+            BindData();
         });
         $(document).on('change', '#ddlProductBulkAction', function () {
             //$('.spinner').show();
@@ -90,7 +90,7 @@ var product = {
                 data: { products: pickedProducts },
                 success: function (data) {
                     SuccessMessage("Submitted to aliExpress for pickup process");
-                    GetData();
+                    BindData();
                     $('.spinner').hide();
                 }
             });
@@ -109,129 +109,12 @@ var product = {
         $(document).on('change', '.chkProducts', function () {
             $("#chk_prod_All", table).prop("checked", $(".chkProducts:checked", table).length > 0);
         });
-    },
-    initProductDT: function () {
-        if (ProductsDt) {
-            ProductsDt.destroy();
-        }
-        ProductsDt = $(table).DataTable({
-            "ajax": {
-                "url": "/Products/getProductManagementDT",
-                "type": "POST",
-                "datatype": "json",
-                "data": function (d) { d.category = $('#ddlProductCat').val(), d.filterOptions = $('#ddlPickupFilter').val() }
-                //"data": { category: $('#ddlProductCat').val() }
-            },
-            //processing: true,
-            //serverSide: true,
-            sort: true,
-            filter: true,
-            search: {
-                //search: "Search"
-            },
-            language: {
-                sSearch: "",
-                searchPlaceholder: "Search product"
-            },
-            preDrawCallback: function () {
-                $('#ProductsDt_filter input').addClass('form-control');
-            },
-            fnDrawCallback: function (oSettings) {
-                $('.selectpicker').selectpicker('refresh');
-            },
-            initComplete: function (setting, json) {
-
-            },
-            columnDefs: [
-                {
-                    targets: 0,
-                    sortable: false,
-                    width: "10%",
-                    "render": function (data, type, full) {
-                        var rawHTML = "";
-                        if (full.SellerPrice > 0) {
-                            rawHTML = "Picked";
-                        }
-                        else {
-                            rawHTML = '<label class="mt-checkbox mt-checkbox-outline"><input type="checkbox" productid=' + full.ProductID + ' id="chk_prod_' + full.ProductID + '" class="chkProducts"><span></span></label>';
-                        }
-                        return rawHTML;
-                    }
-                },
-                {
-                    targets: 1,
-                    sortable: true,
-                    width: "25%",
-                    "render": function (data, type, full) {
-                        return data;
-                    }
-                },
-                {
-                    targets: 2,
-                    sortable: true,
-                    width: "10%",
-                    "render": function (data, type, full) {
-                        return data;
-                    }
-                },
-                {
-                    targets: 3,
-                    sortable: true,
-                    width: "10%",
-                    "render": function (data, type, full) {
-                        return data;
-                    }
-                },
-                {
-                    targets: 4,
-                    sortable: true,
-                    width: "10%",
-                    "render": function (data, type, full) {
-                        return data;
-                    }
-                },
-                {
-                    targets: 5,
-                    sortable: true,
-                    width: "10%",
-                    "render": function (data, type, full) {
-                        return data;
-                    }
-                },
-                {
-                    targets: 6,
-                    sortable: false,
-                    width: "10%",
-                    "render": function (data, type, full) {
-                        return '<input class="SellerPriceInp" ' + (full.SellerPrice > 0 ? 'Disabled' : '') + ' placeholder="Your Price" value="' + (full.SellerPrice > 0 ? full.SellerPrice : '') + '" >';
-                    }
-                },
-                {
-                    targets: 7,
-                    sortable: false,
-                    width: "15%",
-                    "render": function (data, type, full) {
-                        return full.SellerPickedCount > 0 ? ("Picked by " + full.SellerPickedCount + " sellers") : (full.IsActive ? "Online" : "Offline");
-                    }
-                }
-            ],
-            columns: [
-                { "title": '<label class="mt-checkbox mt-checkbox-outline"><input type="checkbox" id="chk_prod_All" class="chkAllProducts"><span></span></label>Check All', "mData": '', sDefaultContent: "", className: "checkAll" },
-                { "title": 'Product Title', "mData": 'Title', sDefaultContent: "", className: "Title" },
-                { "title": 'Category', "mData": 'CategoryName', sDefaultContent: "", className: "CategoryName" },
-                { "title": 'Cost(USD)', "mData": 'Cost', sDefaultContent: "", className: "Cost" },
-                { "title": 'Inventory', "mData": 'Inventory', sDefaultContent: "", className: "Inventory" },
-                { "title": 'Shipping Weight(KG)', "mData": 'ShippingWeight', sDefaultContent: "", className: "ShippingWeight" },
-                { "title": 'Your Price', "mData": '', sDefaultContent: "", className: "YourPrice" },
-                { "title": 'Product Status', "mData": '', sDefaultContent: "", className: "" }
-            ]
-        });
     }
 };
 
 $(document).ready(function () {
     product.init();
-    GetData();
+    BindData();
 
     function SetPickedDisable() {
         var chkUpdatedPriceList = $('input[name=updatedPrice]');
@@ -461,69 +344,80 @@ function GeneratePropertyList(propertyList, elementName, Id) {
     return selectHTML;
 }
 
-function BindData(jsonProducts) {
+function BindData() {
     if (ProductsDt) {
         ProductsDt.destroy();
     }
-    ProductsDt = $(table).DataTable({
-        "data": jsonProducts,
-        "columns": [{
-            "orderable": false,
-            "data": null,
-            "defaultContent": ''
-        },
-        { "data": "Title" },
-        { "data": "category" },
-        { "data": "cost" },
-        { "data": "inventory" },
-        { "data": "shippingweight" },
-        {
-            "data": "UpdatedPrice", "render": function (data, type, full) {
-                if (!(full.ChildProductList.length > 0)) {
-                    full.cost > 0 ? full.cost : 0;
-                    return "<input name='updatedPrice' disabled dataSKU='" + full.ProductID + "' type='number' value=" + full.cost + " class='updatedParentPrice txtParent_" + full.ProductID + "'>";
-                }
-                else {
-                    return "";
-                }
-            }
-        },
-        {
-            "data": "pick", "render": function (data, type, full) {
-                var rawHTML = "";
-                if (full.isProductPicked) {
-                    rawHTML = "Picked";
-                }
-                else if (full.hasProductSkuSync) {
-                    rawHTML = '<label class="mt-checkbox mt-checkbox-outline disabled"><input disabled type="checkbox" productid=' + full.ProductID + ' id="chk_prod_' + full.ProductID + '" class="chkProducts parentChk"><span></span></label>';
-                }
-                else {
-                    rawHTML = '<label class="mt-checkbox mt-checkbox-outline"><input type="checkbox" productid=' + full.ProductID + ' id="chk_prod_' + full.ProductID + '" class="chkProducts parentChk"><span></span></label>';
-                }
-                return rawHTML;
-            }
-        },
 
-        {
-            "data": "check", "render": function (data, type, full) {
-                var rawHTML = "";
-                if (full.hasProductSkuSync && !full.isProductPicked) {
-                    rawHTML = "In Progress"
-                }
-                else {
-                    rawHTML = full.SellerPickedCount > 0 ? ("Picked by " + full.SellerPickedCount + " sellers") : (full.IsActive ? "Online" : "Offline");
-                }
-
-                return rawHTML;
+ProductsDt = $(table).DataTable({
+    "ajax" : {
+        "type"   : "POST",
+        "url": "/Products/getProductManagementDT",
+        "data": { category: $('#ddlProductCat').val(), filterOptions: $('#ddlPickupFilter').val() },
+        "dataSrc": function (json) {
+            jsonProducts = FormatData(json.data);
+            return jsonProducts;
+        }
+    },
+    "processing": true, 
+    "serverSide": true, 
+    "columns": [{
+        "orderable": false,
+        "data": null,
+        "defaultContent": ''
+    },
+    { "data": "Title" },
+    { "data": "category" },
+    { "data": "cost" },
+    { "data": "inventory" },
+    { "data": "shippingweight" },
+    {
+        "data": "UpdatedPrice", "render": function (data, type, full) {
+            if (!(full.ChildProductList.length > 0)) {
+                full.cost > 0 ? full.cost : 0;
+                return "<input name='updatedPrice' disabled dataSKU='" + full.ProductID + "' type='number' value=" + full.cost + " class='updatedParentPrice txtParent_" + full.ProductID + "'>";
+            }
+            else {
+                return "";
             }
         }
-        ],
-        "createdRow": function (row, data, dataIndex) {
-            if (data.ChildProductList.length > 0) {
-                $(row).find("td:eq(0)").addClass('details-control');
+    },
+    {
+        "data": "pick", "render": function (data, type, full) {
+            var rawHTML = "";
+            if (full.isProductPicked) {
+                rawHTML = "Picked";
             }
+            else if (full.hasProductSkuSync) {
+                rawHTML = '<label class="mt-checkbox mt-checkbox-outline disabled"><input disabled type="checkbox" productid=' + full.ProductID + ' id="chk_prod_' + full.ProductID + '" class="chkProducts parentChk"><span></span></label>';
+            }
+            else {
+                rawHTML = '<label class="mt-checkbox mt-checkbox-outline"><input type="checkbox" productid=' + full.ProductID + ' id="chk_prod_' + full.ProductID + '" class="chkProducts parentChk"><span></span></label>';
+            }
+            return rawHTML;
         }
-    });
+    },
+
+    {
+        "data": "check", "render": function (data, type, full) {
+            var rawHTML = "";
+            if (full.hasProductSkuSync && !full.isProductPicked) {
+                rawHTML = "In Progress"
+            }
+            else {
+                rawHTML = full.SellerPickedCount > 0 ? ("Picked by " + full.SellerPickedCount + " sellers") : (full.IsActive ? "Online" : "Offline");
+            }
+
+            return rawHTML;
+        }
+    }
+    ],
+    "createdRow": function (row, data, dataIndex) {
+        if (data.ChildProductList.length > 0) {
+            $(row).find("td:eq(0)").addClass('details-control');
+        }
+    }
+});
 
 
 

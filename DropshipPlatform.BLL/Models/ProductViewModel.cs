@@ -34,7 +34,7 @@ namespace DropshipPlatform.BLL.Models
         public string SourceWebsite { get; set; }
         public Nullable<int> IsActive { get; set; }
         public Nullable<bool> IsOnline { get; set; }
-        public double UpdatedPrice { get; set; }
+        public decimal? UpdatedPrice { get; set; }
         public long UpdatedInvetory { get; set; }
 
         public int SellerPickedCount { get; set; }

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Linq.Dynamic;
 
 namespace DropshipPlatform.Controllers
 {
@@ -24,33 +25,54 @@ namespace DropshipPlatform.Controllers
             return View();
         }
 
-        public JsonResult getProductManagementDT(int? category, int? filterOptions)
+        [HttpPost]
+        public JsonResult getProductManagementDT(int? category,int? filterOptions)
         {
             user user = SessionManager.GetUserSession();
-            List<ProductGroupModel> list = _productService.GetParentProducts(user.UserID);
-            if (category > 0)
-            {
-                list = list.Where(x => x.ParentProduct.CategoryID == category).ToList();
-            }
-            if (filterOptions == 1)
-            {
-                list = list.Where(x => x.ParentProduct.UserID == user.UserID).ToList();
-                list = list.Where(x => x.ParentProduct.isProductPicked == true).ToList();
-            }
-            else if(filterOptions == 2)
-            {
-                list = list.Where(x => x.ParentProduct.UserID != user.UserID).ToList();
-                list = list.Where(x => x.ParentProduct.hasProductSkuSync == false && x.ParentProduct.isProductPicked == false).ToList();
-            }
-            else if (filterOptions == 3)
-            {
-                list = list.Where(x => x.ParentProduct.UserID == user.UserID).ToList();
-                list = list.Where(x => x.ParentProduct.hasProductSkuSync == true && x.ParentProduct.isProductPicked == false).ToList();
-            }
-            return Json(new
-            {
-                data = list.ToArray(),
-            }, JsonRequestBehavior.AllowGet);
+            DTRequestModel DTRequestModel = new DTRequestModel();
+            var draw = Request.Form.GetValues("draw").FirstOrDefault();
+            var start = Request.Form.GetValues("start").FirstOrDefault();
+            var length = Request.Form.GetValues("length").FirstOrDefault();
+            //Find Order Column
+            var sortColumn = Request.Form.GetValues("columns[" + Request.Form.GetValues("order[0][column]").FirstOrDefault() + "][name]").FirstOrDefault();
+            var sortColumnDir = Request.Form.GetValues("order[0][dir]").FirstOrDefault();
+
+            DTRequestModel.PageSize = length != null ? Convert.ToInt32(length) : 0;
+            DTRequestModel.Skip = start != null ? Convert.ToInt32(start) : 0;
+            DTRequestModel.SortBy = sortColumn + " " + sortColumnDir;
+            int recordsTotal = 0;
+            List<ProductGroupModel> list = _productService.GetParentProducts(user.UserID, DTRequestModel, out recordsTotal);
+
+
+
+            //SORT
+            //if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
+            //{
+            //    list = list.OrderBy(sortColumn + " " + sortColumnDir).ToList();
+            //}
+            //if (category > 0)
+            //{
+            //    list = list.Where(x => x.ParentProduct.CategoryID == category).ToList();
+            //}
+            //if (filterOptions == 1)
+            //{
+            //    list = list.Where(x => x.ParentProduct.UserID == user.UserID).ToList();
+            //    list = list.Where(x => x.ParentProduct.isProductPicked == true).ToList();
+            //}
+            //else if (filterOptions == 2)
+            //{
+            //    list = list.Where(x => x.ParentProduct.UserID != user.UserID).ToList();
+            //    list = list.Where(x => x.ParentProduct.hasProductSkuSync == false && x.ParentProduct.isProductPicked == false).ToList();
+            //}
+            //else if (filterOptions == 3)
+            //{
+            //    list = list.Where(x => x.ParentProduct.UserID == user.UserID).ToList();
+            //    list = list.Where(x => x.ParentProduct.hasProductSkuSync == true && x.ParentProduct.isProductPicked == false).ToList();
+            //}
+
+            //recordsTotal = list.Count();
+            var data = list.ToList();
+            return Json(new { draw = draw, recordsFiltered = recordsTotal, recordsTotal = recordsTotal, data = data }, JsonRequestBehavior.AllowGet);
         }
 
         public JsonResult pickSellerProducts(List<scproductModel> products)

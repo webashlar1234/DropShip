@@ -71,4 +71,12 @@ namespace DropshipPlatform.BLL.Models
         public custom_color Color { get; set; }
     }
 
+    public class DTRequestModel
+    {
+        public int PageSize { get; set; }
+        public int Skip { get; set; }
+        public string SearchParams { get; set; }
+        public string SortBy { get; set; }
+        public int recordsTotal { get; set; }
+    }
 }

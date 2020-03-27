@@ -35,19 +35,21 @@ namespace DropshipPlatform.BLL.Services
             return products;
         }
 
-        public List<ProductGroupModel> GetParentProducts(int UserID)
+        public List<ProductGroupModel> GetParentProducts(int UserID, DTRequestModel DTReqModel, out int recordsTotal)
         {
             List<ProductGroupModel> productGroupList = new List<ProductGroupModel>();
             List<ProductViewModel> products = new List<ProductViewModel>();
+            recordsTotal = 0;
             try
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
+                    double num;
+                   
                     products = (from p in datacontext.products
                                 join c in datacontext.categories on p.CategoryID equals c.CategoryID
                                 from sp in datacontext.sellerspickedproducts.Where(x => x.ParentProductID == p.ProductID && x.UserID == UserID).DefaultIfEmpty()
-                                    //from spsku in datacontext.SellerPickedProductSKUs.Where(x => x.ProductId == p.ProductID && x.UserId == UserID).DefaultIfEmpty()
-                                where p.ParentProductID == null
+                                where p.ParentProductID == null && !string.IsNullOrEmpty(p.Cost)
                                 select new ProductViewModel
                                 {
                                     ProductID = p.ProductID,
@@ -61,69 +63,46 @@ namespace DropshipPlatform.BLL.Services
                                     SellerPickedCount = datacontext.sellerspickedproducts.Where(x => x.ParentProductID == p.ProductID && x.UserID != UserID).Count(),
                                     IsActive = p.IsActive,
                                     UserID = sp.UserID,
-                                    AliExpressCategoryID = c.AliExpressCategoryID ?? 0
-                                }).ToList();
+                                    AliExpressCategoryID = c.AliExpressCategoryID ?? 0,
+                                    hasProductSkuSync = sp == null ? false : true,
+                                    SellerPrice = sp.SellerPrice,
+                                    isProductPicked = string.IsNullOrEmpty(sp.AliExpressProductID) ? false : true
+                                }).ToList().Where(x => double.TryParse(x.Cost, out num) == true).ToList();
+                    
+                    recordsTotal = products.Count();
+
+                    products = products.Skip(DTReqModel.Skip).Take(DTReqModel.PageSize).ToList();
 
                     if (products.Count > 0)
                     {
                         foreach (ProductViewModel productViewModel in products)
                         {
-                            double num;
-                            if (double.TryParse(productViewModel.Cost, out num))
-                            {
-                                ProductGroupModel productGroup = new ProductGroupModel();
-                                sellerspickedproduct sellersPickedProduct = datacontext.sellerspickedproducts.Where(x => x.ParentProductID == productViewModel.ProductID && x.UserID == UserID).FirstOrDefault();
-                                if (sellersPickedProduct != null)
-                                {
-                                    productViewModel.hasProductSkuSync = true;
-                                    if (!string.IsNullOrEmpty(sellersPickedProduct.AliExpressProductID))
-                                    {
-                                        productViewModel.SellerPrice = sellersPickedProduct.SellerPrice;
-                                        productViewModel.isProductPicked = true;
-                                    }
-                                }
-                                List<product> childProducts = datacontext.products.Where(x => x.ParentProductID == productViewModel.ProductID).ToList();
-                                productGroup.ParentProduct = productViewModel;
-                                productGroup.ChildProductList = new List<ProductViewModel>();
-                                //long parentInvetoryTotal = 0;
-                                //long parentPriceTotal = 0;
+                            ProductGroupModel productGroup = new ProductGroupModel();
 
-                                bool hasChild = false;
-                                if (childProducts.Count > 0)
-                                {
-                                    hasChild = true;
+                            productGroup.ChildProductList = (from p in datacontext.products.Where(x => x.ParentProductID == productViewModel.ProductID)
+                                                                    join sps in datacontext.sellerpickedproductskus on p.ProductID equals sps.ProductId into sps1
+                                                                    from sku in sps1.DefaultIfEmpty()
+                                                                    select new ProductViewModel
+                                                                    {
+                                                                        ProductID = p.ProductID,
+                                                                        ParentProductID = p.ParentProductID,
+                                                                        Title = p.Title,
+                                                                        Brand = p.Brand,
+                                                                        OriginalProductID = p.OriginalProductID,
+                                                                        Color = p.Color,
+                                                                        Size = p.Size,
+                                                                        Cost = p.Cost,
+                                                                        Inventory = p.Inventory ?? 0,
+                                                                        ShippingWeight = p.ShippingWeight,
+                                                                        IsActive = p.IsActive,
+                                                                        UpdatedPrice = sku.UpdatedPrice
+                                                                    }).ToList();
 
-                                    foreach (product dbChildProduct in childProducts)
-                                    {
-                                        if (double.TryParse(dbChildProduct.Cost, out num) == false)
-                                        {
-                                            productGroup.ChildProductList = new List<ProductViewModel>();
-                                            break;
-                                        }
-                                        ProductViewModel childProductModel = GenerateProductViewModel(dbChildProduct);
-                                        childProductModel = AddUpdatedValues(childProductModel);
-                                        productGroup.ChildProductList.Add(childProductModel);
-                                        //parentInvetoryTotal = parentInvetoryTotal + Convert.ToInt32(childProductModel.Inventory);
-                                        //parentPriceTotal = parentPriceTotal + Convert.ToInt32(childProductModel.Cost);
-                                    }
-                                    //productGroup.ParentProduct.Inventory = parentInvetoryTotal.ToString();
-                                    //productGroup.ParentProduct.Cost = parentPriceTotal;
-                                    // productGroupList.Add(productGroup);
-                                }
-                                if (hasChild == false)
-                                {
-                                    productGroupList.Add(productGroup);
-                                }
-                                else
-                                {
-                                    if (productGroup.ChildProductList.Count > 0)
-                                    {
-                                        productGroupList.Add(productGroup);
-                                    }
-                                }
-                            }
+                            productGroup.ParentProduct = productViewModel;
+                          
+                            productGroupList.Add(productGroup);
                         }
-
+                        productGroupList = productGroupList.Where(x => x.ChildProductList.All(y => double.TryParse(y.Cost, out num)) == true).Take(DTReqModel.PageSize).ToList();
                     }
                 }
             }
@@ -363,7 +342,7 @@ namespace DropshipPlatform.BLL.Services
                     if (dbPickedProductSKU != null)
                     {
                         //productModel.UpdatedInvetory = dbPickedProduct.UpdatedInventory.Value;
-                        productModel.UpdatedPrice = Convert.ToDouble(dbPickedProductSKU.UpdatedPrice.Value);
+                        productModel.UpdatedPrice = dbPickedProductSKU.UpdatedPrice.Value;
                     }
                     else
                     {
@@ -388,7 +367,7 @@ namespace DropshipPlatform.BLL.Services
             productModel.SellingPriceCurrency = dbChildProduct.SellingPriceCurrency;
             productModel.OriginalProductID = dbChildProduct.OriginalProductID;
             productModel.Brand = dbChildProduct.Brand;
-            productModel.Description = Encoding.UTF8.GetString(dbChildProduct.Description);
+            productModel.Description = dbChildProduct.Description != null ? Encoding.UTF8.GetString(dbChildProduct.Description) : "";
             productModel.Inventory = dbChildProduct.Inventory;
             productModel.ManufacturerName = dbChildProduct.ManufacturerName;
             productModel.ExternalCode = dbChildProduct.ExternalCode;
