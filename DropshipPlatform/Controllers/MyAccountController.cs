@@ -1,4 +1,5 @@
 ﻿using DropshipPlatform.BLL.Services;
+using DropshipPlatform.Infrastructure;
 using Stripe;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,8 @@ namespace DropshipPlatform.Controllers
     public class MyAccountController : Controller
     {
         StripeService _stripeService = new StripeService();
+
+        [CustomAuthorize("Admin", "Operational Manager", "Seller")]
         public ActionResult Index()
         {
             return View();

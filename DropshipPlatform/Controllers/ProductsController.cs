@@ -1,6 +1,7 @@
 ﻿using DropshipPlatform.BLL.Models;
 using DropshipPlatform.BLL.Services;
 using DropshipPlatform.Entity;
+using DropshipPlatform.Infrastructure;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,8 @@ namespace DropshipPlatform.Controllers
         {
             return View();
         }
+
+        [CustomAuthorize("Admin", "Operational Manager", "Seller")]
         public ActionResult PickupProducts()
         {
             ViewBag.AliCategory = new CategoryService().getCategories();
@@ -84,6 +87,7 @@ namespace DropshipPlatform.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
+        [CustomAuthorize("Seller")]
         public ActionResult MyProduct()
         {
             //if (SessionManager.GetAccessToken().access_token == null)

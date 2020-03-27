@@ -101,10 +101,8 @@ namespace DropshipPlatform.BLL.Models
         public int EscrowFeeRate { get; set; }
         public string FrozenStatus { get; set; }
         public string FundStatus { get; set; }
-        public string GmtCreate { get; set; }
         public string GmtPayTime { get; set; }
         public object GmtSendGoodsTime { get; set; }
-        public string GmtUpdate { get; set; }
         public bool HasRequestLoan { get; set; }
         public string IssueStatus { get; set; }
         public string LeftSendGoodDay { get; set; }
@@ -124,6 +122,8 @@ namespace DropshipPlatform.BLL.Models
         public string SellerOperatorLoginId { get; set; }
         public string SellerSignerFullname { get; set; }
         public long TimeoutLeftTime { get; set; }
+        public DateTime GmtCreate { get; set; }
+        public DateTime GmtUpdate { get; set; }
     }
 
     public class ResultData
@@ -137,5 +137,17 @@ namespace DropshipPlatform.BLL.Models
         public object TimeStamp { get; set; }
         public int TotalCount { get; set; }
         public int TotalPage { get; set; }
+    }
+
+    public class LogisticServiceData
+    {
+        public string DeliveryAddress { get; set; }
+        public bool ExpressLogisticsService { get; set; }
+        public string LogisticsServiceId { get; set; }
+        public string LogisticsServiceName { get; set; }
+        public object LogisticsTimeliness { get; set; }
+        public List<object> OtherFees { get; set; }
+        public string TrialResult { get; set; }
+        public string WarehouseName { get; set; }
     }
 }

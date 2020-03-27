@@ -233,9 +233,13 @@
     <Compile Include="Controllers\RegistrationController.cs" />
     <Compile Include="Controllers\StripeController.cs" />
     <Compile Include="Controllers\SubscriptionsController.cs" />
+    <Compile Include="Controllers\UnAutoriziedUserController.cs" />
+    <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Infrastructure\CustomAuthenticationFilter.cs" />
+    <Compile Include="Infrastructure\CustomAuthorizeAttribute.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
@@ -326,6 +330,7 @@
     <Content Include="Scripts\custom\site.js" />
     <Content Include="Scripts\custom\stripe_custom.js" />
     <Content Include="Scripts\custom\SubscriptionPlan.js" />
+    <Content Include="Scripts\custom\User.js" />
     <Content Include="Scripts\custom\userManagement.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
@@ -387,12 +392,13 @@
     <Content Include="Views\Order\getOrders.cshtml" />
     <Content Include="Views\Order\Index.cshtml" />
     <Content Include="Views\Registration\Index.cshtml" />
+    <Content Include="Views\User\Index.cshtml" />
+    <Content Include="Views\UnAutoriziedUser\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\Backend\" />
     <Folder Include="Views\Stripe\" />
-    <Folder Include="Views\User\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

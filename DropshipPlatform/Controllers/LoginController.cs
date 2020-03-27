@@ -31,7 +31,8 @@ namespace DropshipPlatform.Controllers
                 response = userService.LoginUser(model);
                 if (response.IsSuccess)
                 {
-                    user user = (user)response.Data;
+                    LoggedUserModel loggedUserModel = (LoggedUserModel)response.Data;
+                    user user = loggedUserModel.dbUser;
                     SessionManager.SetUserSession(user);
                     if (!string.IsNullOrEmpty(user.AliExpressAccessToken))
                     {
@@ -39,6 +40,7 @@ namespace DropshipPlatform.Controllers
                     }
                     Session["UserName"] = user.Name;
                     Session["UserID"] = user.UserID;
+                    Session["RoleName"] = loggedUserModel.LoggedUserRoleName;
                     Session["RoleID"] = userService.GetLoginUserRoleID(user.UserID);
                     return RedirectToAction("Index", "AliExpress");
                 }
