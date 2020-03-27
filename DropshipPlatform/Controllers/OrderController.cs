@@ -1,6 +1,7 @@
 ﻿using DropshipPlatform.BLL.Models;
 using DropshipPlatform.BLL.Services;
 using DropshipPlatform.Entity;
+using DropshipPlatform.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,16 +13,14 @@ namespace DropshipPlatform.Controllers
     public class OrderController : Controller
     {
         // GET: Order
+        [CustomAuthorize("Admin", "Seller")]
         public ActionResult Index()
         {
-           
             return View();
         }
 
         public ActionResult getOrders()
         {
-            
-           
             return View();
         }
 
@@ -36,29 +35,31 @@ namespace DropshipPlatform.Controllers
             string search = Request.Form.GetValues("search[value]").FirstOrDefault();
             int pageSize = length != null ? Convert.ToInt32(length) : 0;
             int skip = start != null ? Convert.ToInt32(start) : 0;
-            List<order> resultList = _orderService.getAllOrdersFromDatabase();
+
+            List<aliexpressorder> resultList = _orderService.getAllOrdersFromDatabase();
+
             List<OrderData> retvalue = new List<OrderData>();
+
             if (resultList != null)
             {
                 foreach (var item in resultList)
                 {
                     OrderData orderData = new OrderData();
-                    //orderData.AliExpressOrderNumber = item.AliExpressOrderID;
-                    //orderData.AliExpressProductId = item.AliExpressProductId;
+                    orderData.AliExpressOrderNumber = item.AliExpressOrderID.ToString();
+                    //orderData.AliExpressProductId = item.AliExpressProductID;
                     //orderData.OrignalProductId = item.OrignalProductId;
                     //orderData.OrignalProductLink = item.OrignalProductLink;
                     //orderData.ProductTitle = item.ProductTitle;
-                    //orderData.OrderAmount = item.OrderAmount;
-                    //orderData.DeleveryCountry = item.DeliveryCountry;
-                    //orderData.ShippingWeight = item.ShippingWeight;
-                    //orderData.OrderStatus = item.OrderStatus;
+                    orderData.OrderAmount = item.OrderAmount;
+                    orderData.DeleveryCountry = item.DeliveryCountry;
+                    orderData.ShippingWeight = item.ShippingWeight;
+                    orderData.OrderStatus = item.OrderStatus;
                     //orderData.PaymentStatus = item.PaymentStatus;
-                    //orderData.SellerID = item.SellerID;
+                    orderData.SellerID = item.AliExpressSellerID;
                     //orderData.SellerEmail = item.SellerEmail;
                     //orderData.LogisticName = item.LogisticName;
                     //orderData.LogisticType = item.LogisticType;
-                    //orderData.productExist = item.productExist;
-
+                    //orderData.ProductExist = item.productExist;
                     retvalue.Add(orderData);
                 }
             }

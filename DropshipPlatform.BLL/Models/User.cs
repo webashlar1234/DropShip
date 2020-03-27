@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DropshipPlatform.Entity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -36,5 +37,11 @@ namespace DropshipPlatform.BLL.Models
         public string Username { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
+    }
+
+    public class LoggedUserModel
+    {
+        public string LoggedUserRoleName { get; set; }
+        public user dbUser { get; set; }
     }
 }

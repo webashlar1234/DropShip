@@ -15,9 +15,10 @@ namespace DropshipPlatform.BLL.Services
     public class OrderService
     {
         readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         public ResultData getAllOrders()
         {
-            ResultData orders =new ResultData();
+            ResultData orders = new ResultData();
             string result = String.Empty;
             try
             {
@@ -25,23 +26,29 @@ namespace DropshipPlatform.BLL.Services
                 AliexpressSolutionOrderGetRequest req = new AliexpressSolutionOrderGetRequest();
 
                 AliexpressSolutionOrderGetRequest.OrderQueryDomain obj1 = new AliexpressSolutionOrderGetRequest.OrderQueryDomain();
+
+                //var todayDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                //obj1.CreateDateEnd = DateTime.Now.AddMinutes(-5).ToString("yyyy-MM-dd HH:mm:ss");
+                //obj1.CreateDateStart = todayDate;
+                //obj1.ModifiedDateStart = todayDate;
+
                 var todayDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                obj1.CreateDateEnd = DateTime.Now.AddDays(1).ToString("yyyy-MM-dd HH:mm:ss");
-                // obj1.CreateDateStart = "2020-03-01 00:00:00";
-                obj1.CreateDateStart = todayDate;
-                //  obj1.ModifiedDateStart = "2020-03-01 00:00:00";
-                obj1.ModifiedDateStart = todayDate;
-                obj1.OrderStatusList = new List<string> { "SELLER_PART_SEND_GOODS", "PLACE_ORDER_SUCCESS", "IN_CANCEL", "WAIT_SELLER_SEND_GOODS", "WAIT_BUYER_ACCEPT_GOODS", "FUND_PROCESSING" , "IN_ISSUE", "IN_FROZEN", "WAIT_SELLER_EXAMINE_MONEY", "RISK_CONTROL", "FINISH" };
+                obj1.CreateDateEnd = todayDate;
+                obj1.CreateDateStart = "2020-03-01 00:00:00";
+                obj1.ModifiedDateStart = "2020-03-01 00:00:00";
+
+                obj1.OrderStatusList = new List<string> { "SELLER_PART_SEND_GOODS", "PLACE_ORDER_SUCCESS", "IN_CANCEL", "WAIT_SELLER_SEND_GOODS", "WAIT_BUYER_ACCEPT_GOODS", "FUND_PROCESSING", "IN_ISSUE", "IN_FROZEN", "WAIT_SELLER_EXAMINE_MONEY", "RISK_CONTROL", "FINISH" };
                 obj1.BuyerLoginId = "edacan0107@aol.com";
                 obj1.PageSize = 20L;
-                obj1.ModifiedDateEnd = todayDate; 
+                //obj1.ModifiedDateEnd = DateTime.Now.AddMinutes(-5).ToString("yyyy-MM-dd HH:mm:ss");
+                obj1.ModifiedDateEnd = todayDate;
                 obj1.CurrentPage = 1L;
                 obj1.OrderStatus = "SELLER_PART_SEND_GOODS";
                 req.Param0_ = obj1;
                 Top.Api.Response.AliexpressSolutionOrderGetResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
                 result = JsonConvert.SerializeObject(rsp.Result);
                 orders = JsonConvert.DeserializeObject<ResultData>(result);
-
+                InsertOrUpdateOrderData(orders);
             }
             catch (Exception ex)
             {
@@ -51,14 +58,14 @@ namespace DropshipPlatform.BLL.Services
 
         }
 
-        public List<product> GetProductById(string Id)
+        public sellerspickedproduct GetProductById(string Id)
         {
-            List<product> products = new List<product>();
+            sellerspickedproduct products = new sellerspickedproduct();
             try
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    products = datacontext.products.Where(x=>x.OriginalProductID == Id).ToList();
+                    products = datacontext.sellerspickedproducts.Where(x => x.AliExpressProductID == Id).FirstOrDefault();
                 }
             }
             catch (Exception ex)
@@ -123,70 +130,118 @@ namespace DropshipPlatform.BLL.Services
         {
             try
             {
-                if (orders.TargetList != null)
+                if (orders.TargetList != null && orders.TargetList.Count > 0)
                 {
                     using (DropshipDataEntities datacontext = new DropshipDataEntities())
                     {
                         foreach (var item in orders.TargetList)
                         {
                             aliexpressorder AliExpressOrderData = new aliexpressorder();
-                            var AliiExpressOrderId = datacontext.aliexpressorders.Where(x => x.AliExpressOrderID == item.OrderId).Any();
-                            //if (!AliiExpressOrderId)
-                            //{
-                            //    AliExpressOrderData.BuyerLoginId = item.BuyerLoginId;
-                            //    AliExpressOrderData.AliExpressOrderID = item.OrderId;
-                            //    AliExpressOrderData.AliExpressProductId = item.ProductList[0].SkuCode;
-                            //    List<Product> productData = GetProductById(AliExpressOrderData.AliExpressProductId);
-                            //    AliExpressOrderData.OrignalProductId = productData[0].OriginalProductID;
-                            //    AliExpressOrderData.OrignalProductLink = productData[0].SourceWebsite;
-                            //    AliExpressOrderData.ProductTitle = item.ProductList[0].ProductName;
-                            //    AliExpressOrderData.OrderAmount = item.ProductList[0].TotalProductAmount.Amount;
-                            //    AliExpressOrderData.CurrencyCode = item.ProductList[0].TotalProductAmount.CurrencyCode;
-                            //    AliExpressOrderData.DeliveryCountry = null;
-                            //    AliExpressOrderData.ShippingWeight = productData[0].ShippingWeight;
-                            //    AliExpressOrderData.OrderStatus = "New Order";
-                            //    AliExpressOrderData.PaymentStatus = "UnPaid";
-                            //    AliExpressOrderData.SellerID = item.SellerLoginId;
-                            //    AliExpressOrderData.SellerEmail = null;
-                            //    AliExpressOrderData.ProductExist = false;
-                            //    if (productData.Count > 0)
-                            //    {
-                            //        AliExpressOrderData.ProductExist = true;
-                            //    }
-                            //    AliExpressOrderData.LogisticName = item.ProductList[0].LogisticsServiceName;
-                            //    AliExpressOrderData.LogisticType = item.ProductList[0].LogisticsType;
-                            //    AliExpressOrderData.NoOfOrderItems = null;
+                            aliexpressorderitem AliExpressOrderItemData = new aliexpressorderitem();
+                            order OrderData = new order();
 
-                            //    datacontext.AliExpressOrders.Add(AliExpressOrderData);
-                            //}
-                            //else
-                            //{
-                            //    AliExpressOrder AliExpressOrderDataList = new AliExpressOrder();
-                            //    AliExpressOrderDataList = datacontext.AliExpressOrders.Where(x => x.AliExpressOrderID == item.OrderId.ToString()).FirstOrDefault();
-                            //    AliExpressOrderDataList.BuyerLoginId = item.BuyerLoginId;
-                            //    AliExpressOrderDataList.AliExpressOrderID = item.OrderId.ToString();
-                            //    AliExpressOrderDataList.AliExpressProductId = item.ProductList[0].SkuCode;
-                            //    List<Product> productData = GetProductById(AliExpressOrderDataList.AliExpressProductId);
-                            //    AliExpressOrderDataList.OrignalProductId = productData[0].OriginalProductID;
-                            //    AliExpressOrderDataList.OrignalProductLink = productData[0].SourceWebsite;
-                            //    AliExpressOrderDataList.ProductTitle = item.ProductList[0].ProductName;
-                            //    AliExpressOrderDataList.OrderAmount = item.ProductList[0].TotalProductAmount.Amount;
-                            //    AliExpressOrderDataList.CurrencyCode = item.ProductList[0].TotalProductAmount.CurrencyCode;
-                            //    AliExpressOrderDataList.DeliveryCountry = null;
-                            //    AliExpressOrderDataList.ShippingWeight = productData[0].ShippingWeight;
-                            //    AliExpressOrderDataList.OrderStatus = "New Order";
-                            //    AliExpressOrderDataList.PaymentStatus = "UnPaid";
-                            //    AliExpressOrderDataList.SellerID = item.SellerLoginId;
-                            //    AliExpressOrderDataList.SellerEmail = null;
-                            //    AliExpressOrderDataList.ProductExist = false;
-                            //    if (productData.Count > 0)
-                            //    {
-                            //        AliExpressOrderDataList.ProductExist = true;
-                            //    }
-                            //    AliExpressOrderDataList.LogisticName = item.ProductList[0].LogisticsServiceName;
-                            //    AliExpressOrderDataList.LogisticType = item.ProductList[0].LogisticsType;
-                            //    AliExpressOrderDataList.NoOfOrderItems = null;
-                            //}
+                            var AliiExpressOrderId = datacontext.aliexpressorders.Where(x => x.AliExpressOrderID == item.OrderId).Any();
+
+                            if (!AliiExpressOrderId)
+                            {
+                                AliExpressOrderData.AliExpressOrderID = item.OrderId;
+                                AliExpressOrderData.BuyerLoginId = item.BuyerLoginId;
+                                AliExpressOrderData.AliExpressSellerID = item.SellerLoginId;
+                                AliExpressOrderData.DeliveryCountry = null;
+                                AliExpressOrderData.PaymentStatus = null;
+                                AliExpressOrderData.TrackingNo = null;
+                                AliExpressOrderData.ShippingWeight = null;
+                                AliExpressOrderData.OrderAmount = null;
+                                AliExpressOrderData.CurrencyCode = null;
+                                AliExpressOrderData.OrderStatus = item.OrderStatus;
+                                AliExpressOrderData.NoOfOrderItems = null;
+                                AliExpressOrderData.ItemCreatedWhen = DateTime.UtcNow;
+                                AliExpressOrderData.ItemModifyWhen = DateTime.UtcNow;
+                                AliExpressOrderData.AliExpressOrderCreatedTime = item.GmtCreate;
+                                AliExpressOrderData.AliExpressOrderUpdatedTime = item.GmtUpdate;
+                                datacontext.aliexpressorders.Add(AliExpressOrderData);
+
+                                foreach (var product in item.ProductList)
+                                {
+                                    AliExpressOrderItemData.AliExpressProductID = product.ProductId.ToString();
+                                    sellerspickedproduct productData = GetProductById(AliExpressOrderItemData.AliExpressProductID);
+
+                                    if (productData != null)
+                                    {
+                                        AliExpressOrderItemData.ProductID = Convert.ToInt64(productData.AliExpressProductID);
+                                    }
+                                    AliExpressOrderItemData.ProductName = product.ProductName;
+                                    AliExpressOrderItemData.Price = product.TotalProductAmount.Amount;
+                                    AliExpressOrderItemData.CurrencyCode = product.TotalProductAmount.CurrencyCode;
+                                    AliExpressOrderItemData.ItemCreatedWhen = DateTime.UtcNow;
+                                    AliExpressOrderItemData.ItemModifyWhen = DateTime.UtcNow;
+                                    AliExpressOrderItemData.AliExpressOrderId = item.OrderId;
+                                    AliExpressOrderItemData.AliExpressProductOrderId = null;
+                                    AliExpressOrderItemData.SCOrderId = null;
+                                    datacontext.aliexpressorderitems.Add(AliExpressOrderItemData);
+                                }
+                                //var OrderId = datacontext.Orders.Where(x => x.OrderID == item.OrderId).Any();
+                                OrderData.AliExpressOrderID = item.OrderId.ToString();
+                                OrderData.AliExpressProductId = item.ProductList[0].ProductId.ToString();
+                                OrderData.OrignalProductId = item.SellerLoginId;
+                                OrderData.OrignalProductLink = null;
+                                OrderData.ProductTitle = null;
+                                OrderData.DeliveryCountry = item.ProductList[0].DeliveryTime;
+                                OrderData.ShippingWeight = null;
+                                OrderData.OrderAmount = item.ProductList[0].TotalProductAmount.Amount; ;
+                                OrderData.OrderStatus = item.OrderStatus;
+                                OrderData.PaymentStatus = null;
+                                OrderData.SellerID = item.SellerLoginId;
+                                OrderData.SellerEmail = null;
+                                OrderData.productExist = 1;
+                                OrderData.LogisticName = item.ProductList[0].LogisticsServiceName;
+                                OrderData.LogisticType = item.ProductList[0].LogisticsType;
+                                OrderData.ItemCreatedBy = null;
+                                OrderData.ItemCreatedWhen = DateTime.UtcNow;
+                                OrderData.ItemModifyBy = null;
+                                OrderData.ItemModifyWhen = DateTime.UtcNow;
+                                datacontext.orders.Add(OrderData);
+                            }
+                            else
+                            {
+                                aliexpressorder AliExpressOrderDataList = new aliexpressorder();
+                                aliexpressorderitem AliExpressOrderItemDataList = new aliexpressorderitem();
+
+                                AliExpressOrderDataList = datacontext.aliexpressorders.Where(x => x.AliExpressOrderID == item.OrderId).FirstOrDefault();
+
+                                AliExpressOrderDataList.AliExpressOrderID = item.OrderId;
+                                AliExpressOrderDataList.BuyerLoginId = item.BuyerLoginId;
+                                AliExpressOrderDataList.AliExpressSellerID = item.SellerLoginId;
+                                AliExpressOrderDataList.DeliveryCountry = null;
+                                AliExpressOrderDataList.PaymentStatus = null;
+                                AliExpressOrderDataList.TrackingNo = null;
+                                AliExpressOrderDataList.ShippingWeight = null;
+                                AliExpressOrderDataList.OrderAmount = null;
+                                AliExpressOrderDataList.CurrencyCode = null;
+                                AliExpressOrderDataList.OrderStatus = item.OrderStatus;
+                                AliExpressOrderDataList.NoOfOrderItems = null;
+                                AliExpressOrderDataList.ItemModifyWhen = DateTime.UtcNow;
+                                AliExpressOrderDataList.AliExpressOrderUpdatedTime = item.GmtUpdate;
+
+                                foreach (var product in item.ProductList)
+                                {
+                                    AliExpressOrderItemDataList.AliExpressProductID = product.ProductId.ToString();
+                                    sellerspickedproduct productData = GetProductById(AliExpressOrderItemDataList.AliExpressProductID);
+
+                                    if (productData != null)
+                                    {
+                                        AliExpressOrderItemDataList.ProductID = Convert.ToInt64(productData.AliExpressProductID);
+                                    }
+                                    AliExpressOrderItemDataList.ProductName = product.ProductName;
+                                    AliExpressOrderItemDataList.ProductName = product.ProductName;
+                                    AliExpressOrderItemDataList.Price = product.TotalProductAmount.Amount;
+                                    AliExpressOrderItemDataList.CurrencyCode = product.TotalProductAmount.CurrencyCode;
+                                    AliExpressOrderItemDataList.ItemModifyWhen = DateTime.UtcNow;
+                                    AliExpressOrderItemDataList.AliExpressOrderId = item.OrderId;
+                                    AliExpressOrderItemDataList.AliExpressProductOrderId = null;
+                                    AliExpressOrderItemDataList.SCOrderId = null;
+                                }
+                            }
                             datacontext.SaveChanges();
                         }
                     }
@@ -198,14 +253,14 @@ namespace DropshipPlatform.BLL.Services
             }
         }
 
-        public List<order> getAllOrdersFromDatabase()
+        public List<aliexpressorder> getAllOrdersFromDatabase()
         {
-            List<order> Orders = new List<order>();
+            List<aliexpressorder> Orders = new List<aliexpressorder>();
             try
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    Orders = datacontext.orders.ToList();
+                    Orders = datacontext.aliexpressorders.ToList();
                 }
             }
             catch (Exception ex)

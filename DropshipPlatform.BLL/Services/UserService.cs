@@ -33,8 +33,12 @@ namespace DropshipPlatform.BLL.Services
                         //userModel.IsPolicyAccepted = dbUser.IsPolicyAccepted.Value;
                         //userModel.AliExpressSellerID = dbUser.AliExpressSellerID;
                         //userModel.StripeCustomerID = dbUser.StripeCustomerID;
-
-                        response.Data = dbUser;
+                        user_roles loggoeduser = datacontext.user_roles.Where(m => m.UserID == dbUser.UserID).FirstOrDefault();
+                        role loggeduserRole = datacontext.roles.Where(m => m.RoleID == loggoeduser.RoleID).FirstOrDefault();
+                        LoggedUserModel loggedUserModel = new LoggedUserModel();
+                        loggedUserModel.LoggedUserRoleName = loggeduserRole.Name;
+                        loggedUserModel.dbUser = dbUser;
+                        response.Data = loggedUserModel;
                         response.Message = "Success";
                         response.IsSuccess = true;
                     }
@@ -172,7 +176,6 @@ namespace DropshipPlatform.BLL.Services
                             users.EmailID = Obj.EmailID;
                             users.Phone = Obj.Phone;
                             users.Country = Obj.Country;
-
                             operationalUsers.Add(users);
                         }
                     }
@@ -188,28 +191,59 @@ namespace DropshipPlatform.BLL.Services
         public bool deleteOperationalManager(int UserID)
         {
             bool result = false;
-
             try
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
                     var userList = datacontext.users.Where(x => x.UserID == UserID).FirstOrDefault();
-                    if(userList != null)
+                    if (userList != null)
                     {
                         datacontext.users.Remove(userList);
                         datacontext.SaveChanges();
                         result = true;
                     }
                 }
-
             }
             catch (Exception ex)
             {
                 result = false;
                 logger.Info(ex.ToString());
             }
-
             return result;
+        }
+
+        public List<user> getSellerUsers()
+        {
+            List<user> SellerUsers = new List<user>();
+            try
+            {
+                using (DropshipDataEntities datacontext = new DropshipDataEntities())
+                {
+                    List<user_roles> userList = datacontext.user_roles.Where(x => x.RoleID == 3).ToList();
+                    foreach (var item in userList)
+                    {
+                        user Obj = datacontext.users.Where(x => x.UserID == item.UserID).FirstOrDefault();
+                        if (Obj != null)
+                        {
+                            user users = new user();
+                            users.Name = Obj.Name;
+                            users.EmailID = Obj.EmailID;
+                            users.Phone = Obj.Phone;
+                            users.AliExpressSellerID = Obj.AliExpressSellerID;
+                            users.StripeCustomerID = Obj.StripeCustomerID;
+                            users.IsActive = Obj.IsActive;
+                            users.IsPolicyAccepted = Obj.IsPolicyAccepted;
+                            users.ItemCreatedWhen = Obj.ItemCreatedWhen;
+                            SellerUsers.Add(users);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString());
+            }
+            return SellerUsers;
         }
     }
 }
