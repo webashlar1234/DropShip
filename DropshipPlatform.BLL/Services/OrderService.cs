@@ -289,7 +289,7 @@ namespace DropshipPlatform.BLL.Services
                 AliexpressLogisticsRedefiningGetonlinelogisticsservicelistbyorderidResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
                 resultdata = JsonConvert.SerializeObject(rsp.ResultList);
                 orderLogisticData = JsonConvert.DeserializeObject<List<LogisticServiceData>>(resultdata);
-                createWarehouseOrder();
+                createWarehouseOrder(orderLogisticData);
             }
             catch (Exception ex)
             {
@@ -300,7 +300,7 @@ namespace DropshipPlatform.BLL.Services
             return result;
         }
 
-        public bool createWarehouseOrder()
+        public bool createWarehouseOrder(List <LogisticServiceData> orderLogisticData)
         {
             bool result = true;
             string resultdata = String.Empty;
@@ -391,30 +391,31 @@ namespace DropshipPlatform.BLL.Services
                 AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareProductForTopDtoDomain obj8 = new AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareProductForTopDtoDomain();
                 list7.Add(obj8);
                 obj8.AneroidMarkup = false;
-                obj8.Breakable = false;
-                obj8.CategoryCnDesc = "连衣裙";
-                obj8.CategoryEnDesc = "dress";
-                obj8.ContainsBattery = false;
+                obj8.Breakable = false;//required
+                obj8.CategoryCnDesc = "连衣裙";//required
+                obj8.CategoryEnDesc = "dress";//required
+                obj8.ContainsBattery = false;//required
                 obj8.HsCode = "77234";
                 obj8.OnlyBattery = false;
-                obj8.ProductDeclareAmount = "1.3";
-                obj8.ProductId = 1000L;
-                obj8.ProductNum = 2L;
-                obj8.ProductWeight = "1.5";
+                obj8.ProductDeclareAmount = "1.3";//required
+                obj8.ProductId = 10000124511021L;//required
+                obj8.ProductNum = 2L;//required
+                obj8.ProductWeight = "1.5";//required
                 obj8.ScItemCode = "scItem code";
-                obj8.ScItemId = 1000L;
+                //obj8.ScItemId = 1000L;
                 obj8.ScItemName = "scItem name";
-                obj8.SkuCode = "sku code";
-                obj8.SkuValue = "sku value";
+                obj8.SkuCode = "sku code";//required
+                obj8.SkuValue = "sku value";//required
                 req.DeclareProductDTOs_ = list7;
-                req.DomesticLogisticsCompany = "tiantiankuaidi";
-                req.DomesticLogisticsCompanyId = 505L;
-                req.DomesticTrackingNo = "none";
+                req.DomesticLogisticsCompany = orderLogisticData[0].LogisticsServiceName;
+                req.DomesticLogisticsCompanyId = 505L;//required
+                req.DomesticTrackingNo = "none";//required
                 req.PackageNum = 1L;
                 req.TradeOrderFrom = "ESCROW";
                 req.TradeOrderId = 1000102673302508L;
                 req.UndeliverableDecision = 0L;
-                req.WarehouseCarrierService = "CPAM_WLB_FPXSZ;CPAM_WLB_CPHSH;CPAM_WLB_ZTOBJ;HRB_WLB_ZTOGZ;HRB_WLB_ZTOSH";
+                req.WarehouseCarrierService = orderLogisticData[0].LogisticsServiceId;
+               // req.WarehouseCarrierService = "CPAM_WLB_FPXSZ;CPAM_WLB_CPHSH;CPAM_WLB_ZTOBJ;HRB_WLB_ZTOGZ;HRB_WLB_ZTOSH";
                 req.InvoiceNumber = "38577123";
                 //req.TopUserKey = "xxxxxxx";
                 AliexpressLogisticsCreatewarehouseorderResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);

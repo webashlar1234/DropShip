@@ -28,6 +28,7 @@ namespace DropshipPlatform.Controllers
         public ActionResult getOrdersData()
         {
             OrderService _orderService = new OrderService();
+            _orderService.getLogisticsServicByOrderId();
             int recordsTotal = 0;
             var draw = Request.Form.GetValues("draw") != null ? Request.Form.GetValues("draw").FirstOrDefault() : null;
             var start = Request.Form.GetValues("start") != null ? Request.Form.GetValues("start").FirstOrDefault() : null;
