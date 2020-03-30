@@ -37,16 +37,18 @@ namespace DropshipPlatform.Controllers
             var start = Request.Form.GetValues("start").FirstOrDefault();
             var length = Request.Form.GetValues("length").FirstOrDefault();
             //Find Order Column
-            var sortColumn = Request.Form.GetValues("columns[" + Request.Form.GetValues("order[0][column]").FirstOrDefault() + "][name]").FirstOrDefault();
+            var sortColumn = Request.Form.GetValues("columns[" + Request.Form.GetValues("order[0][column]").FirstOrDefault() + "][data]").FirstOrDefault();
             var sortColumnDir = Request.Form.GetValues("order[0][dir]").FirstOrDefault();
+            string search = Request.Form.GetValues("search[value]").FirstOrDefault();
 
             DTRequestModel.PageSize = length != null ? Convert.ToInt32(length) : 0;
             DTRequestModel.Skip = start != null ? Convert.ToInt32(start) : 0;
-            DTRequestModel.SortBy = sortColumn + " " + sortColumnDir;
+            DTRequestModel.SortBy = (!string.IsNullOrEmpty(sortColumn) && !string.IsNullOrEmpty(sortColumnDir)) ? sortColumn + " " + sortColumnDir : "";
+            DTRequestModel.Search = search;
             int recordsTotal = 0;
-            List<ProductGroupModel> list = _productService.GetParentProducts(user.UserID, DTRequestModel, out recordsTotal);
+            List<ProductGroupModel> list = _productService.GetParentProducts(user.UserID, DTRequestModel, category, filterOptions,  out recordsTotal);
 
-
+            
 
             //SORT
             //if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))

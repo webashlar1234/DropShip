@@ -360,7 +360,8 @@ ProductsDt = $(table).DataTable({
         }
     },
     "processing": true, 
-    "serverSide": true, 
+    "serverSide": true,
+    "bSort": true,
     "columns": [{
         "orderable": false,
         "data": null,
