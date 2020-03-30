@@ -35,7 +35,7 @@ namespace DropshipPlatform.BLL.Services
             return products;
         }
 
-        public List<ProductGroupModel> GetParentProducts(int UserID, DTRequestModel DTReqModel, out int recordsTotal)
+        public List<ProductGroupModel> GetParentProducts(int UserID, DTRequestModel DTReqModel, out int recordsTotal, int? category, int? filterOptions)
         {
             List<ProductGroupModel> productGroupList = new List<ProductGroupModel>();
             List<ProductViewModel> products = new List<ProductViewModel>();
@@ -68,7 +68,27 @@ namespace DropshipPlatform.BLL.Services
                                     SellerPrice = sp.SellerPrice,
                                     isProductPicked = string.IsNullOrEmpty(sp.AliExpressProductID) ? false : true
                                 }).ToList().Where(x => double.TryParse(x.Cost, out num) == true).ToList();
-                    
+
+                    if (category > 0)
+                    {
+                        products = products.Where(x => x.CategoryID == category).ToList();
+                    }
+                    if (filterOptions == 1)
+                    {
+                        products = products.Where(x => x.UserID == UserID).ToList();
+                        products = products.Where(x => x.isProductPicked == true).ToList();
+                    }
+                    else if (filterOptions == 2)
+                    {
+                        products = products.Where(x => x.UserID != UserID).ToList();
+                        products = products.Where(x => x.hasProductSkuSync == false && x.isProductPicked == false).ToList();
+                    }
+                    else if (filterOptions == 3)
+                    {
+                        products = products.Where(x => x.UserID == UserID).ToList();
+                        products = products.Where(x => x.hasProductSkuSync == true && x.isProductPicked == false).ToList();
+                    }
+
                     recordsTotal = products.Count();
 
                     products = products.Skip(DTReqModel.Skip).Take(DTReqModel.PageSize).ToList();

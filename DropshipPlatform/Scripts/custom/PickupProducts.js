@@ -1,6 +1,7 @@
 ﻿var ProductsDt = null;
 var table = '#ProductsDt';
 var jsonProducts = null;
+var allChecked = false;
 
 var product = {
     init: function () {
@@ -131,6 +132,19 @@ $(document).ready(function () {
                         $(chkUpdatedPriceList[i]).prop("disabled", true);
                     }
                 }
+                else {
+                    var elementID = $(chkUpdatedPriceList[i]).attr("datasku");
+                    if (elementID && parseInt(elementID) > 0) {
+                        elementID = parseInt(elementID);
+                        var ParentProduct = jsonProducts.filter(m => m.ProductID === elementID);
+                        if (ParentProduct != null && ParentProduct.length > 0) {
+                            ParentProduct = ParentProduct[0];
+                        }
+                        if (ParentProduct.hasProductSkuSync || ParentProduct.isProductPicked) {
+                            $(chkUpdatedPriceList[i]).prop("disabled", true);
+                        }
+                    }
+                }
             }
         }
     }
@@ -162,33 +176,15 @@ $(document).ready(function () {
         }
     });
 
-    $('#chkAllProduct').change(function () {
+    $('#chkAllProduct').change(function (e) {
         var parentCheckboxes = $('.parentChk');
         //ProductFormValidate();
+        allChecked = $(event.target).prop('checked');
         if (event.target.checked) {
             parentCheckboxes.prop('checked', true);
             $('#btnSave').prop('disabled', false);
             $('input[name=updatedPrice]').prop("disabled", false);
             SetPickedDisable();
-            //var chkUpdatedPriceList = $('input[name=updatedPrice]');
-            //if (chkUpdatedPriceList && chkUpdatedPriceList.length > 0)
-            //{
-            //    debugger
-            //    for (var i = 0; i < chkUpdatedPriceList.length; i++)
-            //    {
-            //        var ParentID = $(chkUpdatedPriceList[i]).attr("dataparentid");
-            //        if (ParentID && parseInt(ParentID) > 0) {
-            //            ParentID = parseInt(ParentID);
-            //            var ParentProduct = jsonProducts.filter(m => m.ProductID === ParentID);
-            //            if (ParentProduct != null && ParentProduct.length > 0) {
-            //                ParentProduct = ParentProduct[0];
-            //            }
-            //            if (ParentProduct.hasProductSkuSync || ParentProduct.isProductPicked) {
-            //                $(chkUpdatedPriceList[i]).prop("disabled", true);
-            //            }
-            //        }
-            //    }
-            //}
         }
         else {
             parentCheckboxes.prop('checked', false);
@@ -349,75 +345,110 @@ function BindData() {
         ProductsDt.destroy();
     }
 
-ProductsDt = $(table).DataTable({
-    "ajax" : {
-        "type"   : "POST",
-        "url": "/Products/getProductManagementDT",
-        "data": { category: $('#ddlProductCat').val(), filterOptions: $('#ddlPickupFilter').val() },
-        "dataSrc": function (json) {
-            jsonProducts = FormatData(json.data);
-            return jsonProducts;
-        }
-    },
-    "processing": true, 
-    "serverSide": true, 
-    "columns": [{
-        "orderable": false,
-        "data": null,
-        "defaultContent": ''
-    },
-    { "data": "Title" },
-    { "data": "category" },
-    { "data": "cost" },
-    { "data": "inventory" },
-    { "data": "shippingweight" },
-    {
-        "data": "UpdatedPrice", "render": function (data, type, full) {
-            if (!(full.ChildProductList.length > 0)) {
-                full.cost > 0 ? full.cost : 0;
-                return "<input name='updatedPrice' disabled dataSKU='" + full.ProductID + "' type='number' value=" + full.cost + " class='updatedParentPrice txtParent_" + full.ProductID + "'>";
+    ProductsDt = $(table).DataTable({
+        "ajax": {
+            "type": "POST",
+            "url": "/Products/getProductManagementDT",
+            "data": { category: $('#ddlProductCat').val(), filterOptions: $('#ddlPickupFilter').val() },
+            "dataSrc": function (json) {
+                jsonProducts = FormatData(json.data);
+                return jsonProducts;
             }
-            else {
-                return "";
+        },
+        "processing": true,
+        "serverSide": true,
+        "drawCallback": function () {
+            [...$('#ProductsDt [type="checkbox"]')].forEach(checkbox => $(checkbox).prop('checked', allChecked));
+            [...$('#ProductsDt [name="updatedPrice"]')].forEach(function (updatedPrice) {
+                var ParentID = $(updatedPrice).attr("dataparentid");
+                if (ParentID && parseInt(ParentID) > 0) {
+                    ParentID = parseInt(ParentID);
+                    var ParentProduct = jsonProducts.filter(m => m.ProductID === ParentID);
+                    if (ParentProduct != null && ParentProduct.length > 0) {
+                        ParentProduct = ParentProduct[0];
+                    }
+                    if (ParentProduct.hasProductSkuSync || ParentProduct.isProductPicked) {
+                        $(updatedPrice).prop("disabled", true);
+                    }
+                    else {
+                        $(updatedPrice).prop("disabled", !allChecked);
+                    }
+                }
+                else {
+                    var elementID = $(updatedPrice).attr("datasku");
+                    if (elementID && parseInt(elementID) > 0) {
+                        elementID = parseInt(elementID);
+                        var ParentProduct = jsonProducts.filter(m => m.ProductID === elementID);
+                        if (ParentProduct != null && ParentProduct.length > 0) {
+                            ParentProduct = ParentProduct[0];
+                        }
+                        if (ParentProduct.hasProductSkuSync || ParentProduct.isProductPicked) {
+                            $(updatedPrice).prop("disabled", true);
+                        }
+                        else {
+                            $(updatedPrice).prop("disabled", !allChecked);
+                        }
+                    }
+                }
+            })
+        },
+        "columns": [{
+            "orderable": false,
+            "data": null,
+            "defaultContent": ''
+        },
+        { "data": "Title" },
+        { "data": "category" },
+        { "data": "cost" },
+        { "data": "inventory" },
+        { "data": "shippingweight" },
+        {
+            "data": "UpdatedPrice", "render": function (data, type, full) {
+                if (!(full.ChildProductList.length > 0)) {
+                    full.cost > 0 ? full.cost : 0;
+                    return "<input name='updatedPrice' disabled dataSKU='" + full.ProductID + "' type='number' value=" + full.cost + " class='updatedParentPrice txtParent_" + full.ProductID + "'>";
+                }
+                else {
+                    return "";
+                }
             }
-        }
-    },
-    {
-        "data": "pick", "render": function (data, type, full) {
-            var rawHTML = "";
-            if (full.isProductPicked) {
-                rawHTML = "Picked";
+        },
+        {
+            "data": "pick", "render": function (data, type, full) {
+                var rawHTML = "";
+                if (full.isProductPicked) {
+                    rawHTML = "Picked";
+                }
+                else if (full.hasProductSkuSync) {
+                    rawHTML = '<label class="mt-checkbox mt-checkbox-outline disabled"><input disabled type="checkbox" productid=' + full.ProductID + ' id="chk_prod_' + full.ProductID + '" class="chkProducts parentChk"><span></span></label>';
+                }
+                else {
+                    rawHTML = '<label class="mt-checkbox mt-checkbox-outline"><input type="checkbox" productid=' + full.ProductID + ' id="chk_prod_' + full.ProductID + '" class="chkProducts parentChk"><span></span></label>';
+                }
+                return rawHTML;
             }
-            else if (full.hasProductSkuSync) {
-                rawHTML = '<label class="mt-checkbox mt-checkbox-outline disabled"><input disabled type="checkbox" productid=' + full.ProductID + ' id="chk_prod_' + full.ProductID + '" class="chkProducts parentChk"><span></span></label>';
-            }
-            else {
-                rawHTML = '<label class="mt-checkbox mt-checkbox-outline"><input type="checkbox" productid=' + full.ProductID + ' id="chk_prod_' + full.ProductID + '" class="chkProducts parentChk"><span></span></label>';
-            }
-            return rawHTML;
-        }
-    },
+        },
 
-    {
-        "data": "check", "render": function (data, type, full) {
-            var rawHTML = "";
-            if (full.hasProductSkuSync && !full.isProductPicked) {
-                rawHTML = "In Progress"
-            }
-            else {
-                rawHTML = full.SellerPickedCount > 0 ? ("Picked by " + full.SellerPickedCount + " sellers") : (full.IsActive ? "Online" : "Offline");
-            }
+        {
+            "data": "check", "render": function (data, type, full) {
+                var rawHTML = "";
+                if (full.hasProductSkuSync && !full.isProductPicked) {
+                    rawHTML = "In Progress"
+                }
+                else {
+                    rawHTML = full.SellerPickedCount > 0 ? ("Picked by " + full.SellerPickedCount + " sellers") : (full.IsActive ? "Online" : "Offline");
+                }
 
-            return rawHTML;
+                return rawHTML;
+            }
         }
-    }
-    ],
-    "createdRow": function (row, data, dataIndex) {
-        if (data.ChildProductList.length > 0) {
-            $(row).find("td:eq(0)").addClass('details-control');
+        ],
+        "createdRow": function (row, data, dataIndex) {
+            if (data.ChildProductList.length > 0) {
+                $(row).find("td:eq(0)").addClass('details-control');
+            }
         }
-    }
-});
+    });
 
 
 

@@ -44,7 +44,7 @@ namespace DropshipPlatform.Controllers
             DTRequestModel.Skip = start != null ? Convert.ToInt32(start) : 0;
             DTRequestModel.SortBy = sortColumn + " " + sortColumnDir;
             int recordsTotal = 0;
-            List<ProductGroupModel> list = _productService.GetParentProducts(user.UserID, DTRequestModel, out recordsTotal);
+            List<ProductGroupModel> list = _productService.GetParentProducts(user.UserID, DTRequestModel, out recordsTotal, category, filterOptions);
 
 
 
