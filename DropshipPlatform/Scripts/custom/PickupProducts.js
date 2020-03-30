@@ -179,7 +179,6 @@ $(document).ready(function () {
     $('#chkAllProduct').change(function (e) {
         var parentCheckboxes = $('.parentChk');
         //ProductFormValidate();
-        allChecked = $(event.target).prop('checked');
         if (event.target.checked) {
             parentCheckboxes.prop('checked', true);
             $('#btnSave').prop('disabled', false);

@@ -77,6 +77,7 @@ namespace DropshipPlatform.BLL.Models
         public int Skip { get; set; }
         public string SearchParams { get; set; }
         public string SortBy { get; set; }
+        public string Search { get; set; }
         public int recordsTotal { get; set; }
     }
 }
