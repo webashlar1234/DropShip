@@ -1,7 +1,6 @@
 ﻿var ProductsDt = null;
 var table = '#ProductsDt';
 var jsonProducts = null;
-var allChecked = false;
 
 var product = {
     init: function () {
@@ -356,41 +355,7 @@ function BindData() {
         },
         "processing": true,
         "serverSide": true,
-        "drawCallback": function () {
-            [...$('#ProductsDt [type="checkbox"]')].forEach(checkbox => $(checkbox).prop('checked', allChecked));
-            [...$('#ProductsDt [name="updatedPrice"]')].forEach(function (updatedPrice) {
-                var ParentID = $(updatedPrice).attr("dataparentid");
-                if (ParentID && parseInt(ParentID) > 0) {
-                    ParentID = parseInt(ParentID);
-                    var ParentProduct = jsonProducts.filter(m => m.ProductID === ParentID);
-                    if (ParentProduct != null && ParentProduct.length > 0) {
-                        ParentProduct = ParentProduct[0];
-                    }
-                    if (ParentProduct.hasProductSkuSync || ParentProduct.isProductPicked) {
-                        $(updatedPrice).prop("disabled", true);
-                    }
-                    else {
-                        $(updatedPrice).prop("disabled", !allChecked);
-                    }
-                }
-                else {
-                    var elementID = $(updatedPrice).attr("datasku");
-                    if (elementID && parseInt(elementID) > 0) {
-                        elementID = parseInt(elementID);
-                        var ParentProduct = jsonProducts.filter(m => m.ProductID === elementID);
-                        if (ParentProduct != null && ParentProduct.length > 0) {
-                            ParentProduct = ParentProduct[0];
-                        }
-                        if (ParentProduct.hasProductSkuSync || ParentProduct.isProductPicked) {
-                            $(updatedPrice).prop("disabled", true);
-                        }
-                        else {
-                            $(updatedPrice).prop("disabled", !allChecked);
-                        }
-                    }
-                }
-            })
-        },
+        "bSort": true,
         "columns": [{
             "orderable": false,
             "data": null,

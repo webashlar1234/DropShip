@@ -46,14 +46,14 @@ namespace DropshipPlatform.Controllers
             DTRequestModel.SortBy = (!string.IsNullOrEmpty(sortColumn) && !string.IsNullOrEmpty(sortColumnDir)) ? sortColumn + " " + sortColumnDir : "";
             DTRequestModel.Search = search;
             int recordsTotal = 0;
-            List<ProductGroupModel> list = _productService.GetParentProducts(user.UserID, DTRequestModel, out recordsTotal, category, filterOptions);
+            List<ProductGroupModel> list = _productService.GetParentProducts(user.UserID, DTRequestModel, category, filterOptions, out recordsTotal);
 
             
 
             //SORT
             //if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
             //{
-            //    list = list.OrderBy(sortColumn + " " + sortColumnDir).ToList();
+            //   list = list.OrderBy(sortColumn + " " + sortColumnDir).ToList();
             //}
             //if (category > 0)
             //{
