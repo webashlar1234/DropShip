@@ -76,8 +76,8 @@ namespace DropshipPlatform.BLL.Services
                     
                     List<ProductViewModel> childList = (from p in datacontext.products
                                                    join sps in datacontext.sellerpickedproductskus on p.ProductID equals sps.ProductId into sps1
-                                                   from sku in sps1.DefaultIfEmpty()
-                                                   where p.ParentProductID != null && sku.UserId == UserID
+                                                        from sku in sps1.Where(s => s.UserId == UserID).DefaultIfEmpty()
+                                                        where p.ParentProductID != null 
                                                    select new ProductViewModel
                                                    {
                                                        ProductID = p.ProductID,
@@ -91,7 +91,8 @@ namespace DropshipPlatform.BLL.Services
                                                        Inventory = p.Inventory ?? 0,
                                                        ShippingWeight = p.ShippingWeight,
                                                        IsActive = p.IsActive,
-                                                       UpdatedPrice = sku.UpdatedPrice
+                                                       UpdatedPrice = sku.UpdatedPrice,
+                                                       SkuID = p.SkuID,
                                                    }).ToList();
 
                     if (products.Count > 0)
@@ -105,7 +106,7 @@ namespace DropshipPlatform.BLL.Services
                           
                             productGroupList.Add(productGroup);
                         }
-                        productGroupList = productGroupList.Where(x => x.ChildProductList.All(y => double.TryParse(y.Cost, out num)) == true).ToList();
+                        productGroupList = productGroupList.Where(x => x.ChildProductList.All(y => !string.IsNullOrEmpty(y.Cost) ? double.TryParse(y.Cost, out num) == true : true)).ToList();
                     }
 
                     recordsTotal = productGroupList.Count();

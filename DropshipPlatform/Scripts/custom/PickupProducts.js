@@ -286,13 +286,15 @@ function FormatData(json) {
 function format(d) {
     console.log(d.ChildProductList);
     var trs = '';
+    var parentProductCost = d.cost;
     $.each($(d.ChildProductList), function (key, value) {
-
         var isPicked = false;
         if (value.isProductPicked) {
             isPicked = true;
         }
         console.log(value);
+        var childProductCost = value.Cost || parentProductCost;
+        var childUpdatedPrice = value.UpdatedPrice || childProductCost;
         trs +=
             '<tr class="skuRow" data-for="' + value.ParentProductID + '" data-inventory="' + value.Inventory + '" data-sku="' + value.SkuID + '" data-childProductId="' + value.ProductID + '"><td>' + value.Title +
             '</td> <td>' + value.Brand +
@@ -300,8 +302,8 @@ function format(d) {
             '</td><td>' + value.Color +
             '</td><td>' + value.Size +
             '</td><td>' + value.Inventory +
-            '</td><td>' + "$" + value.Cost +
-            '</td><td>' + "<input name='updatedPrice'  disabled dataParentID=" + value.ParentProductID + "  dataSKU='" + value.SkuID + "' type='number' value=" + value.UpdatedPrice + " class='updatedPrice txtEdit_" + value.ParentProductID + "'>" +
+            '</td><td>' + "$" + childProductCost+
+        '</td><td>' + "<input name='updatedPrice'  disabled dataParentID=" + value.ParentProductID + "  dataSKU='" + value.SkuID + "' type='number' value=" + childUpdatedPrice + " class='updatedPrice txtEdit_" + value.ParentProductID + "'>" +
             //'</td><td>' + value.Description +
             '</td></tr>';
     })
