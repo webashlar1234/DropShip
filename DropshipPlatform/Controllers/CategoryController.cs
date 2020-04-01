@@ -16,7 +16,7 @@ namespace DropshipPlatform.Controllers
         CategoryService _categoryService = new CategoryService();
         // GET: Category
 
-        [CustomAuthorize("Admin", "Operational Manager")]
+        [CustomAuthorize("Admin", "Operational Manager", "Developer")]
         public ActionResult Index()
         {
             return View();

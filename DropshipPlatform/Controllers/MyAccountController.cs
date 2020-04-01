@@ -13,7 +13,7 @@ namespace DropshipPlatform.Controllers
     {
         StripeService _stripeService = new StripeService();
 
-        [CustomAuthorize("Admin", "Operational Manager", "Seller")]
+        [CustomAuthorize("Admin", "Operational Manager", "Seller", "Developer")]
         public ActionResult Index()
         {
             return View();

@@ -16,7 +16,7 @@ namespace DropshipPlatform.Controllers
         UserService _userService = new UserService();
         // GET: User
 
-        [CustomAuthorize("Admin", "Operational Manager")]
+        [CustomAuthorize("Admin", "Operational Manager", "Developer")]
         public ActionResult Index()
         {
             return View();

@@ -67,7 +67,7 @@ namespace DropshipPlatform.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
-        [CustomAuthorize("Admin", "Operational Manager")]
+        [CustomAuthorize("Admin", "Operational Manager", "Developer")]
         public ActionResult jobLog()
         {
             return View();

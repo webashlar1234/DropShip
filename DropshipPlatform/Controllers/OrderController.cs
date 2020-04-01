@@ -13,7 +13,7 @@ namespace DropshipPlatform.Controllers
     public class OrderController : Controller
     {
         // GET: Order
-        [CustomAuthorize("Admin", "Seller")]
+        [CustomAuthorize("Admin", "Seller", "Developer")]
         public ActionResult Index()
         {
             return View();
