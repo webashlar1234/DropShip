@@ -59,6 +59,7 @@ namespace DropshipPlatform.BLL.Services
                                 {
                                     ProductID = p.ProductID,
                                     Title = p.Title,
+                                    Brand = p.Brand,
                                     OriginalProductID = p.OriginalProductID,
                                     CategoryID = p.CategoryID,
                                     CategoryName = c.Name,
@@ -908,7 +909,7 @@ namespace DropshipPlatform.BLL.Services
 
                     string brandname = brands.Where(x => x.PropertyName == dbProduct.Brand).Select(x => x.PropertyID).FirstOrDefault();
                     string unit = units.Where(x => x.PropertyName == dbProduct.Unit).Select(x => x.PropertyID).FirstOrDefault();
-                    MySqlConnection mcon = new MySqlConnection("host=localhost;user=root;password=123456;database=dropshipdata;");
+                    MySqlConnection mcon = new MySqlConnection(StaticValues.mySqlDb);
                     MySqlCommand SelectCommand = new MySqlCommand(" SELECT MediaLink FROM dropshipdata.productmedia where ProductID=" + dbProduct.ProductID, mcon);
 
                     string tempparentImages = string.Empty;
@@ -938,7 +939,7 @@ namespace DropshipPlatform.BLL.Services
                                 if (productImages.Count < 6)
                                 {
                                     product originalSKU = datacontext.products.Where(x => x.SkuID == productSKU.skuCode).FirstOrDefault();
-                                    MySqlConnection mcon1 = new MySqlConnection("host=localhost;user=root;password=123456;database=dropshipdata;");
+                                    MySqlConnection mcon1 = new MySqlConnection(StaticValues.mySqlDb);
                                     MySqlCommand SelectCommand1 = new MySqlCommand(" SELECT MediaLink FROM dropshipdata.productmedia where ProductID=" + originalSKU.ProductID, mcon1);
 
                                     string tempchildImages = string.Empty;

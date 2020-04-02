@@ -62,7 +62,12 @@ var product = {
                             pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: childrens[i].SkuID, inventory: childrens[i].Inventory, price: childrens[i].UpdatedPrice, discount_price: 1, childproductId: childrens[i].ProductID });
                         }
                         else {
-                            pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: childrens[i].SkuID, inventory: childrens[i].Inventory, price: childrens[i].Cost, discount_price: 1, childproductId: childrens[i].ProductID });
+                            if (childrens[i].Cost > 0) {
+                                pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: childrens[i].SkuID, inventory: childrens[i].Inventory, price: childrens[i].Cost, discount_price: 1, childproductId: childrens[i].ProductID });
+                            }
+                            else {
+                                pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: childrens[i].SkuID, inventory: childrens[i].Inventory, price: parentItem.cost, discount_price: 1, childproductId: childrens[i].ProductID });
+                            }
                         }
                     }
                 }
@@ -287,6 +292,8 @@ function format(d) {
     console.log(d.ChildProductList);
     var trs = '';
     var parentProductCost = d.cost;
+    var parentProductTitle = d.Title;
+    var parentProductBrand = d.Brand || "null";
     $.each($(d.ChildProductList), function (key, value) {
         var isPicked = false;
         if (value.isProductPicked) {
@@ -295,9 +302,11 @@ function format(d) {
         console.log(value);
         var childProductCost = value.Cost || parentProductCost;
         var childUpdatedPrice = value.UpdatedPrice || childProductCost;
+        var childProductTitle = value.Title || parentProductTitle;
+        var childProductBrand = value.Brand || parentProductBrand;
         trs +=
-            '<tr class="skuRow" data-for="' + value.ParentProductID + '" data-inventory="' + value.Inventory + '" data-sku="' + value.SkuID + '" data-childProductId="' + value.ProductID + '"><td>' + value.Title +
-            '</td> <td>' + value.Brand +
+            '<tr class="skuRow" data-for="' + value.ParentProductID + '" data-inventory="' + value.Inventory + '" data-sku="' + value.SkuID + '" data-childProductId="' + value.ProductID + '"><td>' + parentProductTitle +
+            '</td> <td>' + parentProductBrand +
             '</td><td>' + value.NetWeight +
             '</td><td>' + value.Color +
             '</td><td>' + value.Size +
