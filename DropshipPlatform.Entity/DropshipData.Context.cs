@@ -41,12 +41,12 @@ namespace DropshipPlatform.Entity
         public virtual DbSet<product> products { get; set; }
         public virtual DbSet<role> roles { get; set; }
         public virtual DbSet<user_roles> user_roles { get; set; }
-        public virtual DbSet<user> users { get; set; }
         public virtual DbSet<website> websites { get; set; }
         public virtual DbSet<sellerspickedproduct> sellerspickedproducts { get; set; }
         public virtual DbSet<productmedia> productmedias { get; set; }
         public virtual DbSet<sellerpickedproductsku> sellerpickedproductskus { get; set; }
         public virtual DbSet<subscription> subscriptions { get; set; }
         public virtual DbSet<aliexpressjoblog> aliexpressjoblogs { get; set; }
+        public virtual DbSet<user> users { get; set; }
     }
 }

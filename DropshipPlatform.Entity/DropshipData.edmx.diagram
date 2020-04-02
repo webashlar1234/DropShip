@@ -21,7 +21,6 @@
         <EntityTypeShape EntityType="dropshipdataModel.product" Width="1.5" PointX="11.75" PointY="10.875" IsExpanded="true" />
         <EntityTypeShape EntityType="dropshipdataModel.role" Width="1.5" PointX="0.75" PointY="13.875" IsExpanded="true" />
         <EntityTypeShape EntityType="dropshipdataModel.user_roles" Width="1.5" PointX="13.75" PointY="10.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="dropshipdataModel.user" Width="1.5" PointX="13.75" PointY="14.875" IsExpanded="true" />
         <EntityTypeShape EntityType="dropshipdataModel.website" Width="1.5" PointX="0.75" PointY="7.5" IsExpanded="true" />
         <AssociationConnector Association="dropshipdataModel.category_ibfk_1" ManuallyRouted="false" />
         <AssociationConnector Association="dropshipdataModel.category_ibfk_2" ManuallyRouted="false" />
@@ -32,6 +31,7 @@
         <AssociationConnector Association="dropshipdataModel.FK_sellerpickedproductsku_SellerPickedId" />
         <EntityTypeShape EntityType="dropshipdataModel.subscription" Width="1.5" PointX="12.375" PointY="6.75" />
         <EntityTypeShape EntityType="dropshipdataModel.aliexpressjoblog" Width="1.5" PointX="3.375" PointY="13.75" />
+        <EntityTypeShape EntityType="dropshipdataModel.user" Width="1.5" PointX="14.375" PointY="14.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

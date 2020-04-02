@@ -249,7 +249,7 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <Key>
             <PropertyRef Name="ProductID" />
           </Key>
-          <Property Name="ProductID" Type="bigint" Nullable="false" />
+          <Property Name="ProductID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Title" Type="varchar" MaxLength="255" />
           <Property Name="SourceWebsite" Type="varchar" MaxLength="255" />
           <Property Name="LayoutID" Type="int" />
@@ -775,27 +775,6 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <Property Name="ItemModifyBy" Type="Int32" />
           <Property Name="ItemModifyWhen" Type="DateTime" />
         </EntityType>
-        <EntityType Name="user">
-          <Key>
-            <PropertyRef Name="UserID" />
-          </Key>
-          <Property Name="UserID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="EmailID" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="Image" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="Password" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="Phone" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="Country" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="AliExpressSellerID" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
-          <Property Name="AliExpressAccessToken" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="StripeCustomerID" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
-          <Property Name="IsActive" Type="Boolean" />
-          <Property Name="ItemCreatedBy" Type="Int32" />
-          <Property Name="ItemCreatedWhen" Type="DateTime" />
-          <Property Name="ItemModifyBy" Type="Int32" />
-          <Property Name="ItemModifyWhen" Type="DateTime" />
-          <Property Name="IsPolicyAccepted" Type="Boolean" />
-        </EntityType>
         <EntityType Name="website">
           <Key>
             <PropertyRef Name="WebsiteID" />
@@ -859,7 +838,6 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <EntitySet Name="products" EntityType="Self.product" />
           <EntitySet Name="roles" EntityType="Self.role" />
           <EntitySet Name="user_roles" EntityType="Self.user_roles" />
-          <EntitySet Name="users" EntityType="Self.user" />
           <EntitySet Name="websites" EntityType="Self.website" />
           <AssociationSet Name="category_ibfk_1" Association="Self.category_ibfk_1">
             <End Role="website" EntitySet="websites" />
@@ -882,6 +860,7 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           </AssociationSet>
           <EntitySet Name="subscriptions" EntityType="dropshipdataModel.subscription" />
           <EntitySet Name="aliexpressjoblogs" EntityType="dropshipdataModel.aliexpressjoblog" />
+          <EntitySet Name="users" EntityType="dropshipdataModel.user" />
         </EntityContainer>
         <EntityType Name="sellerspickedproduct">
           <Key>
@@ -970,6 +949,27 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <Property Name="ProductDetails" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
           <Property Name="CreatedOn" Type="DateTime" />
           <Property Name="CreatedBy" Type="Int32" />
+        </EntityType>
+        <EntityType Name="user">
+          <Key>
+            <PropertyRef Name="UserID" />
+          </Key>
+          <Property Name="UserID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="EmailID" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Image" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Password" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Phone" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Country" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="AliExpressSellerID" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="AliExpressAccessToken" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+          <Property Name="StripeCustomerID" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="IsActive" Type="Boolean" />
+          <Property Name="ItemCreatedBy" Type="Int32" />
+          <Property Name="ItemCreatedWhen" Type="DateTime" />
+          <Property Name="ItemModifyBy" Type="Int32" />
+          <Property Name="ItemModifyWhen" Type="DateTime" />
+          <Property Name="IsPolicyAccepted" Type="Boolean" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -1275,28 +1275,6 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="users">
-            <EntityTypeMapping TypeName="dropshipdataModel.user">
-              <MappingFragment StoreEntitySet="users">
-                <ScalarProperty Name="UserID" ColumnName="UserID" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="EmailID" ColumnName="EmailID" />
-                <ScalarProperty Name="Image" ColumnName="Image" />
-                <ScalarProperty Name="Password" ColumnName="Password" />
-                <ScalarProperty Name="Phone" ColumnName="Phone" />
-                <ScalarProperty Name="Country" ColumnName="Country" />
-                <ScalarProperty Name="AliExpressSellerID" ColumnName="AliExpressSellerID" />
-                <ScalarProperty Name="AliExpressAccessToken" ColumnName="AliExpressAccessToken" />
-                <ScalarProperty Name="StripeCustomerID" ColumnName="StripeCustomerID" />
-                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
-                <ScalarProperty Name="ItemCreatedBy" ColumnName="ItemCreatedBy" />
-                <ScalarProperty Name="ItemCreatedWhen" ColumnName="ItemCreatedWhen" />
-                <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
-                <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
-                <ScalarProperty Name="IsPolicyAccepted" ColumnName="IsPolicyAccepted" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="websites">
             <EntityTypeMapping TypeName="dropshipdataModel.website">
               <MappingFragment StoreEntitySet="website">
@@ -1383,6 +1361,28 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
                 <ScalarProperty Name="SuccessItemCount" ColumnName="SuccessItemCount" />
                 <ScalarProperty Name="JobId" ColumnName="JobId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="users">
+            <EntityTypeMapping TypeName="dropshipdataModel.user">
+              <MappingFragment StoreEntitySet="users">
+                <ScalarProperty Name="IsPolicyAccepted" ColumnName="IsPolicyAccepted" />
+                <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
+                <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
+                <ScalarProperty Name="ItemCreatedWhen" ColumnName="ItemCreatedWhen" />
+                <ScalarProperty Name="ItemCreatedBy" ColumnName="ItemCreatedBy" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="StripeCustomerID" ColumnName="StripeCustomerID" />
+                <ScalarProperty Name="AliExpressAccessToken" ColumnName="AliExpressAccessToken" />
+                <ScalarProperty Name="AliExpressSellerID" ColumnName="AliExpressSellerID" />
+                <ScalarProperty Name="Country" ColumnName="Country" />
+                <ScalarProperty Name="Phone" ColumnName="Phone" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Image" ColumnName="Image" />
+                <ScalarProperty Name="EmailID" ColumnName="EmailID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
