@@ -229,7 +229,7 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <Property Name="SourceWebsite" Type="varchar" MaxLength="255" />
           <Property Name="LayoutID" Type="int" />
           <Property Name="CategoryID" Type="int" />
-          <Property Name="Description" Type="blob" />
+          <Property Name="Description" Type="longtext" />
           <Property Name="Cost" Type="varchar" MaxLength="250" />
           <Property Name="SellingPriceCurrency" Type="varchar" MaxLength="255" />
           <Property Name="OriginalProductID" Type="varchar" MaxLength="255" />
@@ -611,56 +611,6 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <Property Name="AgreedPaymentPolicyTime" Type="DateTime" />
           <Property Name="AuthorizeNetProfileId" Type="Int64" />
         </EntityType>
-        <EntityType Name="product">
-          <Key>
-            <PropertyRef Name="ProductID" />
-          </Key>
-          <Property Name="ProductID" Type="Int64" Nullable="false" />
-          <Property Name="Title" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="SourceWebsite" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="LayoutID" Type="Int32" />
-          <Property Name="CategoryID" Type="Int32" />
-          <Property Name="Description" Type="Binary" MaxLength="Max" FixedLength="false" />
-          <Property Name="Cost" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
-          <Property Name="SellingPriceCurrency" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="OriginalProductID" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="Color" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="Size" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="CustomerReviewRating" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="NoOfCustomerReviews" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="Brand" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="Seller" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="ManufacturerName" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="Inventory" Type="Int32" />
-          <Property Name="ShippingLocation" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="ListingPage" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="TypeProductLevel" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="ParentProductID" Type="Int64" />
-          <Property Name="ExternalCode" Type="Int32" />
-          <Property Name="ExternalCodeType" Type="Int32" />
-          <Property Name="DateCreated" Type="DateTime" />
-          <Property Name="LastUpdateDate" Type="DateTime" />
-          <Property Name="TokenUpdateDate" Type="DateTime" />
-          <Property Name="DurationScrapping" Type="DateTime" />
-          <Property Name="TokenPositionScrapping" Type="Int32" />
-          <Property Name="IsActive" Type="Int32" />
-          <Property Name="NetWeight" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="ShippingWeight" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="CountryOfOrigin" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="ItemCreatedBy" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="ItemCreatedWhen" Type="DateTime" />
-          <Property Name="ItemModifyBy" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="ItemModifyWhen" Type="DateTime" />
-          <Property Name="SubTitle" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
-          <Property Name="UrlListingPageScrapped" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
-          <Property Name="WebsiteID" Type="Int32" />
-          <Property Name="SkuID" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
-          <Property Name="StatusScrapper" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
-          <Property Name="PackageHeight" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
-          <Property Name="PackageLength" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
-          <Property Name="PackageWidth" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
-          <Property Name="Unit" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
-        </EntityType>
         <EntityType Name="role">
           <Key>
             <PropertyRef Name="RoleID" />
@@ -741,7 +691,6 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <EntitySet Name="layouts" EntityType="Self.layout" />
           <EntitySet Name="membershiptypes" EntityType="Self.membershiptype" />
           <EntitySet Name="paymentprofiles" EntityType="Self.paymentprofile" />
-          <EntitySet Name="products" EntityType="Self.product" />
           <EntitySet Name="roles" EntityType="Self.role" />
           <EntitySet Name="user_roles" EntityType="Self.user_roles" />
           <EntitySet Name="websites" EntityType="Self.website" />
@@ -769,6 +718,7 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <EntitySet Name="users" EntityType="dropshipdataModel.user" />
           <EntitySet Name="aliexpressorders" EntityType="dropshipdataModel.aliexpressorder" />
           <EntitySet Name="orders" EntityType="dropshipdataModel.order" />
+          <EntitySet Name="products" EntityType="dropshipdataModel.product" />
         </EntityContainer>
         <EntityType Name="sellerspickedproduct">
           <Key>
@@ -920,6 +870,56 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <Property Name="ItemCreatedWhen" Type="DateTime" />
           <Property Name="ItemModifyBy" Type="Int32" />
           <Property Name="ItemModifyWhen" Type="DateTime" />
+        </EntityType>
+        <EntityType Name="product">
+          <Key>
+            <PropertyRef Name="ProductID" />
+          </Key>
+          <Property Name="ProductID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Title" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="SourceWebsite" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="LayoutID" Type="Int32" />
+          <Property Name="CategoryID" Type="Int32" />
+          <Property Name="Description" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+          <Property Name="Cost" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="SellingPriceCurrency" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="OriginalProductID" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Color" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Size" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="CustomerReviewRating" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="NoOfCustomerReviews" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Brand" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Seller" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="ManufacturerName" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Inventory" Type="Int32" />
+          <Property Name="ShippingLocation" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="ListingPage" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="TypeProductLevel" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="ParentProductID" Type="Int64" />
+          <Property Name="ExternalCode" Type="Int32" />
+          <Property Name="ExternalCodeType" Type="Int32" />
+          <Property Name="DateCreated" Type="DateTime" />
+          <Property Name="LastUpdateDate" Type="DateTime" />
+          <Property Name="TokenUpdateDate" Type="DateTime" />
+          <Property Name="DurationScrapping" Type="DateTime" />
+          <Property Name="TokenPositionScrapping" Type="Int32" />
+          <Property Name="IsActive" Type="Int32" />
+          <Property Name="NetWeight" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="ShippingWeight" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="CountryOfOrigin" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="ItemCreatedBy" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="ItemCreatedWhen" Type="DateTime" />
+          <Property Name="ItemModifyBy" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="ItemModifyWhen" Type="DateTime" />
+          <Property Name="SubTitle" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="UrlListingPageScrapped" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="WebsiteID" Type="Int32" />
+          <Property Name="SkuID" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="StatusScrapper" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="PackageHeight" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="PackageLength" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="PackageWidth" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="Unit" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -1077,57 +1077,6 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
                 <ScalarProperty Name="IsAgreedPaymentPolicy" ColumnName="IsAgreedPaymentPolicy" />
                 <ScalarProperty Name="AgreedPaymentPolicyTime" ColumnName="AgreedPaymentPolicyTime" />
                 <ScalarProperty Name="AuthorizeNetProfileId" ColumnName="AuthorizeNetProfileId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="products">
-            <EntityTypeMapping TypeName="dropshipdataModel.product">
-              <MappingFragment StoreEntitySet="products">
-                <ScalarProperty Name="ProductID" ColumnName="ProductID" />
-                <ScalarProperty Name="Title" ColumnName="Title" />
-                <ScalarProperty Name="SourceWebsite" ColumnName="SourceWebsite" />
-                <ScalarProperty Name="LayoutID" ColumnName="LayoutID" />
-                <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="Cost" ColumnName="Cost" />
-                <ScalarProperty Name="SellingPriceCurrency" ColumnName="SellingPriceCurrency" />
-                <ScalarProperty Name="OriginalProductID" ColumnName="OriginalProductID" />
-                <ScalarProperty Name="Color" ColumnName="Color" />
-                <ScalarProperty Name="Size" ColumnName="Size" />
-                <ScalarProperty Name="CustomerReviewRating" ColumnName="CustomerReviewRating" />
-                <ScalarProperty Name="NoOfCustomerReviews" ColumnName="NoOfCustomerReviews" />
-                <ScalarProperty Name="Brand" ColumnName="Brand" />
-                <ScalarProperty Name="Seller" ColumnName="Seller" />
-                <ScalarProperty Name="ManufacturerName" ColumnName="ManufacturerName" />
-                <ScalarProperty Name="Inventory" ColumnName="Inventory" />
-                <ScalarProperty Name="ShippingLocation" ColumnName="ShippingLocation" />
-                <ScalarProperty Name="ListingPage" ColumnName="ListingPage" />
-                <ScalarProperty Name="TypeProductLevel" ColumnName="TypeProductLevel" />
-                <ScalarProperty Name="ParentProductID" ColumnName="ParentProductID" />
-                <ScalarProperty Name="ExternalCode" ColumnName="ExternalCode" />
-                <ScalarProperty Name="ExternalCodeType" ColumnName="ExternalCodeType" />
-                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
-                <ScalarProperty Name="LastUpdateDate" ColumnName="LastUpdateDate" />
-                <ScalarProperty Name="TokenUpdateDate" ColumnName="TokenUpdateDate" />
-                <ScalarProperty Name="DurationScrapping" ColumnName="DurationScrapping" />
-                <ScalarProperty Name="TokenPositionScrapping" ColumnName="TokenPositionScrapping" />
-                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
-                <ScalarProperty Name="NetWeight" ColumnName="NetWeight" />
-                <ScalarProperty Name="ShippingWeight" ColumnName="ShippingWeight" />
-                <ScalarProperty Name="CountryOfOrigin" ColumnName="CountryOfOrigin" />
-                <ScalarProperty Name="ItemCreatedBy" ColumnName="ItemCreatedBy" />
-                <ScalarProperty Name="ItemCreatedWhen" ColumnName="ItemCreatedWhen" />
-                <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
-                <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
-                <ScalarProperty Name="SubTitle" ColumnName="SubTitle" />
-                <ScalarProperty Name="UrlListingPageScrapped" ColumnName="UrlListingPageScrapped" />
-                <ScalarProperty Name="WebsiteID" ColumnName="WebsiteID" />
-                <ScalarProperty Name="SkuID" ColumnName="SkuID" />
-                <ScalarProperty Name="StatusScrapper" ColumnName="StatusScrapper" />
-                <ScalarProperty Name="PackageHeight" ColumnName="PackageHeight" />
-                <ScalarProperty Name="PackageLength" ColumnName="PackageLength" />
-                <ScalarProperty Name="PackageWidth" ColumnName="PackageWidth" />
-                <ScalarProperty Name="Unit" ColumnName="Unit" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1308,6 +1257,57 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
                 <ScalarProperty Name="DeliveryCountry" ColumnName="DeliveryCountry" />
                 <ScalarProperty Name="AliExpressOrderID" ColumnName="AliExpressOrderID" />
                 <ScalarProperty Name="OrderID" ColumnName="OrderID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="products">
+            <EntityTypeMapping TypeName="dropshipdataModel.product">
+              <MappingFragment StoreEntitySet="products">
+                <ScalarProperty Name="Unit" ColumnName="Unit" />
+                <ScalarProperty Name="PackageWidth" ColumnName="PackageWidth" />
+                <ScalarProperty Name="PackageLength" ColumnName="PackageLength" />
+                <ScalarProperty Name="PackageHeight" ColumnName="PackageHeight" />
+                <ScalarProperty Name="StatusScrapper" ColumnName="StatusScrapper" />
+                <ScalarProperty Name="SkuID" ColumnName="SkuID" />
+                <ScalarProperty Name="WebsiteID" ColumnName="WebsiteID" />
+                <ScalarProperty Name="UrlListingPageScrapped" ColumnName="UrlListingPageScrapped" />
+                <ScalarProperty Name="SubTitle" ColumnName="SubTitle" />
+                <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
+                <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
+                <ScalarProperty Name="ItemCreatedWhen" ColumnName="ItemCreatedWhen" />
+                <ScalarProperty Name="ItemCreatedBy" ColumnName="ItemCreatedBy" />
+                <ScalarProperty Name="CountryOfOrigin" ColumnName="CountryOfOrigin" />
+                <ScalarProperty Name="ShippingWeight" ColumnName="ShippingWeight" />
+                <ScalarProperty Name="NetWeight" ColumnName="NetWeight" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="TokenPositionScrapping" ColumnName="TokenPositionScrapping" />
+                <ScalarProperty Name="DurationScrapping" ColumnName="DurationScrapping" />
+                <ScalarProperty Name="TokenUpdateDate" ColumnName="TokenUpdateDate" />
+                <ScalarProperty Name="LastUpdateDate" ColumnName="LastUpdateDate" />
+                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
+                <ScalarProperty Name="ExternalCodeType" ColumnName="ExternalCodeType" />
+                <ScalarProperty Name="ExternalCode" ColumnName="ExternalCode" />
+                <ScalarProperty Name="ParentProductID" ColumnName="ParentProductID" />
+                <ScalarProperty Name="TypeProductLevel" ColumnName="TypeProductLevel" />
+                <ScalarProperty Name="ListingPage" ColumnName="ListingPage" />
+                <ScalarProperty Name="ShippingLocation" ColumnName="ShippingLocation" />
+                <ScalarProperty Name="Inventory" ColumnName="Inventory" />
+                <ScalarProperty Name="ManufacturerName" ColumnName="ManufacturerName" />
+                <ScalarProperty Name="Seller" ColumnName="Seller" />
+                <ScalarProperty Name="Brand" ColumnName="Brand" />
+                <ScalarProperty Name="NoOfCustomerReviews" ColumnName="NoOfCustomerReviews" />
+                <ScalarProperty Name="CustomerReviewRating" ColumnName="CustomerReviewRating" />
+                <ScalarProperty Name="Size" ColumnName="Size" />
+                <ScalarProperty Name="Color" ColumnName="Color" />
+                <ScalarProperty Name="OriginalProductID" ColumnName="OriginalProductID" />
+                <ScalarProperty Name="SellingPriceCurrency" ColumnName="SellingPriceCurrency" />
+                <ScalarProperty Name="Cost" ColumnName="Cost" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
+                <ScalarProperty Name="LayoutID" ColumnName="LayoutID" />
+                <ScalarProperty Name="SourceWebsite" ColumnName="SourceWebsite" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="ProductID" ColumnName="ProductID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

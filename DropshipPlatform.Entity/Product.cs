@@ -19,7 +19,7 @@ namespace DropshipPlatform.Entity
         public string SourceWebsite { get; set; }
         public Nullable<int> LayoutID { get; set; }
         public Nullable<int> CategoryID { get; set; }
-        public byte[] Description { get; set; }
+        public string Description { get; set; }
         public string Cost { get; set; }
         public string SellingPriceCurrency { get; set; }
         public string OriginalProductID { get; set; }

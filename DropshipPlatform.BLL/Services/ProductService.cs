@@ -382,7 +382,7 @@ namespace DropshipPlatform.BLL.Services
             productModel.SellingPriceCurrency = dbChildProduct.SellingPriceCurrency;
             productModel.OriginalProductID = dbChildProduct.OriginalProductID;
             productModel.Brand = dbChildProduct.Brand;
-            productModel.Description = dbChildProduct.Description != null ? Encoding.UTF8.GetString(dbChildProduct.Description) : "";
+            productModel.Description = dbChildProduct.Description;
             productModel.Inventory = dbChildProduct.Inventory;
             productModel.ManufacturerName = dbChildProduct.ManufacturerName;
             productModel.ExternalCode = dbChildProduct.ExternalCode;
@@ -740,7 +740,7 @@ namespace DropshipPlatform.BLL.Services
                     ModuleList _moduleList = new ModuleList();
                     _moduleList.type = "html";
                     _moduleList.html = new Html();
-                    _moduleList.html.content = Encoding.UTF8.GetString(dbProduct.Description);
+                    _moduleList.html.content = dbProduct.Description;
 
                     _description_multi_language_list.module_list.Add(_moduleList);
                     model.description_multi_language_list.Add(_description_multi_language_list);
