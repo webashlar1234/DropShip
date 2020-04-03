@@ -36,89 +36,104 @@ namespace DropshipPlatform.BLL.Services
             return products;
         }
 
-        public List<ProductGroupModel> GetParentProducts(int UserID, DTRequestModel DTReqModel,int? category, int? filterOptions, out int recordsTotal)
+        public List<ProductGroupModel> GetParentProducts(int UserID, DTRequestModel DTReqModel, int? category, int? filterOptions, out int recordsTotal)
         {
             List<ProductGroupModel> productGroupList = new List<ProductGroupModel>();
             List<ProductViewModel> products = new List<ProductViewModel>();
+            List<ProductViewModel> mainproducts = new List<ProductViewModel>();
             recordsTotal = 0;
+            int count = 0;
             try
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
                     double num;
-                    products = (from p in datacontext.products
-                                join c in datacontext.categories on p.CategoryID equals c.CategoryID
-                                from sp in datacontext.sellerspickedproducts.Where(x => x.ParentProductID == p.ProductID && (filterOptions == 2 ? x.UserID != UserID : x.UserID == UserID)).DefaultIfEmpty()
-                                where  p.ParentProductID == null && !string.IsNullOrEmpty(p.Cost) 
-                                && (category > 0 ? category == p.CategoryID : true)
-                                && (filterOptions == 1  ? !string.IsNullOrEmpty(sp.AliExpressProductID) : true)
-                                && (filterOptions == 2 ? (string.IsNullOrEmpty(sp.AliExpressProductID) && sp ==null) : true)
-                                && (filterOptions == 3 ? (string.IsNullOrEmpty(sp.AliExpressProductID) && sp != null) : true)
-                                && (!string.IsNullOrEmpty(DTReqModel.Search) ? p.Title.Contains(DTReqModel.Search) : true)
-                                select new ProductViewModel
-                                {
-                                    ProductID = p.ProductID,
-                                    Title = p.Title,
-                                    Brand = p.Brand,
-                                    OriginalProductID = p.OriginalProductID,
-                                    CategoryID = p.CategoryID,
-                                    CategoryName = c.Name,
-                                    Cost = p.Cost,
-                                    Inventory = p.Inventory ?? 0,
-                                    ShippingWeight = p.ShippingWeight,
-                                    SellerPickedCount = datacontext.sellerspickedproducts.Where(x => x.ParentProductID == p.ProductID && x.UserID != UserID).Count(),
-                                    IsActive = p.IsActive,
-                                    UserID = sp.UserID,
-                                    AliExpressCategoryID = c.AliExpressCategoryID ?? 0,
-                                    hasProductSkuSync = sp == null ? false : true,
-                                    SellerPrice = sp.SellerPrice,
-                                    isProductPicked = string.IsNullOrEmpty(sp.AliExpressProductID) ? false : true
-                                }).ToList().Where(x => double.TryParse(x.Cost, out num) == true).ToList();
+                    mainproducts = (from p in datacontext.products
+                                    join c in datacontext.categories on p.CategoryID equals c.CategoryID
+                                    from sp in datacontext.sellerspickedproducts.Where(x => x.ParentProductID == p.ProductID && (filterOptions == 2 ? x.UserID != UserID : x.UserID == UserID)).DefaultIfEmpty()
+                                    where p.ParentProductID == null && !string.IsNullOrEmpty(p.Cost)
+                                    && (category > 0 ? category == p.CategoryID : true)
+                                    && (filterOptions == 1 ? !string.IsNullOrEmpty(sp.AliExpressProductID) : true)
+                                    && (filterOptions == 2 ? (string.IsNullOrEmpty(sp.AliExpressProductID) && sp == null) : true)
+                                    && (filterOptions == 3 ? (string.IsNullOrEmpty(sp.AliExpressProductID) && sp != null) : true)
+                                    && (!string.IsNullOrEmpty(DTReqModel.Search) ? p.Title.Contains(DTReqModel.Search) : true)
+                                    select new ProductViewModel
+                                    {
+                                        ProductID = p.ProductID,
+                                        Title = p.Title,
+                                        Brand = p.Brand,
+                                        OriginalProductID = p.OriginalProductID,
+                                        CategoryID = p.CategoryID,
+                                        CategoryName = c.Name,
+                                        Cost = p.Cost,
+                                        Inventory = p.Inventory ?? 0,
+                                        ShippingWeight = p.ShippingWeight,
+                                        SellerPickedCount = datacontext.sellerspickedproducts.Where(x => x.ParentProductID == p.ProductID && x.UserID != UserID).Count(),
+                                        IsActive = p.IsActive,
+                                        UserID = sp.UserID,
+                                        AliExpressCategoryID = c.AliExpressCategoryID ?? 0,
+                                        hasProductSkuSync = sp == null ? false : true,
+                                        SellerPrice = sp.SellerPrice,
+                                        isProductPicked = string.IsNullOrEmpty(sp.AliExpressProductID) ? false : true
+                                    }).ToList().Where(x => double.TryParse(x.Cost, out num) == true).ToList();
 
+                    products = mainproducts;
                     recordsTotal = products.Count();
                     //SORT
                     if (!string.IsNullOrEmpty(DTReqModel.SortBy))
                     {
-                        products = products.OrderBy(DTReqModel.SortBy).ToList();
+                        mainproducts = mainproducts.OrderBy(DTReqModel.SortBy).ToList();
                     }
-                    products = products.Skip(DTReqModel.Skip).Take(DTReqModel.PageSize).ToList();
-
-
-                    List<ProductViewModel> childList = (from p in datacontext.products
-                                                   join sps in datacontext.sellerpickedproductskus on p.ProductID equals sps.ProductId into sps1
-                                                        from sku in sps1.Where(s => s.UserId == UserID).DefaultIfEmpty()
-                                                        where p.ParentProductID != null 
-                                                   select new ProductViewModel
-                                                   {
-                                                       ProductID = p.ProductID,
-                                                       ParentProductID = p.ParentProductID,
-                                                       Title = p.Title,
-                                                       Brand = p.Brand,
-                                                       OriginalProductID = p.OriginalProductID,
-                                                       Color = p.Color,
-                                                       Size = p.Size,
-                                                       Cost = p.Cost,
-                                                       Inventory = p.Inventory ?? 0,
-                                                       ShippingWeight = p.ShippingWeight,
-                                                       IsActive = p.IsActive,
-                                                       UpdatedPrice = sku.UpdatedPrice,
-                                                       SkuID = p.SkuID,
-                                                   }).ToList();
-
-                    if (products.Count > 0)
+                    do
                     {
-                        foreach (ProductViewModel productViewModel in products)
+                        if (count > 0)
                         {
-                            ProductGroupModel productGroup = new ProductGroupModel();
-                            productGroup.ChildProductList = childList.Where(x => x.ParentProductID == productViewModel.ProductID).ToList();
-
-                            productGroup.ParentProduct = productViewModel;
-                          
-                            productGroupList.Add(productGroup);
+                            products = mainproducts.Skip(DTReqModel.Skip + (DTReqModel.PageSize * count)).Take(DTReqModel.PageSize).ToList();
                         }
-                        productGroupList = productGroupList.Where(x => x.ChildProductList.All(y => !string.IsNullOrEmpty(y.Cost) ? double.TryParse(y.Cost, out num) == true : true)).ToList();
-                    }
+                        else
+                        {
+                            products = mainproducts.Skip(DTReqModel.Skip).Take(DTReqModel.PageSize).ToList();
+                        }
 
+                        List<ProductViewModel> childList = (from p in datacontext.products
+                                                            join sps in datacontext.sellerpickedproductskus on p.ProductID equals sps.ProductId into sps1
+                                                            from sku in sps1.Where(s => s.UserId == UserID).DefaultIfEmpty()
+                                                            where p.ParentProductID != null
+                                                            select new ProductViewModel
+                                                            {
+                                                                ProductID = p.ProductID,
+                                                                ParentProductID = p.ParentProductID,
+                                                                Title = p.Title,
+                                                                Brand = p.Brand,
+                                                                OriginalProductID = p.OriginalProductID,
+                                                                Color = p.Color,
+                                                                Size = p.Size,
+                                                                Cost = p.Cost,
+                                                                Inventory = p.Inventory ?? 0,
+                                                                ShippingWeight = p.ShippingWeight,
+                                                                IsActive = p.IsActive,
+                                                                UpdatedPrice = sku.UpdatedPrice,
+                                                                SkuID = p.SkuID,
+                                                            }).ToList();
+
+                        if (products.Count > 0)
+                        {
+                            foreach (ProductViewModel productViewModel in products)
+                            {
+                                ProductGroupModel productGroup = new ProductGroupModel();
+                                productGroup.ChildProductList = childList.Where(x => x.ParentProductID == productViewModel.ProductID).ToList();
+
+                                productGroup.ParentProduct = productViewModel;
+
+                                productGroupList.Add(productGroup);
+                            }
+                            productGroupList = productGroupList.Where(x => x.ChildProductList.All(y => !string.IsNullOrEmpty(y.Cost) ? double.TryParse(y.Cost, out num) == true : true)).ToList();
+                            count = count + 1;
+                  
+                        }
+                    } while (productGroupList.Count < DTReqModel.PageSize && mainproducts.Count - DTReqModel.Skip > DTReqModel.PageSize);
+
+                    productGroupList = productGroupList.Take(DTReqModel.PageSize).ToList();
                 }
             }
             catch (Exception ex)
