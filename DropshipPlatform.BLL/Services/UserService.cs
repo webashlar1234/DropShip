@@ -124,6 +124,7 @@ namespace DropshipPlatform.BLL.Services
                     if (Obj != null)
                     {
                         Obj.AliExpressSellerID = AccessToken.user_id;
+                        Obj.AliExpressLoginID = AccessToken.user_nick;
                         Obj.AliExpressAccessToken = Newtonsoft.Json.JsonConvert.SerializeObject(AccessToken);
                         datacontext.Entry(Obj).State = EntityState.Modified;
                         datacontext.SaveChanges();

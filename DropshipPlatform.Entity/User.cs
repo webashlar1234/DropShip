@@ -30,5 +30,6 @@ namespace DropshipPlatform.Entity
         public Nullable<int> ItemModifyBy { get; set; }
         public Nullable<System.DateTime> ItemModifyWhen { get; set; }
         public Nullable<bool> IsPolicyAccepted { get; set; }
+        public string AliExpressLoginID { get; set; }
     }
 }

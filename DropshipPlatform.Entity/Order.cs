@@ -16,20 +16,13 @@ namespace DropshipPlatform.Entity
     {
         public int OrderID { get; set; }
         public string AliExpressOrderID { get; set; }
-        public string AliExpressProductId { get; set; }
-        public string OrignalProductId { get; set; }
-        public string OrignalProductLink { get; set; }
-        public string ProductTitle { get; set; }
         public string DeliveryCountry { get; set; }
         public string ShippingWeight { get; set; }
         public string OrderAmount { get; set; }
         public string OrderStatus { get; set; }
         public string PaymentStatus { get; set; }
-        public string SellerID { get; set; }
-        public string SellerEmail { get; set; }
-        public Nullable<sbyte> productExist { get; set; }
-        public string LogisticName { get; set; }
-        public string LogisticType { get; set; }
+        public string AliExpressLoginID { get; set; }
+        public string TrackingNo { get; set; }
         public Nullable<int> ItemCreatedBy { get; set; }
         public Nullable<System.DateTime> ItemCreatedWhen { get; set; }
         public Nullable<int> ItemModifyBy { get; set; }

@@ -117,9 +117,6 @@
     <Compile Include="order.cs">
       <DependentUpon>DropshipData.tt</DependentUpon>
     </Compile>
-    <Compile Include="orders1.cs">
-      <DependentUpon>DropshipData.tt</DependentUpon>
-    </Compile>
     <Compile Include="paymentprofile.cs">
       <DependentUpon>DropshipData.tt</DependentUpon>
     </Compile>

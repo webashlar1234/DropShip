@@ -68,7 +68,7 @@
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="AliExpressOrderID" Type="bigint" />
           <Property Name="BuyerLoginId" Type="varchar" MaxLength="150" />
-          <Property Name="AliExpressSellerID" Type="varchar" MaxLength="150" />
+          <Property Name="AliExpressLoginID" Type="varchar" MaxLength="150" />
           <Property Name="DeliveryCountry" Type="varchar" MaxLength="50" />
           <Property Name="PaymentStatus" Type="varchar" MaxLength="50" />
           <Property Name="TrackingNo" Type="varchar" MaxLength="50" />
@@ -173,38 +173,13 @@
           </Key>
           <Property Name="OrderID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="AliExpressOrderID" Type="varchar" MaxLength="150" />
-          <Property Name="AliExpressProductId" Type="varchar" MaxLength="150" />
-          <Property Name="OrignalProductId" Type="varchar" MaxLength="150" />
-          <Property Name="OrignalProductLink" Type="varchar" MaxLength="150" />
-          <Property Name="ProductTitle" Type="varchar" MaxLength="150" />
           <Property Name="DeliveryCountry" Type="varchar" MaxLength="50" />
           <Property Name="ShippingWeight" Type="varchar" MaxLength="50" />
           <Property Name="OrderAmount" Type="varchar" MaxLength="50" />
           <Property Name="OrderStatus" Type="varchar" MaxLength="50" />
           <Property Name="PaymentStatus" Type="varchar" MaxLength="50" />
-          <Property Name="SellerID" Type="varchar" MaxLength="150" />
-          <Property Name="SellerEmail" Type="varchar" MaxLength="150" />
-          <Property Name="productExist" Type="tinyint" />
-          <Property Name="LogisticName" Type="varchar" MaxLength="150" />
-          <Property Name="LogisticType" Type="varchar" MaxLength="150" />
-          <Property Name="ItemCreatedBy" Type="int" />
-          <Property Name="ItemCreatedWhen" Type="datetime" Precision="3" />
-          <Property Name="ItemModifyBy" Type="int" />
-          <Property Name="ItemModifyWhen" Type="datetime" Precision="3" />
-        </EntityType>
-        <EntityType Name="orders1">
-          <Key>
-            <PropertyRef Name="OrderID" />
-          </Key>
-          <Property Name="OrderID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="AliExpressOrderID" Type="varchar" MaxLength="150" />
-          <Property Name="DeliveryCountry" Type="varchar" MaxLength="50" />
-          <Property Name="PaymentStatus" Type="int" />
-          <Property Name="AliExpressSellerID" Type="int" />
+          <Property Name="AliExpressLoginID" Type="varchar" MaxLength="150" />
           <Property Name="TrackingNo" Type="varchar" MaxLength="50" />
-          <Property Name="ShippingWeight" Type="varchar" MaxLength="50" />
-          <Property Name="OrderAmount" Type="varchar" MaxLength="50" />
-          <Property Name="OrderStatus" Type="varchar" MaxLength="50" />
           <Property Name="ItemCreatedBy" Type="int" />
           <Property Name="ItemCreatedWhen" Type="datetime" Precision="3" />
           <Property Name="ItemModifyBy" Type="int" />
@@ -377,6 +352,7 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <Property Name="Phone" Type="varchar" MaxLength="50" />
           <Property Name="Country" Type="varchar" MaxLength="50" />
           <Property Name="AliExpressSellerID" Type="varchar" MaxLength="150" />
+          <Property Name="AliExpressLoginID" Type="varchar" MaxLength="150" />
           <Property Name="AliExpressAccessToken" Type="text" />
           <Property Name="StripeCustomerID" Type="varchar" MaxLength="150" />
           <Property Name="IsActive" Type="bit" />
@@ -456,7 +432,6 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <EntitySet Name="layout" EntityType="Self.layout" Schema="dropshipdata" store:Type="Tables" />
           <EntitySet Name="membershiptypes" EntityType="Self.membershiptypes" Schema="dropshipdata" store:Type="Tables" />
           <EntitySet Name="orders" EntityType="Self.orders" Schema="dropshipdata" store:Type="Tables" />
-          <EntitySet Name="orders1" EntityType="Self.orders1" Schema="dropshipdata" store:Type="Tables" />
           <EntitySet Name="paymentprofile" EntityType="Self.paymentprofile" Schema="dropshipdata" store:Type="Tables" />
           <EntitySet Name="productmedia" EntityType="Self.productmedia" Schema="dropshipdata" store:Type="Tables" />
           <EntitySet Name="products" EntityType="Self.products" Schema="dropshipdata" store:Type="Tables" />
@@ -528,29 +503,6 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <Property Name="AliExpressOrderId" Type="Int64" />
           <Property Name="AliExpressProductOrderId" Type="Boolean" />
           <Property Name="SCOrderId" Type="Int32" />
-        </EntityType>
-        <EntityType Name="aliexpressorder">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="AliExpressOrderID" Type="Int64" />
-          <Property Name="BuyerLoginId" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
-          <Property Name="AliExpressSellerID" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
-          <Property Name="DeliveryCountry" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="PaymentStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="TrackingNo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ShippingWeight" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="OrderAmount" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="CurrencyCode" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="OrderStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="NoOfOrderItems" Type="Int32" />
-          <Property Name="ItemCreatedBy" Type="Int32" />
-          <Property Name="ItemCreatedWhen" Type="DateTime" />
-          <Property Name="ItemModifyBy" Type="Int32" />
-          <Property Name="ItemModifyWhen" Type="DateTime" />
-          <Property Name="AliExpressOrderCreatedTime" Type="DateTime" />
-          <Property Name="AliExpressOrderUpdatedTime" Type="DateTime" />
         </EntityType>
         <EntityType Name="applicationlog">
           <Key>
@@ -639,49 +591,6 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <Property Name="ItemModifyBy" Type="Int32" />
           <Property Name="ItemModifyWhen" Type="DateTime" />
           <Property Name="OrderLimit" Type="Int32" />
-        </EntityType>
-        <EntityType Name="order">
-          <Key>
-            <PropertyRef Name="OrderID" />
-          </Key>
-          <Property Name="OrderID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="AliExpressOrderID" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
-          <Property Name="AliExpressProductId" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
-          <Property Name="OrignalProductId" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
-          <Property Name="OrignalProductLink" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
-          <Property Name="ProductTitle" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
-          <Property Name="DeliveryCountry" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ShippingWeight" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="OrderAmount" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="OrderStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="PaymentStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="SellerID" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
-          <Property Name="SellerEmail" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
-          <Property Name="productExist" Type="SByte" />
-          <Property Name="LogisticName" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
-          <Property Name="LogisticType" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
-          <Property Name="ItemCreatedBy" Type="Int32" />
-          <Property Name="ItemCreatedWhen" Type="DateTime" />
-          <Property Name="ItemModifyBy" Type="Int32" />
-          <Property Name="ItemModifyWhen" Type="DateTime" />
-        </EntityType>
-        <EntityType Name="orders1">
-          <Key>
-            <PropertyRef Name="OrderID" />
-          </Key>
-          <Property Name="OrderID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="AliExpressOrderID" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
-          <Property Name="DeliveryCountry" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="PaymentStatus" Type="Int32" />
-          <Property Name="AliExpressSellerID" Type="Int32" />
-          <Property Name="TrackingNo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ShippingWeight" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="OrderAmount" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="OrderStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ItemCreatedBy" Type="Int32" />
-          <Property Name="ItemCreatedWhen" Type="DateTime" />
-          <Property Name="ItemModifyBy" Type="Int32" />
-          <Property Name="ItemModifyWhen" Type="DateTime" />
         </EntityType>
         <EntityType Name="paymentprofile">
           <Key>
@@ -825,15 +734,12 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <EntitySet Name="activitylogs" EntityType="Self.activitylog" />
           <EntitySet Name="aliexpresscategories" EntityType="Self.aliexpresscategory" />
           <EntitySet Name="aliexpressorderitems" EntityType="Self.aliexpressorderitem" />
-          <EntitySet Name="aliexpressorders" EntityType="Self.aliexpressorder" />
           <EntitySet Name="applicationlogs" EntityType="Self.applicationlog" />
           <EntitySet Name="categories" EntityType="Self.category" />
           <EntitySet Name="countries" EntityType="Self.country" />
           <EntitySet Name="frequencyupdates" EntityType="Self.frequencyupdate" />
           <EntitySet Name="layouts" EntityType="Self.layout" />
           <EntitySet Name="membershiptypes" EntityType="Self.membershiptype" />
-          <EntitySet Name="orders" EntityType="Self.order" />
-          <EntitySet Name="orders1" EntityType="Self.orders1" />
           <EntitySet Name="paymentprofiles" EntityType="Self.paymentprofile" />
           <EntitySet Name="products" EntityType="Self.product" />
           <EntitySet Name="roles" EntityType="Self.role" />
@@ -861,6 +767,8 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <EntitySet Name="subscriptions" EntityType="dropshipdataModel.subscription" />
           <EntitySet Name="aliexpressjoblogs" EntityType="dropshipdataModel.aliexpressjoblog" />
           <EntitySet Name="users" EntityType="dropshipdataModel.user" />
+          <EntitySet Name="aliexpressorders" EntityType="dropshipdataModel.aliexpressorder" />
+          <EntitySet Name="orders" EntityType="dropshipdataModel.order" />
         </EntityContainer>
         <EntityType Name="sellerspickedproduct">
           <Key>
@@ -970,6 +878,48 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <Property Name="ItemModifyBy" Type="Int32" />
           <Property Name="ItemModifyWhen" Type="DateTime" />
           <Property Name="IsPolicyAccepted" Type="Boolean" />
+          <Property Name="AliExpressLoginID" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="aliexpressorder">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AliExpressOrderID" Type="Int64" />
+          <Property Name="BuyerLoginId" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="AliExpressLoginID" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="DeliveryCountry" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="PaymentStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="TrackingNo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ShippingWeight" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="OrderAmount" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="CurrencyCode" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="OrderStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="NoOfOrderItems" Type="Int32" />
+          <Property Name="ItemCreatedBy" Type="Int32" />
+          <Property Name="ItemCreatedWhen" Type="DateTime" />
+          <Property Name="ItemModifyBy" Type="Int32" />
+          <Property Name="ItemModifyWhen" Type="DateTime" />
+          <Property Name="AliExpressOrderCreatedTime" Type="DateTime" />
+          <Property Name="AliExpressOrderUpdatedTime" Type="DateTime" />
+        </EntityType>
+        <EntityType Name="order">
+          <Key>
+            <PropertyRef Name="OrderID" />
+          </Key>
+          <Property Name="OrderID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AliExpressOrderID" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="DeliveryCountry" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ShippingWeight" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="OrderAmount" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="OrderStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="PaymentStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="AliExpressLoginID" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="TrackingNo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ItemCreatedBy" Type="Int32" />
+          <Property Name="ItemCreatedWhen" Type="DateTime" />
+          <Property Name="ItemModifyBy" Type="Int32" />
+          <Property Name="ItemModifyWhen" Type="DateTime" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -1018,30 +968,6 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
                 <ScalarProperty Name="AliExpressOrderId" ColumnName="AliExpressOrderId" />
                 <ScalarProperty Name="AliExpressProductOrderId" ColumnName="AliExpressProductOrderId" />
                 <ScalarProperty Name="SCOrderId" ColumnName="SCOrderId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="aliexpressorders">
-            <EntityTypeMapping TypeName="dropshipdataModel.aliexpressorder">
-              <MappingFragment StoreEntitySet="aliexpressorders">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="AliExpressOrderID" ColumnName="AliExpressOrderID" />
-                <ScalarProperty Name="BuyerLoginId" ColumnName="BuyerLoginId" />
-                <ScalarProperty Name="AliExpressSellerID" ColumnName="AliExpressSellerID" />
-                <ScalarProperty Name="DeliveryCountry" ColumnName="DeliveryCountry" />
-                <ScalarProperty Name="PaymentStatus" ColumnName="PaymentStatus" />
-                <ScalarProperty Name="TrackingNo" ColumnName="TrackingNo" />
-                <ScalarProperty Name="ShippingWeight" ColumnName="ShippingWeight" />
-                <ScalarProperty Name="OrderAmount" ColumnName="OrderAmount" />
-                <ScalarProperty Name="CurrencyCode" ColumnName="CurrencyCode" />
-                <ScalarProperty Name="OrderStatus" ColumnName="OrderStatus" />
-                <ScalarProperty Name="NoOfOrderItems" ColumnName="NoOfOrderItems" />
-                <ScalarProperty Name="ItemCreatedBy" ColumnName="ItemCreatedBy" />
-                <ScalarProperty Name="ItemCreatedWhen" ColumnName="ItemCreatedWhen" />
-                <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
-                <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
-                <ScalarProperty Name="AliExpressOrderCreatedTime" ColumnName="AliExpressOrderCreatedTime" />
-                <ScalarProperty Name="AliExpressOrderUpdatedTime" ColumnName="AliExpressOrderUpdatedTime" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1131,51 +1057,6 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
                 <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
                 <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
                 <ScalarProperty Name="OrderLimit" ColumnName="OrderLimit" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="orders">
-            <EntityTypeMapping TypeName="dropshipdataModel.order">
-              <MappingFragment StoreEntitySet="orders">
-                <ScalarProperty Name="OrderID" ColumnName="OrderID" />
-                <ScalarProperty Name="AliExpressOrderID" ColumnName="AliExpressOrderID" />
-                <ScalarProperty Name="AliExpressProductId" ColumnName="AliExpressProductId" />
-                <ScalarProperty Name="OrignalProductId" ColumnName="OrignalProductId" />
-                <ScalarProperty Name="OrignalProductLink" ColumnName="OrignalProductLink" />
-                <ScalarProperty Name="ProductTitle" ColumnName="ProductTitle" />
-                <ScalarProperty Name="DeliveryCountry" ColumnName="DeliveryCountry" />
-                <ScalarProperty Name="ShippingWeight" ColumnName="ShippingWeight" />
-                <ScalarProperty Name="OrderAmount" ColumnName="OrderAmount" />
-                <ScalarProperty Name="OrderStatus" ColumnName="OrderStatus" />
-                <ScalarProperty Name="PaymentStatus" ColumnName="PaymentStatus" />
-                <ScalarProperty Name="SellerID" ColumnName="SellerID" />
-                <ScalarProperty Name="SellerEmail" ColumnName="SellerEmail" />
-                <ScalarProperty Name="productExist" ColumnName="productExist" />
-                <ScalarProperty Name="LogisticName" ColumnName="LogisticName" />
-                <ScalarProperty Name="LogisticType" ColumnName="LogisticType" />
-                <ScalarProperty Name="ItemCreatedBy" ColumnName="ItemCreatedBy" />
-                <ScalarProperty Name="ItemCreatedWhen" ColumnName="ItemCreatedWhen" />
-                <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
-                <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="orders1">
-            <EntityTypeMapping TypeName="dropshipdataModel.orders1">
-              <MappingFragment StoreEntitySet="orders1">
-                <ScalarProperty Name="OrderID" ColumnName="OrderID" />
-                <ScalarProperty Name="AliExpressOrderID" ColumnName="AliExpressOrderID" />
-                <ScalarProperty Name="DeliveryCountry" ColumnName="DeliveryCountry" />
-                <ScalarProperty Name="PaymentStatus" ColumnName="PaymentStatus" />
-                <ScalarProperty Name="AliExpressSellerID" ColumnName="AliExpressSellerID" />
-                <ScalarProperty Name="TrackingNo" ColumnName="TrackingNo" />
-                <ScalarProperty Name="ShippingWeight" ColumnName="ShippingWeight" />
-                <ScalarProperty Name="OrderAmount" ColumnName="OrderAmount" />
-                <ScalarProperty Name="OrderStatus" ColumnName="OrderStatus" />
-                <ScalarProperty Name="ItemCreatedBy" ColumnName="ItemCreatedBy" />
-                <ScalarProperty Name="ItemCreatedWhen" ColumnName="ItemCreatedWhen" />
-                <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
-                <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1367,6 +1248,7 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <EntitySetMapping Name="users">
             <EntityTypeMapping TypeName="dropshipdataModel.user">
               <MappingFragment StoreEntitySet="users">
+                <ScalarProperty Name="AliExpressLoginID" ColumnName="AliExpressLoginID" />
                 <ScalarProperty Name="IsPolicyAccepted" ColumnName="IsPolicyAccepted" />
                 <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
                 <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
@@ -1383,6 +1265,49 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
                 <ScalarProperty Name="EmailID" ColumnName="EmailID" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="UserID" ColumnName="UserID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="aliexpressorders">
+            <EntityTypeMapping TypeName="dropshipdataModel.aliexpressorder">
+              <MappingFragment StoreEntitySet="aliexpressorders">
+                <ScalarProperty Name="AliExpressOrderUpdatedTime" ColumnName="AliExpressOrderUpdatedTime" />
+                <ScalarProperty Name="AliExpressOrderCreatedTime" ColumnName="AliExpressOrderCreatedTime" />
+                <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
+                <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
+                <ScalarProperty Name="ItemCreatedWhen" ColumnName="ItemCreatedWhen" />
+                <ScalarProperty Name="ItemCreatedBy" ColumnName="ItemCreatedBy" />
+                <ScalarProperty Name="NoOfOrderItems" ColumnName="NoOfOrderItems" />
+                <ScalarProperty Name="OrderStatus" ColumnName="OrderStatus" />
+                <ScalarProperty Name="CurrencyCode" ColumnName="CurrencyCode" />
+                <ScalarProperty Name="OrderAmount" ColumnName="OrderAmount" />
+                <ScalarProperty Name="ShippingWeight" ColumnName="ShippingWeight" />
+                <ScalarProperty Name="TrackingNo" ColumnName="TrackingNo" />
+                <ScalarProperty Name="PaymentStatus" ColumnName="PaymentStatus" />
+                <ScalarProperty Name="DeliveryCountry" ColumnName="DeliveryCountry" />
+                <ScalarProperty Name="AliExpressLoginID" ColumnName="AliExpressLoginID" />
+                <ScalarProperty Name="BuyerLoginId" ColumnName="BuyerLoginId" />
+                <ScalarProperty Name="AliExpressOrderID" ColumnName="AliExpressOrderID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="orders">
+            <EntityTypeMapping TypeName="dropshipdataModel.order">
+              <MappingFragment StoreEntitySet="orders">
+                <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
+                <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
+                <ScalarProperty Name="ItemCreatedWhen" ColumnName="ItemCreatedWhen" />
+                <ScalarProperty Name="ItemCreatedBy" ColumnName="ItemCreatedBy" />
+                <ScalarProperty Name="TrackingNo" ColumnName="TrackingNo" />
+                <ScalarProperty Name="AliExpressLoginID" ColumnName="AliExpressLoginID" />
+                <ScalarProperty Name="PaymentStatus" ColumnName="PaymentStatus" />
+                <ScalarProperty Name="OrderStatus" ColumnName="OrderStatus" />
+                <ScalarProperty Name="OrderAmount" ColumnName="OrderAmount" />
+                <ScalarProperty Name="ShippingWeight" ColumnName="ShippingWeight" />
+                <ScalarProperty Name="DeliveryCountry" ColumnName="DeliveryCountry" />
+                <ScalarProperty Name="AliExpressOrderID" ColumnName="AliExpressOrderID" />
+                <ScalarProperty Name="OrderID" ColumnName="OrderID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

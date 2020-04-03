@@ -28,15 +28,12 @@ namespace DropshipPlatform.Entity
         public virtual DbSet<activitylog> activitylogs { get; set; }
         public virtual DbSet<aliexpresscategory> aliexpresscategories { get; set; }
         public virtual DbSet<aliexpressorderitem> aliexpressorderitems { get; set; }
-        public virtual DbSet<aliexpressorder> aliexpressorders { get; set; }
         public virtual DbSet<applicationlog> applicationlogs { get; set; }
         public virtual DbSet<category> categories { get; set; }
         public virtual DbSet<country> countries { get; set; }
         public virtual DbSet<frequencyupdate> frequencyupdates { get; set; }
         public virtual DbSet<layout> layouts { get; set; }
         public virtual DbSet<membershiptype> membershiptypes { get; set; }
-        public virtual DbSet<order> orders { get; set; }
-        public virtual DbSet<orders1> orders1 { get; set; }
         public virtual DbSet<paymentprofile> paymentprofiles { get; set; }
         public virtual DbSet<product> products { get; set; }
         public virtual DbSet<role> roles { get; set; }
@@ -48,5 +45,7 @@ namespace DropshipPlatform.Entity
         public virtual DbSet<subscription> subscriptions { get; set; }
         public virtual DbSet<aliexpressjoblog> aliexpressjoblogs { get; set; }
         public virtual DbSet<user> users { get; set; }
+        public virtual DbSet<aliexpressorder> aliexpressorders { get; set; }
+        public virtual DbSet<order> orders { get; set; }
     }
 }

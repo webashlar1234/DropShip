@@ -37,33 +37,8 @@ namespace DropshipPlatform.Controllers
             int pageSize = length != null ? Convert.ToInt32(length) : 0;
             int skip = start != null ? Convert.ToInt32(start) : 0;
 
-            List<aliexpressorder> resultList = _orderService.getAllOrdersFromDatabase();
+            List<OrderData> retvalue = _orderService.getAllOrdersFromDatabase();
 
-            List<OrderData> retvalue = new List<OrderData>();
-
-            if (resultList != null)
-            {
-                foreach (var item in resultList)
-                {
-                    OrderData orderData = new OrderData();
-                    orderData.AliExpressOrderNumber = item.AliExpressOrderID.ToString();
-                    orderData.ProductTitle = null;
-                    orderData.OrignalProductId = null;
-                    //orderData.OrignalProductLink = item.OrignalProductLink;
-                    //orderData.ProductTitle = item.ProductTitle;
-                    orderData.OrderAmount = item.OrderAmount;
-                    orderData.DeleveryCountry = item.DeliveryCountry;
-                    orderData.ShippingWeight = item.ShippingWeight;
-                    orderData.OrderStatus = item.OrderStatus;
-                    orderData.PaymentStatus = item.PaymentStatus;
-                    orderData.SellerID = item.AliExpressSellerID;
-                    //orderData. = item.SellerEmail;
-                    //orderData.LogisticName = item.LogisticName;
-                    //orderData.LogisticType = item.LogisticType;
-                    //orderData.ProductExist = item.productExist;
-                    retvalue.Add(orderData);
-                }
-            }
             if (!string.IsNullOrEmpty(search))
             {
                 retvalue = retvalue.Where(x => x.AliExpressOrderNumber != null && x.AliExpressOrderNumber.ToLower().Contains(search.ToLower()) ||

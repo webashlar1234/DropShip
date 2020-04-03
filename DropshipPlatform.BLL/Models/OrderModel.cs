@@ -114,7 +114,7 @@ namespace DropshipPlatform.BLL.Models
         public object OrderDetailUrl { get; set; }
         public long OrderId { get; set; }
         public string OrderStatus { get; set; }
-        public object PayAmount { get; set; }
+        public TotalProductAmount PayAmount { get; set; }
         public string PaymentType { get; set; }
         public bool Phone { get; set; }
         public List<ProductList> ProductList { get; set; }

@@ -17,7 +17,7 @@ namespace DropshipPlatform.Entity
         public int ID { get; set; }
         public Nullable<long> AliExpressOrderID { get; set; }
         public string BuyerLoginId { get; set; }
-        public string AliExpressSellerID { get; set; }
+        public string AliExpressLoginID { get; set; }
         public string DeliveryCountry { get; set; }
         public string PaymentStatus { get; set; }
         public string TrackingNo { get; set; }
