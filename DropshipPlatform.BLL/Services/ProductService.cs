@@ -74,7 +74,16 @@ namespace DropshipPlatform.BLL.Services
                                     SellerPrice = sp.SellerPrice,
                                     isProductPicked = string.IsNullOrEmpty(sp.AliExpressProductID) ? false : true
                                 }).ToList().Where(x => double.TryParse(x.Cost, out num) == true).ToList();
-                    
+
+                    recordsTotal = products.Count();
+                    //SORT
+                    if (!string.IsNullOrEmpty(DTReqModel.SortBy))
+                    {
+                        products = products.OrderBy(DTReqModel.SortBy).ToList();
+                    }
+                    products = products.Skip(DTReqModel.Skip).Take(DTReqModel.PageSize).ToList();
+
+
                     List<ProductViewModel> childList = (from p in datacontext.products
                                                    join sps in datacontext.sellerpickedproductskus on p.ProductID equals sps.ProductId into sps1
                                                         from sku in sps1.Where(s => s.UserId == UserID).DefaultIfEmpty()
@@ -110,13 +119,6 @@ namespace DropshipPlatform.BLL.Services
                         productGroupList = productGroupList.Where(x => x.ChildProductList.All(y => !string.IsNullOrEmpty(y.Cost) ? double.TryParse(y.Cost, out num) == true : true)).ToList();
                     }
 
-                    recordsTotal = productGroupList.Count();
-                    //SORT
-                    if (!string.IsNullOrEmpty(DTReqModel.SortBy))
-                    {
-                        productGroupList = productGroupList.OrderBy(DTReqModel.SortBy).ToList();
-                    }
-                    productGroupList = productGroupList.Skip(DTReqModel.Skip).Take(DTReqModel.PageSize).ToList();
                 }
             }
             catch (Exception ex)
