@@ -928,7 +928,7 @@ namespace DropshipPlatform.BLL.Services
                     string brandname = brands.Where(x => x.PropertyName == dbProduct.Brand).Select(x => x.PropertyID).FirstOrDefault();
                     string unit = units.Where(x => x.PropertyName == dbProduct.Unit).Select(x => x.PropertyID).FirstOrDefault();
                     MySqlConnection mcon = new MySqlConnection(StaticValues.mySqlDb);
-                    MySqlCommand SelectCommand = new MySqlCommand(" SELECT MediaLink FROM dropshipdata.productmedia where ProductID=" + dbProduct.ProductID, mcon);
+                    MySqlCommand SelectCommand = new MySqlCommand(" SELECT MediaLink FROM productmedia where ProductID=" + dbProduct.ProductID, mcon);
 
                     string tempparentImages = string.Empty;
                     MySqlDataReader myReader;

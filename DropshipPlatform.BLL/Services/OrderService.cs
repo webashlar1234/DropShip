@@ -9,6 +9,9 @@ using Newtonsoft.Json;
 using Top.Api;
 using Top.Api.Request;
 using Top.Api.Response;
+using System.IO.Compression;
+using ICSharpCode.SharpZipLib.Zip;
+using System.IO;
 
 namespace DropshipPlatform.BLL.Services
 {
@@ -277,7 +280,7 @@ namespace DropshipPlatform.BLL.Services
         }
 
 
-        public bool getLogisticsServicByOrderId()
+        public bool getLogisticsServicByOrderId(long OrderID)
         {
             bool result = true;
             List<LogisticServiceData> orderLogisticData = new List<LogisticServiceData>();
@@ -291,11 +294,11 @@ namespace DropshipPlatform.BLL.Services
                 req.GoodsHeight = 1L; //optional
                 req.GoodsWeight = "1.5"; //optional
                 req.GoodsLength = 1L; //optional
-                req.OrderId = 1000102673302508; //required OrderId
+                req.OrderId = OrderID; //required OrderId
                 AliexpressLogisticsRedefiningGetonlinelogisticsservicelistbyorderidResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
                 resultdata = JsonConvert.SerializeObject(rsp.ResultList);
                 orderLogisticData = JsonConvert.DeserializeObject<List<LogisticServiceData>>(resultdata);
-                createWarehouseOrder(orderLogisticData);
+                createWarehouseOrder(orderLogisticData, OrderID);
             }
             catch (Exception ex)
             {
@@ -306,7 +309,7 @@ namespace DropshipPlatform.BLL.Services
             return result;
         }
 
-        public bool createWarehouseOrder(List<LogisticServiceData> orderLogisticData)
+        public bool createWarehouseOrder(List<LogisticServiceData> orderLogisticData, long OrderID)
         {
             bool result = true;
             string resultdata = String.Empty;
@@ -317,116 +320,151 @@ namespace DropshipPlatform.BLL.Services
                 AliexpressSolutionOrderInfoGetRequest req1 = new AliexpressSolutionOrderInfoGetRequest();
                 AliexpressSolutionOrderInfoGetRequest.OrderDetailQueryDomain obj = new AliexpressSolutionOrderInfoGetRequest.OrderDetailQueryDomain();
                 obj.ExtInfoBitFlag = 11111L;
-                obj.OrderId = 1000102673302508;
+                obj.OrderId = OrderID;
                 req1.Param1_ = obj;
                 AliexpressSolutionOrderInfoGetResponse rsp1 = client.Execute(req1, SessionManager.GetAccessToken().access_token);
+                var resultdata1 = JsonConvert.SerializeObject(rsp1.Result);
+                AliexpressSolutionOrderInfoGetResponse.BaseResultDomain OrderDetails = rsp1.Result;
 
                 //Create Warehouse Order
                 AliexpressLogisticsCreatewarehouseorderRequest req = new AliexpressLogisticsCreatewarehouseorderRequest();
-                AliexpressLogisticsCreatewarehouseorderRequest.AddressdtosDomain obj1 = new AliexpressLogisticsCreatewarehouseorderRequest.AddressdtosDomain();
-                AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareAddressDtoDomain obj2 = new AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareAddressDtoDomain();
-                obj2.Phone = "098-234234";
-                obj2.Fax = "234234234";
-                obj2.MemberType = "类型";
-                obj2.TrademanageId = "cn234234234";
-                obj2.Street = "street";
-                obj2.Country = "RU";
-                obj2.City = "Moscow";
-                obj2.County = "county";
-                obj2.Email = "alibaba@alibaba.com";
-                obj2.AddressId = -1;
-                obj2.Name = "Linda";
-                obj2.Province = "Moscow";
-                obj2.StreetAddress = "street address";
-                obj2.Mobile = "18766234324";
-                obj2.PostCode = "056202";
-                obj1.Sender = obj2;
-                AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareAddressDtoDomain obj3 = new AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareAddressDtoDomain();
-                obj3.Phone = "098-234234";
-                obj3.Fax = "234234234";
-                obj3.MemberType = "类型";
-                obj3.TrademanageId = "cn234234234";
-                obj3.Street = "street";
-                obj3.Country = "RU";
-                obj3.City = "Moscow";
-                obj3.County = "county";
-                obj3.Email = "alibaba@alibaba.com";
-                obj3.AddressId = -1;
-                obj3.Name = "Linda";
-                obj3.Province = "Moscow";
-                obj3.StreetAddress = "street address";
-                obj3.Mobile = "18766234324";
-                obj3.PostCode = "056202";
-                obj1.Pickup = obj3;
-                AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareAddressDtoDomain obj4 = new AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareAddressDtoDomain();
-                obj4.Phone = "098-234234";
-                obj4.Fax = "234234234";
-                obj4.MemberType = "类型";
-                obj4.TrademanageId = "cn234234234";
-                obj4.Street = "street";
-                obj4.PostCode = "056202";
-                obj4.Country = "RU";
-                obj4.City = "Moscow";
-                obj4.County = "county";
-                obj4.Email = "alibaba@alibaba.com";
-                obj4.AddressId = -1;
-                obj4.Name = "Linda";
-                obj4.Province = "Moscow";
-                obj4.StreetAddress = "street address";
-                obj4.Mobile = "18766234324";
-                obj1.Receiver = obj4;
-                AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareAddressDtoDomain obj5 = new AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareAddressDtoDomain();
-                obj5.Phone = "098-234234";
-                obj5.Fax = "234234234";
-                obj5.MemberType = "类型";
-                obj5.TrademanageId = "cn234234234";
-                obj5.Street = "street";
-                obj5.Country = "RU";
-                obj5.City = "Moscow";
-                obj5.County = "county";
-                obj5.Email = "alibaba@alibaba.com";
-                obj5.AddressId = -1;
-                obj5.Name = "Linda";
-                obj5.Province = "Moscow";
-                obj5.StreetAddress = "street address";
-                obj5.Mobile = "18766234324";
-                obj5.PostCode = "056202";
-                obj1.Refund = obj5;
-                req.AddressDTOs_ = obj1;
-                List<AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareProductForTopDtoDomain> list7 = new List<AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareProductForTopDtoDomain>();
-                AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareProductForTopDtoDomain obj8 = new AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareProductForTopDtoDomain();
-                list7.Add(obj8);
-                obj8.AneroidMarkup = false;
-                obj8.Breakable = false;//required
-                obj8.CategoryCnDesc = "连衣裙";//required
-                obj8.CategoryEnDesc = "dress";//required
-                obj8.ContainsBattery = false;//required
-                obj8.HsCode = "77234";
-                obj8.OnlyBattery = false;
-                obj8.ProductDeclareAmount = "1.3";//required
-                obj8.ProductId = 10000124511021L;//required
-                obj8.ProductNum = 2L;//required
-                obj8.ProductWeight = "1.5";//required
-                obj8.ScItemCode = "scItem code";
-                //obj8.ScItemId = 1000L;
-                obj8.ScItemName = "scItem name";
-                obj8.SkuCode = "sku code";//required
-                obj8.SkuValue = "sku value";//required
-                req.DeclareProductDTOs_ = list7;
-                req.DomesticLogisticsCompany = orderLogisticData[0].LogisticsServiceName;
-                req.DomesticLogisticsCompanyId = 505L;//required
-                req.DomesticTrackingNo = "none";//required
+                AliexpressLogisticsCreatewarehouseorderRequest.AddressdtosDomain AddressDTO = new AliexpressLogisticsCreatewarehouseorderRequest.AddressdtosDomain();
+
+                using (DropshipDataEntities datacontext = new DropshipDataEntities())
+                {
+                    defaultaddress senderAdd = datacontext.defaultaddresses.Where(x => x.Type == "sender").FirstOrDefault();
+                    defaultaddress refundAdd = datacontext.defaultaddresses.Where(x => x.Type == "refund").FirstOrDefault();
+
+                    if (senderAdd != null)
+                    {
+                        AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareAddressDtoDomain SenderObj = new AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareAddressDtoDomain();
+                        SenderObj.Phone = senderAdd.Phone;
+                        SenderObj.Fax = senderAdd.Fax;
+                        SenderObj.Street = senderAdd.Street;
+                        SenderObj.PostCode = senderAdd.PostCode;
+                        SenderObj.Country = refundAdd.Country;
+                        SenderObj.City = senderAdd.City;
+                        SenderObj.County = senderAdd.County;
+                        SenderObj.AddressId = -1;
+                        SenderObj.Name = senderAdd.Name;
+                        SenderObj.Province = senderAdd.Province;
+                        SenderObj.StreetAddress = senderAdd.StreetAddress;
+                        SenderObj.Mobile = senderAdd.Mobile;
+                        AddressDTO.Sender = SenderObj;
+                    }
+
+                    if (refundAdd != null)
+                    {
+                        AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareAddressDtoDomain RefundObj = new AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareAddressDtoDomain();
+                        RefundObj.Phone = refundAdd.Phone;
+                        RefundObj.Fax = refundAdd.Fax;
+                        RefundObj.Street = refundAdd.Street;
+                        RefundObj.Country = refundAdd.Country;
+                        RefundObj.City = refundAdd.City;
+                        RefundObj.County = refundAdd.County;
+                        RefundObj.AddressId = -1;
+                        RefundObj.Name = refundAdd.Name;
+                        RefundObj.Province = refundAdd.Province;
+                        RefundObj.StreetAddress = refundAdd.StreetAddress;
+                        RefundObj.Mobile = refundAdd.Mobile;
+                        RefundObj.PostCode = refundAdd.PostCode;
+                        AddressDTO.Refund = RefundObj;
+                    }
+
+                    //if (senderAdd != null)
+                    //{
+                    //    AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareAddressDtoDomain SenderObj = new AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareAddressDtoDomain();
+                    //    SenderObj.Phone = "098-234234";
+                    //    SenderObj.Fax = "234234234";
+                    //    SenderObj.Street = "street";
+                    //    SenderObj.PostCode = "01010";
+                    //    SenderObj.Country = "TR";
+                    //    SenderObj.City = "Seyhan";
+                    //    SenderObj.County = "county";
+                    //    SenderObj.AddressId = -1;
+                    //    SenderObj.Name = "Linda";
+                    //    SenderObj.Province = "Adana";
+                    //    SenderObj.StreetAddress = "street address";
+                    //    SenderObj.Mobile = "18766234324";
+                    //    AddressDTO.Sender = SenderObj;
+                    //}
+
+                    //if (refundAdd != null)
+                    //{
+                    //    AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareAddressDtoDomain RefundObj = new AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareAddressDtoDomain();
+                    //    RefundObj.Fax = "234234234";
+                    //    RefundObj.Street = "street";
+                    //    RefundObj.Country = "RU";
+                    //    RefundObj.City = "Moscow";
+                    //    RefundObj.County = "county";
+                    //    RefundObj.AddressId = -1;
+                    //    RefundObj.Name = "Linda";
+                    //    RefundObj.Province = "Moscow";
+                    //    RefundObj.StreetAddress = "street address";
+                    //    RefundObj.Mobile = "18766234324";
+                    //    RefundObj.PostCode = "056202";
+                    //    AddressDTO.Refund = RefundObj;
+                    //}
+                }
+                
+                AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareAddressDtoDomain ReceiverObj = new AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareAddressDtoDomain();
+                ReceiverObj.Phone = OrderDetails.Data.ReceiptAddress.PhoneNumber;
+                ReceiverObj.Fax = OrderDetails.Data.ReceiptAddress.FaxNumber;
+                //obj4.MemberType = "类型"; //optional
+                //obj4.TrademanageId = "cn234234234"; //optional
+                ReceiverObj.Street = OrderDetails.Data.ReceiptAddress.Address;
+                ReceiverObj.PostCode = OrderDetails.Data.ReceiptAddress.Zip;
+                ReceiverObj.Country = OrderDetails.Data.ReceiptAddress.Country;
+                ReceiverObj.City = OrderDetails.Data.ReceiptAddress.City;
+                ReceiverObj.County = OrderDetails.Data.ReceiptAddress.DetailAddress;
+                //obj4.Email = "alibaba@alibaba.com"; //optional
+                ReceiverObj.AddressId = -1;
+                ReceiverObj.Name = OrderDetails.Data.ReceiptAddress.ContactPerson;
+                ReceiverObj.Province = OrderDetails.Data.ReceiptAddress.Province;
+                ReceiverObj.StreetAddress = "street address";
+                ReceiverObj.Mobile = OrderDetails.Data.ReceiptAddress.MobileNo;
+                AddressDTO.Receiver = ReceiverObj;
+
+                req.AddressDTOs_ = AddressDTO;
+                List<AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareProductForTopDtoDomain> ProductList = new List<AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareProductForTopDtoDomain>();
+
+                foreach (var item in OrderDetails.Data.ChildOrderList)
+                {
+                    AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareProductForTopDtoDomain ProductObj = new AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareProductForTopDtoDomain();
+                    //obj8.AneroidMarkup = false;
+                    //obj8.Breakable = false;
+                    ProductObj.CategoryCnDesc = "衬衫";
+                    ProductObj.CategoryEnDesc = "Shirt";
+                    //obj8.ContainsBattery = false;
+                    //obj8.HsCode = "77234";
+                    //obj8.OnlyBattery = false;
+                    ProductObj.ProductDeclareAmount = item.InitOrderAmt.Amount;
+                    ProductObj.ProductId = item.ProductId;
+                    ProductObj.ProductNum = item.ProductCount;
+                    //obj8.ProductWeight = "1.5";
+                    //obj8.ScItemCode = "scItem code";
+                    //obj8.ScItemId = 1000L;
+                    //obj8.ScItemName = "scItem name";
+                    //obj8.SkuCode = "sku code";
+                    //obj8.SkuValue = "sku value";
+                    ProductList.Add(ProductObj);
+                }
+
+                req.DeclareProductDTOs_ = ProductList;
+
+                //req.DomesticLogisticsCompany = "tiantiankuaidi";
+                req.DomesticLogisticsCompanyId = 505L;
+                req.DomesticTrackingNo = "none";
                 req.PackageNum = 1L;
                 req.TradeOrderFrom = "ESCROW";
-                req.TradeOrderId = 1000102673302508L;
+                req.TradeOrderId = OrderID;
                 req.UndeliverableDecision = 0L;
                 req.WarehouseCarrierService = orderLogisticData[0].LogisticsServiceId;
-                // req.WarehouseCarrierService = "CPAM_WLB_FPXSZ;CPAM_WLB_CPHSH;CPAM_WLB_ZTOBJ;HRB_WLB_ZTOGZ;HRB_WLB_ZTOSH";
-                req.InvoiceNumber = "38577123";
+                req.InvoiceNumber = "";
                 //req.TopUserKey = "xxxxxxx";
                 AliexpressLogisticsCreatewarehouseorderResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
-                Console.WriteLine(rsp.Body);
-                getInternationalLogisticNoByOrderId();
+                string res = JsonConvert.SerializeObject(rsp.Result);
+                getInternationalLogisticNoByOrderId(OrderID);
             }
             catch (Exception ex)
             {
@@ -437,7 +475,7 @@ namespace DropshipPlatform.BLL.Services
             return result;
         }
 
-        public bool getInternationalLogisticNoByOrderId()
+        public bool getInternationalLogisticNoByOrderId(long OrderID)
         {
             bool result = true;
             string resultdata = String.Empty;
@@ -445,9 +483,15 @@ namespace DropshipPlatform.BLL.Services
             {
                 ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret);
                 AliexpressLogisticsQuerylogisticsorderdetailRequest req = new AliexpressLogisticsQuerylogisticsorderdetailRequest();
-                req.TradeOrderId = 1000102673302508; //required OrderId
+                req.TradeOrderId = OrderID; //required OrderId
                 AliexpressLogisticsQuerylogisticsorderdetailResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
                 resultdata = JsonConvert.SerializeObject(rsp.Result);
+
+                if (rsp.Result.Success)
+                {
+                    List<AliexpressLogisticsQuerylogisticsorderdetailResponse.AeopLogisticsOrderDetailDtoDomain> OrderDetailDto = rsp.Result.ResultList;
+                    getPrintInfo(OrderDetailDto.FirstOrDefault().InternationalLogisticsNum);
+                }
             }
             catch (Exception ex)
             {
@@ -458,7 +502,7 @@ namespace DropshipPlatform.BLL.Services
             return result;
         }
 
-        public bool getPrintInfo()
+        public bool getPrintInfo(string international_logistics_id)
         {
             bool result = true;
             string resultdata = String.Empty;
@@ -466,9 +510,22 @@ namespace DropshipPlatform.BLL.Services
             {
                 ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret);
                 AliexpressLogisticsRedefiningGetprintinfoRequest req = new AliexpressLogisticsRedefiningGetprintinfoRequest();
-                req.InternationalLogisticsId = "1000102673302508"; //required InternationalLogisticsId from getInternationalLogisticNoByOrderId result
+                req.InternationalLogisticsId = international_logistics_id; //required InternationalLogisticsId from getInternationalLogisticNoByOrderId result
                 AliexpressLogisticsRedefiningGetprintinfoResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
                 resultdata = JsonConvert.SerializeObject(rsp.Result);
+
+                LogisticPrintinfo LogisticPrintinfo = JsonConvert.DeserializeObject<LogisticPrintinfo>(rsp.Result);
+
+                byte[] bytes = Convert.FromBase64String(LogisticPrintinfo.body);
+
+                var path = StaticValues.CainiaoFiles_path + international_logistics_id + ".pdf";
+                
+                System.IO.FileStream stream =
+                new FileStream(path, FileMode.CreateNew);
+                System.IO.BinaryWriter writer =
+                    new BinaryWriter(stream);
+                writer.Write(bytes, 0, bytes.Length);
+                writer.Close();
             }
             catch (Exception ex)
             {

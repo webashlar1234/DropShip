@@ -47,5 +47,6 @@ namespace DropshipPlatform.Entity
         public virtual DbSet<aliexpressorder> aliexpressorders { get; set; }
         public virtual DbSet<order> orders { get; set; }
         public virtual DbSet<product> products { get; set; }
+        public virtual DbSet<defaultaddress> defaultaddresses { get; set; }
     }
 }

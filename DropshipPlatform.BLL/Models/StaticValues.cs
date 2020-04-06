@@ -25,6 +25,7 @@ namespace DropshipPlatform.BLL.Models
         public static int shippingPreparationTime = 20;
         public static string shippingTemplateID = "1013213014";
         public static string mySqlDb = System.Web.Configuration.WebConfigurationManager.AppSettings["MySqlConnection"].ToString();
+        public static string CainiaoFiles_path = System.Web.Configuration.WebConfigurationManager.AppSettings["CainiaoFiles_path"].ToString();
 
     }
 }

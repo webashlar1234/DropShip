@@ -29,7 +29,7 @@ namespace DropshipPlatform.Controllers
         }
 
         [HttpPost]
-        public JsonResult getProductManagementDT(int? category,int? filterOptions)
+        public JsonResult getProductManagementDT(int? category, int? filterOptions)
         {
             user user = SessionManager.GetUserSession();
             DTRequestModel DTRequestModel = new DTRequestModel();
@@ -48,7 +48,7 @@ namespace DropshipPlatform.Controllers
             int recordsTotal = 0;
             List<ProductGroupModel> list = _productService.GetParentProducts(user.UserID, DTRequestModel, category, filterOptions, out recordsTotal);
 
-            
+
 
             //SORT
             //if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
@@ -83,9 +83,9 @@ namespace DropshipPlatform.Controllers
         public JsonResult pickSellerProducts(List<scproductModel> products)
         {
             user user = SessionManager.GetUserSession();
-            
-                bool result = _productService.AddSellersPickedProducts(products, user.UserID);
-            
+
+            bool result = _productService.AddSellersPickedProducts(products, user.UserID);
+
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
@@ -138,7 +138,7 @@ namespace DropshipPlatform.Controllers
 
 
         [HttpPost]
-        public JsonResult updateProductStatuts(string id,bool status)
+        public JsonResult updateProductStatuts(string id, bool status)
         {
             ProductService _productService = new ProductService();
             return Json(_productService.updateProductStatuts(id, status), JsonRequestBehavior.AllowGet);

@@ -48,7 +48,11 @@
               ("0" + date.getDate()).slice(-2) + " " + date.getHours() + ":" +
               date.getMinutes();
         return formatted;
-    }
+    },
+    getParameterByName: function (name) {
+        var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+        return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+    },
 }
 
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -149,5 +150,14 @@ namespace DropshipPlatform.BLL.Models
         public List<object> OtherFees { get; set; }
         public string TrialResult { get; set; }
         public string WarehouseName { get; set; }
+    }
+    public class LogisticPrintinfo
+    {
+        [JsonProperty("Content-Disposition")]
+        public string Content_Disposition { get; set; }
+        public string body { get; set; }
+        public string StatusCode { get; set; }
+        [JsonProperty("Content-Type")]
+        public string Content_Type { get; set; }
     }
 }

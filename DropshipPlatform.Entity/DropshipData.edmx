@@ -132,6 +132,24 @@
           <Property Name="Name" Type="varchar" MaxLength="150" />
           <Property Name="CountryCode" Type="varchar" MaxLength="50" />
         </EntityType>
+        <EntityType Name="defaultaddress">
+          <Key>
+            <PropertyRef Name="DefaultAddressID" />
+          </Key>
+          <Property Name="DefaultAddressID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="145" />
+          <Property Name="Phone" Type="varchar" MaxLength="45" />
+          <Property Name="Fax" Type="varchar" MaxLength="45" />
+          <Property Name="Street" Type="varchar" MaxLength="200" />
+          <Property Name="StreetAddress" Type="varchar" MaxLength="255" />
+          <Property Name="PostCode" Type="varchar" MaxLength="45" />
+          <Property Name="Country" Type="varchar" MaxLength="45" />
+          <Property Name="City" Type="varchar" MaxLength="45" />
+          <Property Name="County" Type="varchar" MaxLength="500" />
+          <Property Name="Province" Type="varchar" MaxLength="45" />
+          <Property Name="Mobile" Type="varchar" MaxLength="45" />
+          <Property Name="Type" Type="varchar" MaxLength="45" />
+        </EntityType>
         <EntityType Name="frequencyupdate">
           <Key>
             <PropertyRef Name="FrequencyUpdateID" />
@@ -428,6 +446,7 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <EntitySet Name="applicationlogs" EntityType="Self.applicationlogs" Schema="dropshipdata" store:Type="Tables" />
           <EntitySet Name="category" EntityType="Self.category" Schema="dropshipdata" store:Type="Tables" />
           <EntitySet Name="country" EntityType="Self.country" Schema="dropshipdata" store:Type="Tables" />
+          <EntitySet Name="defaultaddress" EntityType="Self.defaultaddress" Schema="dropshipdata" store:Type="Tables" />
           <EntitySet Name="frequencyupdate" EntityType="Self.frequencyupdate" Schema="dropshipdata" store:Type="Tables" />
           <EntitySet Name="layout" EntityType="Self.layout" Schema="dropshipdata" store:Type="Tables" />
           <EntitySet Name="membershiptypes" EntityType="Self.membershiptypes" Schema="dropshipdata" store:Type="Tables" />
@@ -719,6 +738,7 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <EntitySet Name="aliexpressorders" EntityType="dropshipdataModel.aliexpressorder" />
           <EntitySet Name="orders" EntityType="dropshipdataModel.order" />
           <EntitySet Name="products" EntityType="dropshipdataModel.product" />
+          <EntitySet Name="defaultaddresses" EntityType="dropshipdataModel.defaultaddress" />
         </EntityContainer>
         <EntityType Name="sellerspickedproduct">
           <Key>
@@ -920,6 +940,24 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <Property Name="PackageLength" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
           <Property Name="PackageWidth" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
           <Property Name="Unit" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="defaultaddress">
+          <Key>
+            <PropertyRef Name="DefaultAddressID" />
+          </Key>
+          <Property Name="DefaultAddressID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="145" FixedLength="false" Unicode="false" />
+          <Property Name="Phone" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+          <Property Name="Fax" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+          <Property Name="Street" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="PostCode" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+          <Property Name="Country" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+          <Property Name="City" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+          <Property Name="County" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="Province" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+          <Property Name="Mobile" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+          <Property Name="Type" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+          <Property Name="StreetAddress" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -1308,6 +1346,25 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
                 <ScalarProperty Name="SourceWebsite" ColumnName="SourceWebsite" />
                 <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="ProductID" ColumnName="ProductID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="defaultaddresses">
+            <EntityTypeMapping TypeName="dropshipdataModel.defaultaddress">
+              <MappingFragment StoreEntitySet="defaultaddress">
+                <ScalarProperty Name="StreetAddress" ColumnName="StreetAddress" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="Mobile" ColumnName="Mobile" />
+                <ScalarProperty Name="Province" ColumnName="Province" />
+                <ScalarProperty Name="County" ColumnName="County" />
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="Country" ColumnName="Country" />
+                <ScalarProperty Name="PostCode" ColumnName="PostCode" />
+                <ScalarProperty Name="Street" ColumnName="Street" />
+                <ScalarProperty Name="Fax" ColumnName="Fax" />
+                <ScalarProperty Name="Phone" ColumnName="Phone" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="DefaultAddressID" ColumnName="DefaultAddressID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

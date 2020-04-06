@@ -19,8 +19,13 @@ namespace DropshipPlatform.Controllers
             return View();
         }
 
+        [CustomAuthorize("Developer")]
         public ActionResult getOrders()
         {
+            OrderService _orderService = new OrderService();
+            //_orderService.getLogisticsServicByOrderId(1000102673302508);
+            //_orderService.getPrintInfo("AEFP0000134813RU2");
+            
             return View();
         }
 
@@ -28,7 +33,6 @@ namespace DropshipPlatform.Controllers
         public ActionResult getOrdersData()
         {
             OrderService _orderService = new OrderService();
-            _orderService.getLogisticsServicByOrderId();
             int recordsTotal = 0;
             var draw = Request.Form.GetValues("draw") != null ? Request.Form.GetValues("draw").FirstOrDefault() : null;
             var start = Request.Form.GetValues("start") != null ? Request.Form.GetValues("start").FirstOrDefault() : null;

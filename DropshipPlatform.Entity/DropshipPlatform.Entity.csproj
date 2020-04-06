@@ -90,6 +90,9 @@
     <Compile Include="country.cs">
       <DependentUpon>DropshipData.tt</DependentUpon>
     </Compile>
+    <Compile Include="defaultaddress.cs">
+      <DependentUpon>DropshipData.tt</DependentUpon>
+    </Compile>
     <Compile Include="DropshipData.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
