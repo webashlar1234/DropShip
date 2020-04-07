@@ -53,6 +53,8 @@
           <Property Name="ProductName" Type="varchar" MaxLength="255" />
           <Property Name="Price" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="CurrencyCode" Type="varchar" MaxLength="50" />
+          <Property Name="Size" Type="varchar" MaxLength="255" />
+          <Property Name="Color" Type="varchar" MaxLength="45" />
           <Property Name="ItemCreatedBy" Type="int" />
           <Property Name="ItemCreatedWhen" Type="datetime" Precision="0" />
           <Property Name="ItemModifyBy" Type="int" />
@@ -198,6 +200,7 @@
           <Property Name="PaymentStatus" Type="varchar" MaxLength="50" />
           <Property Name="AliExpressLoginID" Type="varchar" MaxLength="150" />
           <Property Name="TrackingNo" Type="varchar" MaxLength="50" />
+          <Property Name="SellerPaymentStatus" Type="bool" />
           <Property Name="ItemCreatedBy" Type="int" />
           <Property Name="ItemCreatedWhen" Type="datetime" Precision="3" />
           <Property Name="ItemModifyBy" Type="int" />
@@ -522,6 +525,8 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <Property Name="AliExpressOrderId" Type="Int64" />
           <Property Name="AliExpressProductOrderId" Type="Boolean" />
           <Property Name="SCOrderId" Type="Int32" />
+          <Property Name="Size" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Color" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="applicationlog">
           <Key>
@@ -890,6 +895,7 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <Property Name="ItemCreatedWhen" Type="DateTime" />
           <Property Name="ItemModifyBy" Type="Int32" />
           <Property Name="ItemModifyWhen" Type="DateTime" />
+          <Property Name="SellerPaymentStatus" Type="Boolean" />
         </EntityType>
         <EntityType Name="product">
           <Key>
@@ -993,6 +999,8 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <EntitySetMapping Name="aliexpressorderitems">
             <EntityTypeMapping TypeName="dropshipdataModel.aliexpressorderitem">
               <MappingFragment StoreEntitySet="aliexpressorderitems">
+                <ScalarProperty Name="Color" ColumnName="Color" />
+                <ScalarProperty Name="Size" ColumnName="Size" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="AliExpressProductID" ColumnName="AliExpressProductID" />
                 <ScalarProperty Name="ProductID" ColumnName="ProductID" />
@@ -1282,6 +1290,7 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <EntitySetMapping Name="orders">
             <EntityTypeMapping TypeName="dropshipdataModel.order">
               <MappingFragment StoreEntitySet="orders">
+                <ScalarProperty Name="SellerPaymentStatus" ColumnName="SellerPaymentStatus" />
                 <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
                 <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
                 <ScalarProperty Name="ItemCreatedWhen" ColumnName="ItemCreatedWhen" />

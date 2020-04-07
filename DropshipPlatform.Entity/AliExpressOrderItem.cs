@@ -27,5 +27,7 @@ namespace DropshipPlatform.Entity
         public Nullable<long> AliExpressOrderId { get; set; }
         public Nullable<bool> AliExpressProductOrderId { get; set; }
         public Nullable<int> SCOrderId { get; set; }
+        public string Size { get; set; }
+        public string Color { get; set; }
     }
 }
