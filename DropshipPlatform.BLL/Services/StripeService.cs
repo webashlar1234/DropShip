@@ -129,7 +129,7 @@ namespace DropshipPlatform.BLL.Services
 
         public bool ChargeSavedCard(string StripeCustomerID, long amount)
         {
-            bool result = true;
+            bool result = false;
             try
             {
                 var options = new PaymentMethodListOptions
@@ -153,6 +153,7 @@ namespace DropshipPlatform.BLL.Services
                         OffSession = true,
                     };
                     PIservice.Create(options_create);
+                    result = true;
                 }
             }
             catch (StripeException e)
@@ -165,7 +166,7 @@ namespace DropshipPlatform.BLL.Services
                         var paymentIntentId = e.StripeError.PaymentIntent.Id;
                         var service = new PaymentIntentService();
                         var paymentIntent = service.Get(paymentIntentId);
-
+                        result = false;
                         logger.Error(paymentIntent.Id);
                         break;
                     default:

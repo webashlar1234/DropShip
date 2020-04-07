@@ -118,6 +118,7 @@ var product = {
 };
 
 $(document).ready(function () {
+    debugger
     product.init();
     BindData();
 

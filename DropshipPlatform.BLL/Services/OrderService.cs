@@ -147,6 +147,10 @@ namespace DropshipPlatform.BLL.Services
 
                             if (!AliiExpressOrderId)
                             {
+                                StripeService _stripeservice = new StripeService();
+                                string amount = item.PayAmount != null ? item.PayAmount.Amount : null;
+                                string stripeCustomerId = datacontext.users.Where(x => x.AliExpressLoginID == item.SellerLoginId).Select(x => x.StripeCustomerID).FirstOrDefault();
+                                bool resultStripePayment = _stripeservice.ChargeSavedCard(stripeCustomerId, Convert.ToInt64(amount));
                                 AliExpressOrderData.AliExpressOrderID = item.OrderId;
                                 AliExpressOrderData.BuyerLoginId = item.BuyerLoginId;
                                 AliExpressOrderData.AliExpressLoginID = item.SellerLoginId;
@@ -195,6 +199,7 @@ namespace DropshipPlatform.BLL.Services
                                 OrderData.ItemCreatedWhen = DateTime.UtcNow;
                                 OrderData.ItemModifyBy = null;
                                 OrderData.ItemModifyWhen = DateTime.UtcNow;
+                                OrderData.SellerPaymentStatus = resultStripePayment;
                                 datacontext.orders.Add(OrderData);
                             }
                             else
@@ -251,7 +256,9 @@ namespace DropshipPlatform.BLL.Services
 
         public List<OrderData> getAllOrdersFromDatabase()
         {
+            List<OrderData> OrdersList = new List<OrderData>();
             List<OrderData> Orders = new List<OrderData>();
+            List<OrderViewModel> ChildOrders = new List<OrderViewModel>();
             try
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
@@ -261,6 +268,7 @@ namespace DropshipPlatform.BLL.Services
                               where u.IsActive == true
                               select new OrderData
                               {
+                                  AliExpressOrderID = o.AliExpressOrderID,
                                   AliExpressOrderNumber = o.AliExpressOrderID,
                                   OrderAmount = o.OrderAmount,
                                   DeleveryCountry = o.DeliveryCountry,
@@ -270,13 +278,42 @@ namespace DropshipPlatform.BLL.Services
                                   SellerID = u.AliExpressSellerID,
                                   SellerEmail = u.EmailID
                               }).ToList();
+
+                    List<OrderViewModel> childList = (from o in datacontext.orders
+                                                      join oi in datacontext.aliexpressorderitems on o.AliExpressOrderID equals oi.AliExpressOrderId.ToString()
+                                                      from sp in datacontext.sellerspickedproducts.Where(x => x.AliExpressProductID == oi.AliExpressProductID).DefaultIfEmpty()
+                                                      join p in datacontext.products on sp.ParentProductID equals p.ProductID
+                                                      where o.AliExpressOrderID != null
+                                                      select new OrderViewModel
+                                                      {
+                                                          AliExpressOrderId = oi.AliExpressOrderId.ToString(),
+                                                          AliExpressProductId = oi.AliExpressProductID,
+                                                          OrignalProductId =  p.OriginalProductID,
+                                                          OrignalProductLink = p.SourceWebsite,
+                                                          ProductName = oi.ProductName,
+                                                          Price = oi.Price,
+                                                          Colour = p.Color,
+                                                          Size = p.Size
+                                                      }).ToList();
+
+                    if (Orders.Count > 0)
+                    {
+                        foreach (OrderData OrderdataModel in Orders)
+                        {
+                            OrderData OrderGroup = new OrderData();
+
+                            OrderdataModel.ChildOrderItemList = childList.Where(x => x.AliExpressOrderId == OrderdataModel.AliExpressOrderID).ToList();
+
+                            OrdersList.Add(OrderdataModel);
+                        }
+                    }
                 }
             }
             catch (Exception ex)
             {
                 logger.Error(ex.ToString());
             }
-            return Orders;
+            return OrdersList;
         }
 
 
@@ -406,7 +443,7 @@ namespace DropshipPlatform.BLL.Services
                     //    AddressDTO.Refund = RefundObj;
                     //}
                 }
-                
+
                 AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareAddressDtoDomain ReceiverObj = new AliexpressLogisticsCreatewarehouseorderRequest.AeopWlDeclareAddressDtoDomain();
                 ReceiverObj.Phone = OrderDetails.Data.ReceiptAddress.PhoneNumber;
                 ReceiverObj.Fax = OrderDetails.Data.ReceiptAddress.FaxNumber;
@@ -519,7 +556,7 @@ namespace DropshipPlatform.BLL.Services
                 byte[] bytes = Convert.FromBase64String(LogisticPrintinfo.body);
 
                 var path = StaticValues.CainiaoFiles_path + international_logistics_id + ".pdf";
-                
+
                 System.IO.FileStream stream =
                 new FileStream(path, FileMode.CreateNew);
                 System.IO.BinaryWriter writer =

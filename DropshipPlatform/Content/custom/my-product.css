@@ -680,4 +680,7 @@ input.error {
 .updatedPrice, .pickedInvetory {
     width: 70px;
 }
+.btn .btn-info {
+    color: blue;
+}
 /*#endregion*/

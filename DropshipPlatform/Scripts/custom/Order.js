@@ -1,5 +1,7 @@
 ﻿var orderDT = null;
 var orderDTSeller = null;
+var table = '#orderDT';
+var jsonProducts = null;
 
 var order = {
     init: function () {
@@ -43,14 +45,14 @@ var order = {
                         .click(function () {
                             input.val('');
                             $searchButton.click();
-                        })
+                        });
                 $('.dataTables_filter').append($searchButton, $clearButton);
             },
             columnDefs: [
                 {
                     targets: 0,
                     sortable: true,
-                    width: "10%",
+                    width: "5%",
                     "render": function (data, type, full) {
                         return data;
                     }
@@ -66,15 +68,15 @@ var order = {
                 {
                     targets: 2,
                     sortable: true,
-                    width: "10%",
-                    "render": function (data, type, row) {
-                        return data;
+                    width: "5%",
+                    "render": function (data, type, full) {
+                        return data + '<label>$</label>';
                     }
                 },
                 {
                     targets: 3,
                     sortable: true,
-                    width: "5%",
+                    width: "10%",
                     "render": function (data, type, full) {
                         return data;
                     }
@@ -82,15 +84,15 @@ var order = {
                 {
                     targets: 4,
                     sortable: true,
-                    width: "5%",
-                    "render": function (data, type, full) {
-                        return data + '<label>$</label>';
+                    width: "10%",
+                    "render": function (data, type, row) {
+                        return data;
                     }
                 },
                 {
                     targets: 5,
                     sortable: true,
-                    width: "10%",
+                    width: "5%",
                     "render": function (data, type, full) {
                         return data;
                     }
@@ -99,24 +101,24 @@ var order = {
                     targets: 6,
                     sortable: true,
                     width: "10%",
-                    "render": function (data, type, row) {
+                    "render": function (data, type, full) {
+                        //return '<input data-role="switch" type="checkbox" data-toggle="toggle" data-on="Paid " data-off="Unpaid " />';
                         return data;
                     }
                 },
                 {
                     targets: 7,
                     sortable: true,
-                    width: "5%",
-                    "render": function (data, type, full) {
+                    width: "10%",
+                    "render": function (data, type, row) {
                         return data;
                     }
                 },
                 {
                     targets: 8,
                     sortable: true,
-                    width: "10%",
+                    width: "5%",
                     "render": function (data, type, full) {
-                        //return '<input data-role="switch" type="checkbox" data-toggle="toggle" data-on="Paid " data-off="Unpaid " />';
                         return data;
                     }
                 },
@@ -125,33 +127,16 @@ var order = {
                     sortable: true,
                     width: "10%",
                     "render": function (data, type, row) {
-                        return data;
-                    }
-                },
-                {
-                    targets: 10,
-                    sortable: true,
-                    width: "5%",
-                    "render": function (data, type, full) {
-                        return data;
-                    }
-                },
-                {
-                    targets: 11,
-                    sortable: true,
-                    width: "10%",
-                    "render": function (data, type, row) {
+                        
                         if (data) {
                             return '<a class="btn btn-info btn-sm" href="#" onclick=updateStatus("' + row.OrignalProductLink + '",this,"' + row.AliExpressOrderNumber + '","' + row.LogisticType + '")>' + 'Buy Now' + '</a>';
                         }
                     }
-                },
+                }
             ],
             columns: [
+                { "sTitle": '', "mData": '', sDefaultContent: "", className: "details-control" },
                 { "sTitle": 'Ali Express Order Number', "mData": 'AliExpressOrderNumber', sDefaultContent: "", className: "AliExpressOrderNumber" },
-                { "sTitle": 'Orignal Product Id', "mData": 'OrignalProductId', sDefaultContent: "", className: "OrignalProductId" },
-                { "sTitle": 'Orignal Product Link', "mData": 'OrignalProductLink', sDefaultContent: "", className: "OrignalProductLink" },
-                { "sTitle": 'Product Title', "mData": 'ProductTitle', sDefaultContent: "", className: "ProductTitle" },
                 { "sTitle": 'Order Amount(USD)', "mData": 'OrderAmount', sDefaultContent: "", className: "OrderAmount" },
                 { "sTitle": 'Delevery Country', "mData": 'DeleveryCountry', sDefaultContent: "", className: "DeleveryCountry" },
                 { "sTitle": 'Shipping Weight(KG)', "mData": 'ShippingWeight', sDefaultContent: "", className: "ShippingWeight" },
@@ -161,6 +146,13 @@ var order = {
                 { "sTitle": 'Seller Email', "mData": 'SellerEmail', sDefaultContent: "", className: "SellerEmail" },
                 { "sTitle": 'Actions', "mData": 'productExist', sDefaultContent: "", className: "Actions" }
             ]
+            //"createdRow": function (row, data, dataIndex) {
+            //    if (data.ChildOrderItemList.length > 0) {
+            //        debugger
+            //        console.log(data.ChildOrderItemList);
+            //        $(row).find("td:eq(0)").addClass('details-control');
+            //    }
+            //}
         });
     },
 
@@ -280,6 +272,22 @@ var order = {
 
 $(document).ready(function () {
 
+    $('#orderDT').on('click', 'td.details-control', function () {
+        var tr = $(this).closest('tr');
+        var row = orderDT.row(tr);
+
+        if (row.child.isShown()) {
+            // This row is already open - close it
+            row.child.hide();
+            tr.removeClass('shown');
+
+        } else {
+            // Open this row
+            row.child(format(row.data())).show();
+            tr.addClass('shown');
+        }
+    });
+
     adminTable = $("#orderDT");
     sellerTable = $("#orderDTSeller");
 
@@ -321,4 +329,36 @@ function updateStatus(productLink, data, OrderId, LogisticType) {
             }
         });
     }
+}
+
+function format(data) {
+    console.log(data.ChildOrderItemList);
+    var trs = '';
+    $.each($(data.ChildOrderItemList), function (key, value) {
+
+        console.log(value);
+        trs +=
+            '<tr class="skuRow" data-for="' + value.AliExpressProductId + '"<td>' +
+            '</td> <td>' + value.ProductName +
+            '</td> <td>' + value.AliExpressProductId +
+            '</td> <td>' + value.OrignalProductLink +
+            '</td> <td>' + value.OrignalProductId +
+            '</td><td>' + value.Price +
+            '</td><td>' +
+            '</td><td>' +
+            '</td></tr>';
+    });
+    // `data` is the original data object for the row
+    return '<table class="table table-border table-hover innertable">' +
+        '<thead>' +
+        '<th style="width:15%">Product Name</th>' +
+        '<th>AliExpress Product ID</th>' +
+        '<th>Orignal Product Link</th>' +
+        '<th>Orignal Product Id</th>' +
+        '<th>Price</th>' +
+        '<th>Color</th>' +
+        '<th>Size</th>' +
+        '</thead><tbody>' +
+        trs +
+        '</tbody></table>';
 }

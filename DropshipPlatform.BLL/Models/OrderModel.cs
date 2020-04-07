@@ -30,12 +30,27 @@ namespace DropshipPlatform.BLL.Models
         public string DeleveryCountry { get; set; }
         public string ShippingWeight { get; set; }
         public string OrderStatus { get; set; }
+        public string AliExpressOrderID { get; set; }
         public string PaymentStatus { get; set; }
         public string SellerID { get; set; }
         public string SellerEmail { get; set; }
         public Nullable<bool> productExist { get; set; }
         public string LogisticType { get; set; }
         public string LogisticName { get; set; }
+        public List<OrderViewModel> ChildOrderItemList { get; set; }
+    }
+
+    public class OrderViewModel
+    {
+        public string AliExpressProductId { get; set; }
+        public string AliExpressOrderId { get; set; }
+        public string ProductName{ get; set; }
+        public string OrignalProductId { get; set; }
+        public string OrignalProductLink { get; set; }
+        public string Price { get; set; }
+        public string Colour { get; set; }
+        public string Size { get; set; }
+
     }
 
     public class LogisticsAmount
