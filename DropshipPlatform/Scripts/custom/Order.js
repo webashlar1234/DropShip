@@ -127,7 +127,7 @@ var order = {
                     sortable: true,
                     width: "10%",
                     "render": function (data, type, row) {
-                        
+
                         if (data) {
                             return '<a class="btn btn-info btn-sm" href="#" onclick=updateStatus("' + row.OrignalProductLink + '",this,"' + row.AliExpressOrderNumber + '","' + row.LogisticType + '")>' + 'Buy Now' + '</a>';
                         }
@@ -145,14 +145,15 @@ var order = {
                 { "sTitle": 'Seller ID', "mData": 'SellerID', sDefaultContent: "", className: "SellerID" },
                 { "sTitle": 'Seller Email', "mData": 'SellerEmail', sDefaultContent: "", className: "SellerEmail" },
                 { "sTitle": 'Actions', "mData": 'productExist', sDefaultContent: "", className: "Actions" }
-            ]
-            //"createdRow": function (row, data, dataIndex) {
-            //    if (data.ChildOrderItemList.length > 0) {
-            //        debugger
-            //        console.log(data.ChildOrderItemList);
-            //        $(row).find("td:eq(0)").addClass('details-control');
-            //    }
-            //}
+            ],
+            "createdRow": function (row, data, dataIndex) {
+                if (data.ChildOrderItemList.length > 0) {
+                    console.log(data.ChildOrderItemList);
+                    $(row).find("td:eq(0)").addClass('details-control');
+                } else {
+                    $(row).find("td:eq(0)").removeClass('details-control');
+                }
+            }
         });
     },
 
@@ -194,7 +195,7 @@ var order = {
                 {
                     targets: 0,
                     sortable: true,
-                    width: "12%",
+                    width: "5%",
                     "render": function (data, type, full) {
                         return data;
                     }
@@ -202,7 +203,7 @@ var order = {
                 {
                     targets: 1,
                     sortable: true,
-                    width: "10%",
+                    width: "12%",
                     "render": function (data, type, full) {
                         return data;
                     }
@@ -254,18 +255,26 @@ var order = {
                     "render": function (data, type, full) {
                         return data;
                     }
-                },
+                }
             ],
             columns: [
+                { "sTitle": '', "mData": '', sDefaultContent: "", className: "details-control" },
                 { "sTitle": 'Ali Express Order Number', "mData": 'AliExpressOrderNumber', sDefaultContent: "", className: "AliExpressOrderNumber" },
-                { "sTitle": 'Product Title', "mData": 'ProductTitle', sDefaultContent: "", className: "ProductTitle" },
                 { "sTitle": 'Order Amount(USD)', "mData": 'OrderAmount', sDefaultContent: "", className: "OrderAmount" },
                 { "sTitle": 'Delevery Country', "mData": 'DeleveryCountry', sDefaultContent: "", className: "DeleveryCountry" },
                 { "sTitle": 'Shipping Weight(KG)', "mData": 'ShippingWeight', sDefaultContent: "", className: "ShippingWeight" },
                 { "sTitle": 'Status', "mData": 'OrderStatus', sDefaultContent: "", className: "OrderStatus" },
                 { "sTitle": 'Tracking No', "mData": 'TrackingNo', sDefaultContent: "", className: "TrackingNo" },
                 { "sTitle": 'Payment Status', "mData": 'PaymentStatus', sDefaultContent: "", className: "PaymentStatus" },
-            ]
+            ],
+            "createdRow": function (row, data, dataIndex) {
+                if (data.ChildOrderItemList.length > 0) {
+                    console.log(data.ChildOrderItemList);
+                    $(row).find("td:eq(0)").addClass('details-control');
+                } else {
+                    $(row).find("td:eq(0)").removeClass('details-control');
+                }
+            }
         });
     }
 };
@@ -275,6 +284,22 @@ $(document).ready(function () {
     $('#orderDT').on('click', 'td.details-control', function () {
         var tr = $(this).closest('tr');
         var row = orderDT.row(tr);
+
+        if (row.child.isShown()) {
+            // This row is already open - close it
+            row.child.hide();
+            tr.removeClass('shown');
+
+        } else {
+            // Open this row
+            row.child(format(row.data())).show();
+            tr.addClass('shown');
+        }
+    });
+
+    $('#orderDTSeller').on('click', 'td.details-control', function () {
+        var tr = $(this).closest('tr');
+        var row = orderDTSeller.row(tr);
 
         if (row.child.isShown()) {
             // This row is already open - close it
@@ -344,8 +369,8 @@ function format(data) {
             '</td> <td>' + value.OrignalProductLink +
             '</td> <td>' + value.OrignalProductId +
             '</td><td>' + value.Price +
-            '</td><td>' +
-            '</td><td>' +
+            '</td><td>' + value.Colour +
+            '</td><td>' + value.Size +
             '</td></tr>';
     });
     // `data` is the original data object for the row
@@ -356,7 +381,7 @@ function format(data) {
         '<th>Orignal Product Link</th>' +
         '<th>Orignal Product Id</th>' +
         '<th>Price</th>' +
-        '<th>Color</th>' +
+        '<th>Colour</th>' +
         '<th>Size</th>' +
         '</thead><tbody>' +
         trs +
