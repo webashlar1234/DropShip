@@ -18,7 +18,7 @@ namespace DropshipPlatform.Entity
         public Nullable<int> UserID { get; set; }
         public string CreditCardNumber { get; set; }
         public string CreditCardType { get; set; }
-        public Nullable<System.DateTime> ExpiryDate { get; set; }
+        public string ExpiryDate { get; set; }
         public string NameOnCard { get; set; }
         public Nullable<sbyte> IsDefault { get; set; }
         public Nullable<int> ItemCreatedBy { get; set; }
