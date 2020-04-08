@@ -28,5 +28,6 @@ namespace DropshipPlatform.Entity
         public Nullable<sbyte> IsAgreedPaymentPolicy { get; set; }
         public Nullable<System.DateTime> AgreedPaymentPolicyTime { get; set; }
         public Nullable<long> AuthorizeNetProfileId { get; set; }
+        public string StripePaymentMethodId { get; set; }
     }
 }

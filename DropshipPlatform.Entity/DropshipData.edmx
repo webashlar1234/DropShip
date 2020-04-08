@@ -217,6 +217,7 @@
           <Property Name="ExpiryDate" Type="varchar" MaxLength="255" />
           <Property Name="NameOnCard" Type="varchar" MaxLength="50" />
           <Property Name="IsDefault" Type="tinyint" />
+          <Property Name="StripePaymentMethodId" Type="varchar" MaxLength="255" />
           <Property Name="ItemCreatedBy" Type="int" />
           <Property Name="ItemCreatedWhen" Type="datetime" Precision="3" />
           <Property Name="ItemModifyBy" Type="int" />
@@ -964,6 +965,7 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <Property Name="IsAgreedPaymentPolicy" Type="SByte" />
           <Property Name="AgreedPaymentPolicyTime" Type="DateTime" />
           <Property Name="AuthorizeNetProfileId" Type="Int64" />
+          <Property Name="StripePaymentMethodId" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -1360,6 +1362,7 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <EntitySetMapping Name="paymentprofiles">
             <EntityTypeMapping TypeName="dropshipdataModel.paymentprofile">
               <MappingFragment StoreEntitySet="paymentprofile">
+                <ScalarProperty Name="StripePaymentMethodId" ColumnName="StripePaymentMethodId" />
                 <ScalarProperty Name="AuthorizeNetProfileId" ColumnName="AuthorizeNetProfileId" />
                 <ScalarProperty Name="AgreedPaymentPolicyTime" ColumnName="AgreedPaymentPolicyTime" />
                 <ScalarProperty Name="IsAgreedPaymentPolicy" ColumnName="IsAgreedPaymentPolicy" />
