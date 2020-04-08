@@ -87,6 +87,7 @@ namespace DropshipPlatform.BLL.Services
             {
                 ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret);
 
+                //get Logistic service
                 AliexpressLogisticsRedefiningGetonlinelogisticsservicelistbyorderidRequest req1 = new AliexpressLogisticsRedefiningGetonlinelogisticsservicelistbyorderidRequest();
                 req1.GoodsWidth = 1L;
                 req1.GoodsHeight = 1L;
@@ -94,30 +95,26 @@ namespace DropshipPlatform.BLL.Services
                 req1.GoodsLength = 1L;
                 req1.OrderId = Convert.ToInt64(orderData.AliExpressOrderNumber);
                 AliexpressLogisticsRedefiningGetonlinelogisticsservicelistbyorderidResponse rsp1 = client.Execute(req1, SessionManager.GetAccessToken().access_token);
-                var LogisticsNo = string.Empty;
-                if (rsp1.ResultList.Count > 0)
-                {
-                    LogisticsNo = rsp1.ResultList[0].LogisticsServiceId;
-                }
 
-                AliexpressSolutionOrderInfoGetRequest req2 = new AliexpressSolutionOrderInfoGetRequest();
-                AliexpressSolutionOrderInfoGetRequest.OrderDetailQueryDomain obj1 = new AliexpressSolutionOrderInfoGetRequest.OrderDetailQueryDomain();
-                //obj1.ExtInfoBitFlag = 11111L;
-                obj1.OrderId = Convert.ToInt64(orderData.AliExpressOrderNumber);
-                req2.Param1_ = obj1;
-                AliexpressSolutionOrderInfoGetResponse rsp2 = client.Execute(req2, SessionManager.GetAccessToken().access_token);
-
+                //get logistic service name (Service key)
                 AliexpressLogisticsRedefiningListlogisticsserviceRequest req3 = new AliexpressLogisticsRedefiningListlogisticsserviceRequest();
                 AliexpressLogisticsRedefiningListlogisticsserviceResponse rsp3 = client.Execute(req3, SessionManager.GetAccessToken().access_token);
+                string ServiceName = rsp3.ResultList.Where(x => rsp1.ResultList[0].LogisticsServiceId.Contains(x.LogisticsCompany)).Select(x => x.ServiceName).FirstOrDefault();
+                string res = JsonConvert.SerializeObject(rsp3.ResultList);
+
+                //get logistic number
+                AliexpressLogisticsQuerylogisticsorderdetailRequest req4 = new AliexpressLogisticsQuerylogisticsorderdetailRequest();
+                req4.TradeOrderId = Convert.ToInt64(orderData.AliExpressOrderNumber); //required OrderId
+                AliexpressLogisticsQuerylogisticsorderdetailResponse rsp4 = client.Execute(req4, SessionManager.GetAccessToken().access_token);
+                string resultdata = JsonConvert.SerializeObject(rsp4.Result);
 
                 AliexpressSolutionOrderFulfillRequest req = new AliexpressSolutionOrderFulfillRequest();
-                req.ServiceName = orderData.LogisticType;
-                req.TrackingWebsite = orderData.OrignalProductLink;
+                req.ServiceName = ServiceName;
+                //req.TrackingWebsite = orderData.OrignalProductLink; //only if servicename is other
                 req.OutRef = orderData.AliExpressOrderNumber;
-                req.SendType = "part";
+                req.SendType = "all"; //part
                 req.Description = "memo";
-                //req.LogisticsNo = "AEFP123456RU2";
-                req.LogisticsNo = LogisticsNo;
+                req.LogisticsNo = rsp4.Result.ResultList[0].InternationalLogisticsNum;
                 AliexpressSolutionOrderFulfillResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
                 var data = rsp;
             }
