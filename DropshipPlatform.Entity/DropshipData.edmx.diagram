@@ -14,7 +14,6 @@
         <EntityTypeShape EntityType="dropshipdataModel.frequencyupdate" Width="1.5" PointX="0.75" PointY="4.25" IsExpanded="true" />
         <EntityTypeShape EntityType="dropshipdataModel.layout" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="dropshipdataModel.membershiptype" Width="1.5" PointX="9.75" PointY="4.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="dropshipdataModel.paymentprofile" Width="1.5" PointX="11.75" PointY="1.875" IsExpanded="true" />
         <EntityTypeShape EntityType="dropshipdataModel.role" Width="1.5" PointX="0.75" PointY="13.875" IsExpanded="true" />
         <EntityTypeShape EntityType="dropshipdataModel.user_roles" Width="1.5" PointX="13.75" PointY="10.875" IsExpanded="true" />
         <EntityTypeShape EntityType="dropshipdataModel.website" Width="1.5" PointX="0.75" PointY="7.5" IsExpanded="true" />
@@ -32,6 +31,7 @@
         <EntityTypeShape EntityType="dropshipdataModel.order" Width="1.5" PointX="5.375" PointY="15.75" />
         <EntityTypeShape EntityType="dropshipdataModel.product" Width="1.5" PointX="9.375" PointY="9.75" />
         <EntityTypeShape EntityType="dropshipdataModel.defaultaddress" Width="1.5" PointX="11.375" PointY="14.75" />
+        <EntityTypeShape EntityType="dropshipdataModel.paymentprofile" Width="1.5" PointX="16.375" PointY="8.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

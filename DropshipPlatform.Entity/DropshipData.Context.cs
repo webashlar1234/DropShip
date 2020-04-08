@@ -34,7 +34,6 @@ namespace DropshipPlatform.Entity
         public virtual DbSet<frequencyupdate> frequencyupdates { get; set; }
         public virtual DbSet<layout> layouts { get; set; }
         public virtual DbSet<membershiptype> membershiptypes { get; set; }
-        public virtual DbSet<paymentprofile> paymentprofiles { get; set; }
         public virtual DbSet<role> roles { get; set; }
         public virtual DbSet<user_roles> user_roles { get; set; }
         public virtual DbSet<website> websites { get; set; }
@@ -48,5 +47,6 @@ namespace DropshipPlatform.Entity
         public virtual DbSet<order> orders { get; set; }
         public virtual DbSet<product> products { get; set; }
         public virtual DbSet<defaultaddress> defaultaddresses { get; set; }
+        public virtual DbSet<paymentprofile> paymentprofiles { get; set; }
     }
 }

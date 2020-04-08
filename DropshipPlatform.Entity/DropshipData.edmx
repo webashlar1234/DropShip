@@ -214,9 +214,10 @@
           <Property Name="UserID" Type="int" />
           <Property Name="CreditCardNumber" Type="varchar" MaxLength="50" />
           <Property Name="CreditCardType" Type="varchar" MaxLength="50" />
-          <Property Name="ExpiryDate" Type="datetime" Precision="3" />
+          <Property Name="ExpiryDate" Type="varchar" MaxLength="255" />
           <Property Name="NameOnCard" Type="varchar" MaxLength="50" />
           <Property Name="IsDefault" Type="tinyint" />
+          <Property Name="StripePaymentMethodId" Type="varchar" MaxLength="255" />
           <Property Name="ItemCreatedBy" Type="int" />
           <Property Name="ItemCreatedWhen" Type="datetime" Precision="3" />
           <Property Name="ItemModifyBy" Type="int" />
@@ -616,25 +617,6 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <Property Name="ItemModifyWhen" Type="DateTime" />
           <Property Name="OrderLimit" Type="Int32" />
         </EntityType>
-        <EntityType Name="paymentprofile">
-          <Key>
-            <PropertyRef Name="PaymentProfileID" />
-          </Key>
-          <Property Name="PaymentProfileID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="UserID" Type="Int32" />
-          <Property Name="CreditCardNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="CreditCardType" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ExpiryDate" Type="DateTime" />
-          <Property Name="NameOnCard" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="IsDefault" Type="SByte" />
-          <Property Name="ItemCreatedBy" Type="Int32" />
-          <Property Name="ItemCreatedWhen" Type="DateTime" />
-          <Property Name="ItemModifyBy" Type="Int32" />
-          <Property Name="ItemModifyWhen" Type="DateTime" />
-          <Property Name="IsAgreedPaymentPolicy" Type="SByte" />
-          <Property Name="AgreedPaymentPolicyTime" Type="DateTime" />
-          <Property Name="AuthorizeNetProfileId" Type="Int64" />
-        </EntityType>
         <EntityType Name="role">
           <Key>
             <PropertyRef Name="RoleID" />
@@ -714,7 +696,6 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <EntitySet Name="frequencyupdates" EntityType="Self.frequencyupdate" />
           <EntitySet Name="layouts" EntityType="Self.layout" />
           <EntitySet Name="membershiptypes" EntityType="Self.membershiptype" />
-          <EntitySet Name="paymentprofiles" EntityType="Self.paymentprofile" />
           <EntitySet Name="roles" EntityType="Self.role" />
           <EntitySet Name="user_roles" EntityType="Self.user_roles" />
           <EntitySet Name="websites" EntityType="Self.website" />
@@ -744,6 +725,7 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <EntitySet Name="orders" EntityType="dropshipdataModel.order" />
           <EntitySet Name="products" EntityType="dropshipdataModel.product" />
           <EntitySet Name="defaultaddresses" EntityType="dropshipdataModel.defaultaddress" />
+          <EntitySet Name="paymentprofiles" EntityType="dropshipdataModel.paymentprofile" />
         </EntityContainer>
         <EntityType Name="sellerspickedproduct">
           <Key>
@@ -965,6 +947,26 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <Property Name="Type" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
           <Property Name="StreetAddress" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
         </EntityType>
+        <EntityType Name="paymentprofile">
+          <Key>
+            <PropertyRef Name="PaymentProfileID" />
+          </Key>
+          <Property Name="PaymentProfileID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserID" Type="Int32" />
+          <Property Name="CreditCardNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="CreditCardType" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ExpiryDate" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="NameOnCard" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="IsDefault" Type="SByte" />
+          <Property Name="ItemCreatedBy" Type="Int32" />
+          <Property Name="ItemCreatedWhen" Type="DateTime" />
+          <Property Name="ItemModifyBy" Type="Int32" />
+          <Property Name="ItemModifyWhen" Type="DateTime" />
+          <Property Name="IsAgreedPaymentPolicy" Type="SByte" />
+          <Property Name="AgreedPaymentPolicyTime" Type="DateTime" />
+          <Property Name="AuthorizeNetProfileId" Type="Int64" />
+          <Property Name="StripePaymentMethodId" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1103,26 +1105,6 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
                 <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
                 <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
                 <ScalarProperty Name="OrderLimit" ColumnName="OrderLimit" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="paymentprofiles">
-            <EntityTypeMapping TypeName="dropshipdataModel.paymentprofile">
-              <MappingFragment StoreEntitySet="paymentprofile">
-                <ScalarProperty Name="PaymentProfileID" ColumnName="PaymentProfileID" />
-                <ScalarProperty Name="UserID" ColumnName="UserID" />
-                <ScalarProperty Name="CreditCardNumber" ColumnName="CreditCardNumber" />
-                <ScalarProperty Name="CreditCardType" ColumnName="CreditCardType" />
-                <ScalarProperty Name="ExpiryDate" ColumnName="ExpiryDate" />
-                <ScalarProperty Name="NameOnCard" ColumnName="NameOnCard" />
-                <ScalarProperty Name="IsDefault" ColumnName="IsDefault" />
-                <ScalarProperty Name="ItemCreatedBy" ColumnName="ItemCreatedBy" />
-                <ScalarProperty Name="ItemCreatedWhen" ColumnName="ItemCreatedWhen" />
-                <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
-                <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
-                <ScalarProperty Name="IsAgreedPaymentPolicy" ColumnName="IsAgreedPaymentPolicy" />
-                <ScalarProperty Name="AgreedPaymentPolicyTime" ColumnName="AgreedPaymentPolicyTime" />
-                <ScalarProperty Name="AuthorizeNetProfileId" ColumnName="AuthorizeNetProfileId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1374,6 +1356,27 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
                 <ScalarProperty Name="Phone" ColumnName="Phone" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="DefaultAddressID" ColumnName="DefaultAddressID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="paymentprofiles">
+            <EntityTypeMapping TypeName="dropshipdataModel.paymentprofile">
+              <MappingFragment StoreEntitySet="paymentprofile">
+                <ScalarProperty Name="StripePaymentMethodId" ColumnName="StripePaymentMethodId" />
+                <ScalarProperty Name="AuthorizeNetProfileId" ColumnName="AuthorizeNetProfileId" />
+                <ScalarProperty Name="AgreedPaymentPolicyTime" ColumnName="AgreedPaymentPolicyTime" />
+                <ScalarProperty Name="IsAgreedPaymentPolicy" ColumnName="IsAgreedPaymentPolicy" />
+                <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
+                <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
+                <ScalarProperty Name="ItemCreatedWhen" ColumnName="ItemCreatedWhen" />
+                <ScalarProperty Name="ItemCreatedBy" ColumnName="ItemCreatedBy" />
+                <ScalarProperty Name="IsDefault" ColumnName="IsDefault" />
+                <ScalarProperty Name="NameOnCard" ColumnName="NameOnCard" />
+                <ScalarProperty Name="ExpiryDate" ColumnName="ExpiryDate" />
+                <ScalarProperty Name="CreditCardType" ColumnName="CreditCardType" />
+                <ScalarProperty Name="CreditCardNumber" ColumnName="CreditCardNumber" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="PaymentProfileID" ColumnName="PaymentProfileID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
