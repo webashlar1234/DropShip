@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "Orders";
     //Layout = "~/Views/Shared/_Layout.cshtml";
     <link href="~/Content/bootstrap-toggle.min.css" rel="stylesheet" />
@@ -8,25 +7,54 @@
     <link href="~/Content/custom/my-product.css" rel="stylesheet" />
 }
 
+<style>
+    .dataTables_filter {
+        display: block !important;
+    }
+</style>
 <section class="row">
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">
 
-                @if (Session["RoleName"] != null && Session["RoleName"].ToString() == "Operational Manager" || Session["RoleName"].ToString() == "Admin")
-                {
-                    <p class="tbl-title">
-                        Order Management - Operation Management
-                    </p>
-                }
-                @if (Session["RoleName"] != null && Session["RoleName"].ToString() == "Seller")
-                {
-                    <p class="tbl-title">
-                        Your Order List
-                    </p>
+                @if (Session["RoleName"] != null && Session["RoleName"].ToString() != "Seller")
+                    {
+                        <p class="tbl-title">
+                            Order Management - Operation Management
+                        </p>
+                    }
+                    @if (Session["RoleName"] != null && Session["RoleName"].ToString() == "Seller")
+                    {
+                <p class="tbl-title">
+                    Your Order List
+                </p>
                 }
             </div>
 
+        </div>
+    </div>
+</section>
+
+<section class="mt-3">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-3">
+                <label for="">Order Status</label>
+                <select class="selectpicker form-control" title="Select" id="ddlOrderStatus">
+                    <option value="All">All</option>
+                    <option value="Unpurchased">Unpurchased</option>
+                    <option value="Waiting for Shipment">Waiting for Shipment</option>
+                    <option value="Shipped">Shipped</option>
+                </select>
+            </div>
+            <div class="col-lg-3">
+                <label for="">Payment Status</label>
+                <select class="selectpicker form-control" title="Select" id="ddlPaymentStatus">
+                    <option value="0">All</option>
+                    <option value="1">Paid</option>
+                    <option value="2">Unpaid</option>
+                </select>
+            </div>
         </div>
     </div>
 </section>
@@ -35,21 +63,21 @@
     <div class="container-fluid">
 
         @if (Session["RoleName"] != null && Session["RoleName"].ToString() != "Seller")
-        {
-            <div class="col-lg-12 table-responsive  mb-5">
-                <table id="orderDT" class="display" style="width:100%"></table>
-            </div>
+            {
+                <div class="col-lg-12 table-responsive  mb-5">
+                    <table id="orderDT" class="display" style="width:100%"></table>
+                </div>
+            }
+            @if (Session["RoleName"] != null && Session["RoleName"].ToString() == "Seller")
+            {
+        <div class="col-lg-12 table-responsive  mb-5">
+            <table id="orderDTSeller" class="display" style="width:100%"></table>
+        </div>
         }
-        @if (Session["RoleName"] != null && Session["RoleName"].ToString() == "Seller")
-        {
-            <div class="col-lg-12 table-responsive  mb-5">
-                <table id="orderDTSeller" class="display" style="width:100%"></table>
-            </div>
-        }
-        @if (Session["RoleName"] == null)
-        {
-            <p>You need to login !!</p>
-        }
+            @if (Session["RoleName"] == null)
+            {
+                <p>You need to login !!</p>
+            }
 
     </div>
 
