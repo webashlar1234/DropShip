@@ -19,7 +19,7 @@ namespace DropshipPlatform.Controllers
             return View();
         }
 
-        [CustomAuthorize("Developer")]
+        [CustomAuthorize("Admin", "Seller", "Developer")]
         public ActionResult getOrders()
         {
             OrderService _orderService = new OrderService();
@@ -41,7 +41,17 @@ namespace DropshipPlatform.Controllers
             int pageSize = length != null ? Convert.ToInt32(length) : 0;
             int skip = start != null ? Convert.ToInt32(start) : 0;
 
-            List<OrderData> retvalue = _orderService.getAllOrdersFromDatabase();
+            user user = SessionManager.GetUserSession();
+            int UserID = 0;
+            if (Session["RoleName"] != null)
+            {
+                if (Session["RoleName"].ToString() == "Seller")
+                {
+                    UserID = user.UserID;
+                }
+            }
+
+            List<OrderData> retvalue = _orderService.getAllOrdersFromDatabase(UserID);
 
             if (orderStatus != "All")
             {
@@ -51,7 +61,8 @@ namespace DropshipPlatform.Controllers
             {
                 retvalue = retvalue.Where(x => x.SellerPaymentStatus == true).ToList();
             }
-            else if (sellerPaymentStatus == 2) {
+            else if (sellerPaymentStatus == 2)
+            {
                 retvalue = retvalue.Where(x => x.SellerPaymentStatus == false).ToList();
             }
             if (!string.IsNullOrEmpty(search))
@@ -78,6 +89,7 @@ namespace DropshipPlatform.Controllers
         }
 
         [HttpPost]
+        [CustomAuthorize("Admin", "Developer")]
         public JsonResult FullFillAliExpressOrder(OrderData orderData, bool isFullShip)
         {
             bool result = false;
@@ -85,16 +97,26 @@ namespace DropshipPlatform.Controllers
             {
                 OrderService _orderService = new OrderService();
                 result = _orderService.FullFillAliExpressOrder(orderData, isFullShip);
-                
+
             }
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
+        [CustomAuthorize("Admin", "Developer")]
         public JsonResult BuyOrderFromSourceWebsite(string OrderID)
         {
             OrderService _orderService = new OrderService();
             return Json(_orderService.BuyOrderFromSourceWebsite(OrderID), JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        [CustomAuthorize("Seller")]
+        public JsonResult PayForOrderBySeller(string OrderID)
+        {
+            OrderService _orderService = new OrderService();
+            user user = SessionManager.GetUserSession();
+            return Json(_orderService.PayForOrderBySeller(OrderID, user.UserID), JsonRequestBehavior.AllowGet);
         }
     }
 }

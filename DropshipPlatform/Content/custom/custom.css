@@ -70,3 +70,6 @@ table.dataTable tbody td, table.dataTable tbody td input, table.dataTable tbody 
     background-color: #f0ebeb;
     cursor:not-allowed;
 }
+a.btn-info{
+    color:white !important;
+}

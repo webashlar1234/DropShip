@@ -13,6 +13,7 @@ using System.IO.Compression;
 using ICSharpCode.SharpZipLib.Zip;
 using System.IO;
 using Newtonsoft.Json.Linq;
+using System.Data.Entity;
 
 namespace DropshipPlatform.BLL.Services
 {
@@ -52,9 +53,12 @@ namespace DropshipPlatform.BLL.Services
                 Top.Api.Response.AliexpressSolutionOrderGetResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
                 result = JsonConvert.SerializeObject(rsp.Result);
                 orders = JsonConvert.DeserializeObject<ResultData>(result);
-                if(orders.TargetList.Count > 0)
+                if(orders != null)
                 {
-                    InsertOrUpdateOrderData(orders);
+                    if (orders.TargetList.Count > 0)
+                    {
+                        InsertOrUpdateOrderData(orders);
+                    }
                 }
             }
             catch (Exception ex)
@@ -96,7 +100,7 @@ namespace DropshipPlatform.BLL.Services
                     DbOrder = datacontext.orders.Where(x => x.AliExpressOrderID == orderData.AliExpressOrderNumber).FirstOrDefault();
                 }
 
-                if(DbOrder != null)
+                if (DbOrder != null)
                 {
                     string LogisticserviceName = string.Empty;
                     if (DbOrder.OrderApiResult != null)
@@ -116,7 +120,7 @@ namespace DropshipPlatform.BLL.Services
                         AliexpressLogisticsRedefiningGetonlinelogisticsservicelistbyorderidResponse rsp1 = client.Execute(req1, SessionManager.GetAccessToken().access_token);
                         LogisticserviceName = rsp1.ResultList[0].LogisticsServiceId;
                     }
-                    
+
                     //get logistic service name (Service key)
                     AliexpressLogisticsRedefiningListlogisticsserviceRequest req3 = new AliexpressLogisticsRedefiningListlogisticsserviceRequest();
                     AliexpressLogisticsRedefiningListlogisticsserviceResponse rsp3 = client.Execute(req3, SessionManager.GetAccessToken().access_token);
@@ -156,7 +160,7 @@ namespace DropshipPlatform.BLL.Services
             catch (Exception ex)
             {
                 result = false;
-                logger.Info(orderData.TrackingNumber +": "+ ex.ToString());
+                logger.Info(orderData.TrackingNumber + ": " + ex.ToString());
             }
 
             return result;
@@ -329,7 +333,7 @@ namespace DropshipPlatform.BLL.Services
             }
         }
 
-        public List<OrderData> getAllOrdersFromDatabase()
+        public List<OrderData> getAllOrdersFromDatabase(int? UserID = null)
         {
             //List<OrderData> OrdersList = new List<OrderData>();
             List<OrderData> Orders = new List<OrderData>();
@@ -340,7 +344,7 @@ namespace DropshipPlatform.BLL.Services
                 {
                     Orders = (from o in datacontext.orders
                               join u in datacontext.users on o.AliExpressLoginID equals u.AliExpressLoginID
-                              where u.IsActive == true
+                              where u.IsActive == true && UserID > 0 ? u.UserID == UserID : true
                               select new OrderData
                               {
                                   AliExpressOrderID = o.AliExpressOrderID,
@@ -361,7 +365,7 @@ namespace DropshipPlatform.BLL.Services
                                                       join oi in datacontext.aliexpressorderitems on o.AliExpressOrderID equals oi.AliExpressOrderId.ToString()
                                                       from sp in datacontext.sellerspickedproducts.Where(x => x.AliExpressProductID == oi.AliExpressProductID).DefaultIfEmpty()
                                                       from p in datacontext.products.Where(x => x.ProductID == sp.ParentProductID).DefaultIfEmpty()
-                                                      //join p in datacontext.products on sp.ParentProductID equals p.ProductID
+                                                          //join p in datacontext.products on sp.ParentProductID equals p.ProductID
                                                       where o.AliExpressOrderID != null
                                                       select new OrderViewModel
                                                       {
@@ -373,7 +377,7 @@ namespace DropshipPlatform.BLL.Services
                                                           Price = oi.Price,
                                                           Colour = oi.Color,
                                                           Size = oi.Size,
-                                                          IsReadyToBuy = !string.IsNullOrEmpty(sp.AliExpressProductID) && o.SellerPaymentStatus==true && o.OrderStatus == "Unpurchased" ? true : false
+                                                          IsReadyToBuy = !string.IsNullOrEmpty(sp.AliExpressProductID) && o.SellerPaymentStatus == true && o.OrderStatus == "Unpurchased" ? true : false
                                                       }).ToList();
 
                     if (Orders.Count > 0)
@@ -709,7 +713,7 @@ namespace DropshipPlatform.BLL.Services
                 {
                     DbOrder = datacontext.orders.Where(x => x.AliExpressOrderID == OrderID).FirstOrDefault();
                     DbOrder.OrderStatus = "Waiting for Shipment";
-                    datacontext.Entry(DbOrder).State = System.Data.Entity.EntityState.Modified;
+                    datacontext.Entry(DbOrder).State = EntityState.Modified;
                     datacontext.SaveChanges();
                 }
             }
@@ -721,7 +725,51 @@ namespace DropshipPlatform.BLL.Services
 
             return result;
         }
+        public bool PayForOrderBySeller(string OrderID, int UserID)
+        {
+            bool resultStripePayment = true;
+            try
+            {
+                //charge seller
+                StripeService _stripeservice = new StripeService();
 
+                order DbOrder = new order();
+                using (DropshipDataEntities datacontext = new DropshipDataEntities())
+                {
+                    var UserData = (from o in datacontext.orders
+                                    from u in datacontext.users.Where(x => x.AliExpressLoginID == o.AliExpressLoginID && x.UserID == UserID)
+                                    where o.AliExpressOrderID == OrderID
+                                    select new
+                                    {
+                                        o.OrderAmount,
+                                        u.StripeCustomerID,
+                                        u.AliExpressLoginID
+                                    }).FirstOrDefault();
+
+                    if (UserData != null)
+                    {
+                        if (!string.IsNullOrEmpty(UserData.StripeCustomerID) && !string.IsNullOrEmpty(UserData.OrderAmount) && !string.IsNullOrEmpty(UserData.AliExpressLoginID))
+                        {
+                            resultStripePayment = _stripeservice.ChargeSavedCard(UserData.StripeCustomerID, Convert.ToInt64(UserData.OrderAmount));
+                            if (resultStripePayment)
+                            {
+                                order order = datacontext.orders.Where(x => x.AliExpressOrderID == OrderID && x.AliExpressLoginID == UserData.AliExpressLoginID).FirstOrDefault();
+                                order.SellerPaymentStatus = true;
+                                datacontext.Entry(order).State = EntityState.Modified;
+                                datacontext.SaveChanges();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                resultStripePayment = false;
+                logger.Info(ex.ToString());
+            }
+
+            return resultStripePayment;
+        }
         public string getLocalOrderStatus(string AliOrderStatus)
         {
             string OrderStatus = string.Empty;

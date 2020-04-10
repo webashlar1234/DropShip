@@ -6,13 +6,29 @@ var jsonProducts = null;
 var order = {
     init: function () {
         order.onclick();
-        order.initCategoryTable();
+        order.change();
+
+        adminTable = $("#orderDT").length > 0 ? true :false;
+        sellerTable = $("#orderDTSeller").length > 0 ? true : false;
+
+        if (adminTable) {
+            order.initOrderTable();
+        }
+        else if (sellerTable) {
+            order.initSeller();
+        }
     },
     initSeller: function () {
-        order.initCategoryTableSeller();
+        order.initOrderTableSeller();
     },
     change: function () {
-
+        $(document).on('change', '#ddlOrderStatus,#ddlPaymentStatus', function () {
+            if (orderDT) {
+                orderDT.clear().draw();
+            } else if (orderDTSeller) {
+                orderDTSeller.clear().draw();
+            }
+        });
     },
     onclick: function () {
         $(document).on('click', '.shipOrder', function () {
@@ -22,14 +38,70 @@ var order = {
                 ErrorMessage("Please enter value for Tracking No");
             }
         });
+        $(document).on('click', '.PayOrder', function () {
+            ShowLoader();
+            var OrderId = $(this).data('orderid')
+            $.ajax({
+                type: "POST",
+                url: "/Order/PayForOrderBySeller",
+                dataType: "json",
+                async: false,
+                data: { OrderID: OrderId },
+                success: function (data) {
+                    if (data) {
+                        SuccessMessage("Your payment is done successfully");
+                    }
+                    else {
+                        ErrorMessage("Your payment is faild for order " + OrderId + ", please try again later");
+                    }
+                    HideLoader();
+                },
+                error: function (err) {
+                    HideLoader();
+                    ErrorMessage("Your payment is faild for order " + OrderId + ", please try again later");
+                }
+            });
+        });
+
+        $('#orderDT').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = orderDT.row(tr);
+
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+
+            } else {
+                // Open this row
+                row.child(format(row.data())).show();
+                tr.addClass('shown');
+            }
+        });
+
+        $('#orderDTSeller').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = orderDTSeller.row(tr);
+
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+
+            } else {
+                // Open this row
+                row.child(format(row.data())).show();
+                tr.addClass('shown');
+            }
+        });
     },
-    initCategoryTable: function () {
+    initOrderTable: function () {
         orderDT = $('#orderDT').DataTable({
             ajax: {
                 "url": "/Order/getOrdersData",
                 "type": "POST",
                 "datatype": "json",
-                "data": { orderStatus: $('#ddlOrderStatus').val(), sellerPaymentStatus: $('#ddlPaymentStatus').val() },
+                "data": function (d) { d.orderStatus = $('#ddlOrderStatus').val(), d.sellerPaymentStatus = $('#ddlPaymentStatus').val() },
             },
             destroy: true,
             processing: true,
@@ -169,13 +241,13 @@ var order = {
         });
     },
 
-    initCategoryTableSeller: function () {
+    initOrderTableSeller: function () {
         orderDTSeller = $('#orderDTSeller').DataTable({
             ajax: {
                 "url": "/Order/getOrdersData",
                 "type": "POST",
                 "datatype": "json",
-                "data": { orderStatus: $('#ddlOrderStatus').val(), sellerPaymentStatus: $('#ddlPaymentStatus').val() },
+                "data": function (d) { d.orderStatus = $('#ddlOrderStatus').val(), d.sellerPaymentStatus = $('#ddlPaymentStatus').val() },
             },
             destroy: true,
             processing: true,
@@ -208,7 +280,7 @@ var order = {
                 {
                     targets: 0,
                     sortable: true,
-                    width: "5%",
+                    width: "3%",
                     "render": function (data, type, full) {
                         return data;
                     }
@@ -216,7 +288,7 @@ var order = {
                 {
                     targets: 1,
                     sortable: true,
-                    width: "12%",
+                    width: "10%",
                     "render": function (data, type, full) {
                         return data;
                     }
@@ -224,15 +296,15 @@ var order = {
                 {
                     targets: 2,
                     sortable: true,
-                    width: "10%",
+                    width: "9%",
                     "render": function (data, type, row) {
-                        return data + '<label>$</label>';
+                        return data ? data + '<label>$</label>' : '';
                     }
                 },
                 {
                     targets: 3,
                     sortable: true,
-                    width: "5%",
+                    width: "8%",
                     "render": function (data, type, full) {
                         return data;
                     }
@@ -240,7 +312,7 @@ var order = {
                 {
                     targets: 4,
                     sortable: true,
-                    width: "5%",
+                    width: "10%",
                     "render": function (data, type, full) {
                         return data;
                     }
@@ -264,9 +336,17 @@ var order = {
                 {
                     targets: 7,
                     sortable: true,
-                    width: "5%",
+                    width: "8%",
                     "render": function (data, type, full) {
-                        return data;
+                        return data == true ? 'Paid' : 'Unpaid';
+                    }
+                },
+                {
+                    targets: 8,
+                    sortable: true,
+                    width: "6%",
+                    "render": function (data, type, full) {
+                        return full.SellerPaymentStatus == true ? '' : '<a class="btn btn-info btn-sm PayOrder" data-orderid="' + full.AliExpressOrderNumber + '">Pay Now</a>';
                     }
                 }
             ],
@@ -278,7 +358,8 @@ var order = {
                 { "sTitle": 'Shipping Weight(KG)', "mData": 'ShippingWeight', sDefaultContent: "", className: "ShippingWeight" },
                 { "sTitle": 'Status', "mData": 'OrderStatus', sDefaultContent: "", className: "OrderStatus" },
                 { "sTitle": 'Tracking No', "mData": 'TrackingNo', sDefaultContent: "", className: "TrackingNo" },
-                { "sTitle": 'Payment Status', "mData": 'PaymentStatus', sDefaultContent: "", className: "PaymentStatus" },
+                { "sTitle": 'Payment Status', "mData": 'SellerPaymentStatus', sDefaultContent: "", className: "PaymentStatus" },
+                { "sTitle": 'Action', "mData": '', sDefaultContent: "", className: "ActionSeller" },
             ],
             "createdRow": function (row, data, dataIndex) {
                 if (data.ChildOrderItemList.length > 0) {
@@ -319,53 +400,7 @@ var order = {
 };
 
 $(document).ready(function () {
-
-    $('#orderDT').on('click', 'td.details-control', function () {
-        var tr = $(this).closest('tr');
-        var row = orderDT.row(tr);
-
-        if (row.child.isShown()) {
-            // This row is already open - close it
-            row.child.hide();
-            tr.removeClass('shown');
-
-        } else {
-            // Open this row
-            row.child(format(row.data())).show();
-            tr.addClass('shown');
-        }
-    });
-
-    $('#orderDTSeller').on('click', 'td.details-control', function () {
-        var tr = $(this).closest('tr');
-        var row = orderDTSeller.row(tr);
-
-        if (row.child.isShown()) {
-            // This row is already open - close it
-            row.child.hide();
-            tr.removeClass('shown');
-
-        } else {
-            // Open this row
-            row.child(format(row.data())).show();
-            tr.addClass('shown');
-        }
-    });
-
-    adminTable = $("#orderDT");
-    sellerTable = $("#orderDTSeller");
-
-    if (adminTable) {
-        order.init();
-    }
-    if (sellerTable) {
-        order.initSeller();
-    }
-
-    $('[data-role="switch"]').bootstrapToggle({
-        on: 'Enabled',
-        off: 'Disabled'
-    });
+    order.init();
 });
 
 function BuyProduct(productLink, data, OrderId, TrackingNumber) {
@@ -427,7 +462,7 @@ function format(data) {
             '</td><td>' + value.Price +
             '</td><td>' + value.Colour +
             '</td><td>' + value.Size +
-            '</td><td>' + BuyNowLink +
+            '</td><td>' + adminTable ? BuyNowLink : '' +
             '</td></tr>';
     });
     // `data` is the original data object for the row
