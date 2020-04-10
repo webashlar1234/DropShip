@@ -350,6 +350,7 @@ namespace DropshipPlatform.BLL.Services
                                   ShippingWeight = o.ShippingWeight,
                                   OrderStatus = o.OrderStatus,
                                   PaymentStatus = o.PaymentStatus,
+                                  SellerPaymentStatus = o.SellerPaymentStatus,
                                   SellerID = u.AliExpressSellerID,
                                   SellerEmail = u.EmailID,
                                   TrackingNumber = o.TrackingNo

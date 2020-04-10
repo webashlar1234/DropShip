@@ -32,6 +32,7 @@ namespace DropshipPlatform.BLL.Models
         public string OrderStatus { get; set; }
         public string AliExpressOrderID { get; set; }
         public string PaymentStatus { get; set; }
+        public bool? SellerPaymentStatus { get; set; }
         public string SellerID { get; set; }
         public string SellerEmail { get; set; }
         public string LogisticType { get; set; }

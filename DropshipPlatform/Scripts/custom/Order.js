@@ -57,7 +57,7 @@ var order = {
                 {
                     targets: 0,
                     sortable: true,
-                    width: "5%",
+                    width: "3%",
                     "render": function (data, type, full) {
                         return data;
                     }
@@ -97,7 +97,7 @@ var order = {
                 {
                     targets: 5,
                     sortable: true,
-                    width: "5%",
+                    width: "15%",
                     "render": function (data, type, full) {
                         return data;
                     }
@@ -105,16 +105,16 @@ var order = {
                 {
                     targets: 6,
                     sortable: true,
-                    width: "10%",
+                    width: "8%",
                     "render": function (data, type, full) {
                         //return '<input data-role="switch" type="checkbox" data-toggle="toggle" data-on="Paid " data-off="Unpaid " />';
-                        return data;
+                        return data == true ? 'Paid' : 'Unpaid';
                     }
                 },
                 {
                     targets: 7,
                     sortable: true,
-                    width: "10%",
+                    width: "8%",
                     "render": function (data, type, row) {
                         return data;
                     }
@@ -122,7 +122,7 @@ var order = {
                 {
                     targets: 8,
                     sortable: true,
-                    width: "5%",
+                    width: "8%",
                     "render": function (data, type, full) {
                         return data;
                     }
@@ -130,7 +130,7 @@ var order = {
                 {
                     targets: 9,
                     sortable: true,
-                    width: "10%",
+                    width: "8%",
                     "render": function (data, type, full) {
                         if (data) {
                             return "<a class='btn btn-info btn-sm BuyAll' data-full='" + global.build_full_attrData(full) + "' onclick=BuyAllProduct(this)>Buy All</a>";
@@ -145,7 +145,7 @@ var order = {
                 { "sTitle": 'Delevery Country', "mData": 'DeleveryCountry', sDefaultContent: "", className: "DeleveryCountry" },
                 { "sTitle": 'Shipping Weight(KG)', "mData": 'ShippingWeight', sDefaultContent: "", className: "ShippingWeight" },
                 { "sTitle": 'Order Status', "mData": 'OrderStatus', sDefaultContent: "", className: "OrderStatus" },
-                { "sTitle": 'Payment Status', "mData": 'PaymentStatus', sDefaultContent: "", className: "PaymentStatus" },
+                { "sTitle": 'Payment Status', "mData": 'SellerPaymentStatus', sDefaultContent: "", className: "PaymentStatus" },
                 { "sTitle": 'Seller ID', "mData": 'SellerID', sDefaultContent: "", className: "SellerID" },
                 { "sTitle": 'Seller Email', "mData": 'SellerEmail', sDefaultContent: "", className: "SellerEmail" },
                 { "sTitle": 'Actions', "mData": 'productExistAny', sDefaultContent: "", className: "Actions" }
