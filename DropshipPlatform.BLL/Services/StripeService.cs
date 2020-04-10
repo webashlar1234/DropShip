@@ -71,6 +71,10 @@ namespace DropshipPlatform.BLL.Services
                         datacontext.Entry(Obj).State = EntityState.Modified;
                         datacontext.SaveChanges();
                     }
+                    if (!string.IsNullOrEmpty(customer.Id))
+                    {
+                        AddCardToPaymentProfile(customer.Id, user.UserID, PaymentMethodId);
+                    }
                 }
             }
             catch (Exception ex)
@@ -82,17 +86,21 @@ namespace DropshipPlatform.BLL.Services
             return result;
         }
 
-        public bool stripe_UpdateCustomer()
+        public bool stripe_UpdateCustomer(string PaymentMethodId)
         {
             bool result = true;
             try
             {
                 var options = new CustomerUpdateOptions
                 {
-                    Metadata = new Dictionary<string, string>
-                      {
-                        { "order_id", "6735" },
-                      },
+                    //Metadata = new Dictionary<string, string>
+                    //  {
+                    //    { "order_id", "6735" },
+                    //  },
+                    InvoiceSettings = new CustomerInvoiceSettingsOptions
+                    {
+                        DefaultPaymentMethod = PaymentMethodId
+                    }
                 };
                 var service = new CustomerService();
                 service.Update("cus_GgsfpfsLgmjI9q", options);
@@ -117,6 +125,11 @@ namespace DropshipPlatform.BLL.Services
                 };
                 var service = new PaymentMethodService();
                 var paymentMethod = service.Attach(PaymentMethodId, options);
+                if (!string.IsNullOrEmpty(StripeCustomerID))
+                {
+                    user user = SessionManager.GetUserSession();
+                    AddCardToPaymentProfile(StripeCustomerID, user.UserID, PaymentMethodId);
+                }
             }
             catch (Exception ex)
             {
@@ -364,6 +377,55 @@ namespace DropshipPlatform.BLL.Services
                 logger.Error(ex.ToString());
             }
             return subscription;
+        }
+
+        public bool AddCardToPaymentProfile(string StripeCustomerID, int UserID, string PaymentMethodId)
+        {
+            bool result = false;
+            try
+            {
+                using (DropshipDataEntities datacontext = new DropshipDataEntities())
+                {
+                    StripeList<PaymentMethod> PaymentMethods = new StripeList<PaymentMethod>();
+                    PaymentMethods = ListPaymentMethods(StripeCustomerID);
+                    if (PaymentMethods.Data.Count() > 0)
+                    {
+                        foreach (var item in PaymentMethods.Data)
+                        {
+                            paymentprofile paymentObj = new paymentprofile();
+                            var dbpaymentMethodId = datacontext.paymentprofiles.Where(x => x.StripePaymentMethodId == PaymentMethodId).Any();
+                            if (!dbpaymentMethodId)
+                            {
+                                paymentObj.UserID = UserID;
+                                paymentObj.CreditCardNumber = item.Card.Last4;
+                                paymentObj.CreditCardType = item.Card.Brand;
+                                paymentObj.ExpiryDate = item.Card.ExpMonth + "/" + item.Card.ExpYear;
+                                paymentObj.NameOnCard = item.BillingDetails.Name;
+                                paymentprofile defaultObj = datacontext.paymentprofiles.Where(x => x.UserID == UserID && x.IsDefault == 1).FirstOrDefault();
+                                if (defaultObj != null)
+                                {
+                                    paymentObj.IsDefault = 0;
+                                }
+                                else
+                                {
+                                    paymentObj.IsDefault = 1;
+                                }
+                                paymentObj.StripePaymentMethodId = PaymentMethodId;
+                                paymentObj.ItemCreatedBy = UserID;
+                                paymentObj.ItemCreatedWhen = DateTime.Now;
+                                datacontext.paymentprofiles.Add(paymentObj);
+                            }
+                        }
+                        datacontext.SaveChanges();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString());
+                result = false;
+            }
+            return result;
         }
     }
 }
