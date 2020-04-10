@@ -414,11 +414,42 @@ namespace DropshipPlatform.BLL.Services
                                 paymentObj.ItemCreatedBy = UserID;
                                 paymentObj.ItemCreatedWhen = DateTime.Now;
                                 datacontext.paymentprofiles.Add(paymentObj);
+                                result = true;
                             }
                         }
                         datacontext.SaveChanges();
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString());
+                result = false;
+            }
+            return result;
+        }
+
+        public bool getChargedCardRefund(string AliExpressSellerID)
+        {
+            bool result = false;
+            string PaymentMethodId = string.Empty; 
+            try
+            {
+                using (DropshipDataEntities datacontext = new DropshipDataEntities())
+                {
+                    user admin = datacontext.users.Where(x => x.AliExpressSellerID == AliExpressSellerID).FirstOrDefault();
+                    paymentprofile payment = datacontext.paymentprofiles.Where(x => x.UserID == admin.UserID).FirstOrDefault();
+                    PaymentMethodId = payment.StripePaymentMethodId;
+                }
+                var refundService = new RefundService();
+                var refundOptions = new RefundCreateOptions
+                {
+                    PaymentIntent = PaymentMethodId,
+                    //Amount = 1000//to refund part of the amount
+                };
+                var refund = refundService.Create(refundOptions);
+                result = true;
+
             }
             catch (Exception ex)
             {
