@@ -997,10 +997,14 @@ namespace DropshipPlatform.BLL.Services
                     string packageWidth = dbProduct.PackageWidth != null ? dbProduct.PackageWidth : "1";
                     string productWeight = dbProduct.NetWeight != null ? dbProduct.NetWeight.Split(' ')[0] : "234";
 
-                    dbProduct.Description = dbProduct.Description.Trim('"');
-                    string replacement = Regex.Replace(dbProduct.Description, @"\t|\n|\r", "");
-                    string description = replacement.Replace("\"", "\\\"");
-
+                    string description = string.Empty;
+                    if (!string.IsNullOrEmpty(dbProduct.Description))
+                    {
+                        dbProduct.Description = dbProduct.Description.Trim('"');
+                        string replacement = Regex.Replace(dbProduct.Description, @"\t|\n|\r", "");
+                        description = replacement.Replace("\"", "\\\"");
+                    }
+                    
                     //only requred
                     //result = "{\"category_id\":" + AliCategoryID + ",\"brand_name\":" + (brandname ?? "201470514") + ",\"description_multi_language_list\":[{\"locale\":\"" + locale + "\",\"module_list\":[{\"html\":{\"content\":\"" + dbProduct.Description + "\"},\"type\":\"html\"}]}],\"image_url_list\":[" + string.Join(",", uploadImages.ToArray()) + "],\"inventory_deduction_strategy\":\""+ inventoryDeductionStrategy + "\",\"locale\":\"" + locale + "\",\"package_height\":" + packageHeight + ",\"package_length\":" + packageLength + ",\"package_weight\":" + productWeight + ",\"package_width\":" + packageWidth + ",\"product_units_type\":\"" + (unit ?? "100000015") + "\",\"service_template_id\":"+ serviceTemplateID + ",\"shipping_preparation_time\":"+ shippingPreparationTime + ",\"shipping_template_id\":"+ shippingTemplateID + ",\"sku_info_list\":[" + string.Join(",", skuStr) + "],\"title_multi_language_list\":[{\"locale\":\"" + locale + "\",\"title\":\"" + dbProduct.Title + "\"}]}";
                     result = "{\"category_id\":" + AliCategoryID + ",\"brand_name\":" + (brandname ?? "201512802") + ",\"description_multi_language_list\":[{\"locale\":\"en_US\",\"module_list\":[{\"html\":{\"content\":\"" + description + "\"},\"type\":\"html\"}]}],\"image_url_list\":[" + string.Join(",", uploadImages.ToArray()) + "],\"inventory_deduction_strategy\":\"place_order_withhold\",\"locale\":\"en_US\",\"package_height\":" + packageHeight + ",\"package_length\":" + packageLength + ",\"package_weight\":" + productWeight + ",\"package_width\":" + packageWidth + ",\"product_units_type\":\"" + (unit ?? "100000015") + "\",\"service_template_id\":\"" + StaticValues.serviceTemplateID + "\",\"shipping_preparation_time\":" + StaticValues.shippingPreparationTime + ",\"shipping_template_id\":\"" + StaticValues.shippingTemplateID + "\",\"sku_info_list\":[" + string.Join(",", skuStr) + "],\"title_multi_language_list\":[{\"locale\":\"en_US\",\"title\":\"" + dbProduct.Title + "\"}]}";
