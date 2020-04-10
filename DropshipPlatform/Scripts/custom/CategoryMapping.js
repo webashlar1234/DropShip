@@ -4,7 +4,7 @@ var category = {
         category.initCategoryTable();
     },
     change: function () {
-        
+  
     },
 
     initCategoryTable: function () {
@@ -13,7 +13,7 @@ var category = {
                 "url": "/Category/getCategoryDatatable",
                 "type": "POST",
                 "datatype": "json",
-                "data": { "ddlMappingValue": $("#category-filter").val() }
+                "data": function (d) { d.ddlMappingValue = $('#category-filter').val()},
             },
             destroy: true,
             processing: true,
@@ -132,9 +132,7 @@ var category = {
 
 $(document).ready(function () {
     category.init();
-    $('#category-filter').change(function () {
-        //category.change();
-    });
+
     $(document).on('change', '.dllAliExpressCat', function () {
         if ($(this).val() > 0) {
             var alicategory = $(this).find('option:selected');
@@ -151,6 +149,10 @@ $(document).ready(function () {
                 }
             });
         }
+    });
+
+    $(document).on('change', '#category-filter', function () {
+        categoryDT.clear().draw();
     });
 });
 
