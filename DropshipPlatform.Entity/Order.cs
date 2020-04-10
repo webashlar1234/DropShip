@@ -28,5 +28,10 @@ namespace DropshipPlatform.Entity
         public Nullable<int> ItemModifyBy { get; set; }
         public Nullable<System.DateTime> ItemModifyWhen { get; set; }
         public Nullable<bool> SellerPaymentStatus { get; set; }
+        public string SellerPaymentDetails { get; set; }
+        public byte[] CainiaoLable { get; set; }
+        public string OrderApiError { get; set; }
+        public string OrderApiResult { get; set; }
+        public string orderscol { get; set; }
     }
 }

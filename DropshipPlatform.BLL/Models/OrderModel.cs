@@ -32,11 +32,14 @@ namespace DropshipPlatform.BLL.Models
         public string OrderStatus { get; set; }
         public string AliExpressOrderID { get; set; }
         public string PaymentStatus { get; set; }
+        public bool? SellerPaymentStatus { get; set; }
         public string SellerID { get; set; }
         public string SellerEmail { get; set; }
-        public Nullable<bool> productExist { get; set; }
         public string LogisticType { get; set; }
         public string LogisticName { get; set; }
+        //Logistic Number
+        public string TrackingNumber { get; set; }
+        public Nullable<bool> productExistAny { get; set; }
         public List<OrderViewModel> ChildOrderItemList { get; set; }
     }
 
@@ -50,6 +53,7 @@ namespace DropshipPlatform.BLL.Models
         public string Price { get; set; }
         public string Colour { get; set; }
         public string Size { get; set; }
+        public Nullable<bool> productExist { get; set; }
 
     }
 
@@ -174,5 +178,17 @@ namespace DropshipPlatform.BLL.Models
         public string StatusCode { get; set; }
         [JsonProperty("Content-Type")]
         public string Content_Type { get; set; }
+    }
+
+    public class OrderAPIResultModal
+    {
+        public long AliExpressOrderID { get; set; }
+        public string LogisticsServiceId { get; set; }
+        //tracking Number
+        public string LogisticsNumber { get; set; }
+        public byte[] CainiaoLabel { get; set; }
+        public long WarehouseOrderId { get; set; }
+        public string Error { get; set; }
+        public bool IsSuccess { get; set; }
     }
 }

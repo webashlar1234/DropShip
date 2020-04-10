@@ -201,10 +201,15 @@
           <Property Name="AliExpressLoginID" Type="varchar" MaxLength="150" />
           <Property Name="TrackingNo" Type="varchar" MaxLength="50" />
           <Property Name="SellerPaymentStatus" Type="bool" />
+          <Property Name="SellerPaymentDetails" Type="text" />
           <Property Name="ItemCreatedBy" Type="int" />
           <Property Name="ItemCreatedWhen" Type="datetime" Precision="3" />
           <Property Name="ItemModifyBy" Type="int" />
           <Property Name="ItemModifyWhen" Type="datetime" Precision="3" />
+          <Property Name="CainiaoLable" Type="blob" />
+          <Property Name="OrderApiError" Type="text" />
+          <Property Name="OrderApiResult" Type="text" />
+          <Property Name="orderscol" Type="varchar" MaxLength="45" />
         </EntityType>
         <EntityType Name="paymentprofile">
           <Key>
@@ -878,6 +883,11 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <Property Name="ItemModifyBy" Type="Int32" />
           <Property Name="ItemModifyWhen" Type="DateTime" />
           <Property Name="SellerPaymentStatus" Type="Boolean" />
+          <Property Name="SellerPaymentDetails" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+          <Property Name="CainiaoLable" Type="Binary" MaxLength="Max" FixedLength="false" />
+          <Property Name="OrderApiError" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+          <Property Name="OrderApiResult" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+          <Property Name="orderscol" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="product">
           <Key>
@@ -1272,6 +1282,11 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <EntitySetMapping Name="orders">
             <EntityTypeMapping TypeName="dropshipdataModel.order">
               <MappingFragment StoreEntitySet="orders">
+                <ScalarProperty Name="orderscol" ColumnName="orderscol" />
+                <ScalarProperty Name="OrderApiResult" ColumnName="OrderApiResult" />
+                <ScalarProperty Name="OrderApiError" ColumnName="OrderApiError" />
+                <ScalarProperty Name="CainiaoLable" ColumnName="CainiaoLable" />
+                <ScalarProperty Name="SellerPaymentDetails" ColumnName="SellerPaymentDetails" />
                 <ScalarProperty Name="SellerPaymentStatus" ColumnName="SellerPaymentStatus" />
                 <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
                 <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
