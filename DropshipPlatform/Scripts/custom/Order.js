@@ -5,6 +5,7 @@ var jsonProducts = null;
 
 var order = {
     init: function () {
+        order.onclick();
         order.initCategoryTable();
     },
     initSeller: function () {
@@ -13,7 +14,11 @@ var order = {
     change: function () {
 
     },
-
+    onclick: function () {
+        $(document).on('click', '.shipOrder', function () {
+            order.ShipNow($(this).data('orderid'), $(this).data('isfullship'), $(this).parent('td').find('.tracking').val());
+        });
+    },
     initCategoryTable: function () {
         orderDT = $('#orderDT').DataTable({
             ajax: {
@@ -70,7 +75,7 @@ var order = {
                     sortable: true,
                     width: "5%",
                     "render": function (data, type, full) {
-                        return data + '<label>$</label>';
+                        return data ? data + '<label>$</label>' : '';
                     }
                 },
                 {
@@ -126,10 +131,9 @@ var order = {
                     targets: 9,
                     sortable: true,
                     width: "10%",
-                    "render": function (data, type, row) {
-
+                    "render": function (data, type, full) {
                         if (data) {
-                            return '<a class="btn btn-info btn-sm" href="#" onclick=updateStatus("' + row.OrignalProductLink + '",this,"' + row.AliExpressOrderNumber + '","' + row.LogisticType + '")>' + 'Buy Now' + '</a>';
+                            return "<a class='btn btn-info btn-sm BuyAll' data-full='" + global.build_full_attrData(full) + "' onclick=BuyAllProduct(this)>Buy All</a>";
                         }
                     }
                 }
@@ -144,7 +148,7 @@ var order = {
                 { "sTitle": 'Payment Status', "mData": 'PaymentStatus', sDefaultContent: "", className: "PaymentStatus" },
                 { "sTitle": 'Seller ID', "mData": 'SellerID', sDefaultContent: "", className: "SellerID" },
                 { "sTitle": 'Seller Email', "mData": 'SellerEmail', sDefaultContent: "", className: "SellerEmail" },
-                { "sTitle": 'Actions', "mData": 'productExist', sDefaultContent: "", className: "Actions" }
+                { "sTitle": 'Actions', "mData": 'productExistAny', sDefaultContent: "", className: "Actions" }
             ],
             "createdRow": function (row, data, dataIndex) {
                 if (data.ChildOrderItemList.length > 0) {
@@ -276,6 +280,32 @@ var order = {
                 }
             }
         });
+    },
+    ShipNow: function (OrderId, isFullShip, TrackingNumber) {
+        ShowLoader();
+        obj = {
+            AliExpressOrderNumber: OrderId, TrackingNumber: TrackingNumber
+        }
+        $.ajax({
+            type: "POST",
+            url: "/Order/FullFillAliExpressOrder",
+            dataType: "json",
+            async: false,
+            data: { orderData: obj, isFullShip: isFullShip },
+            success: function (data) {
+                if (data) {
+                    SuccessMessage("Product Status Updated successfully");
+                }
+                else {
+                    ErrorMessage("Order Fullfilment faild for order " + OrderId + ", please try again later");
+                }
+                HideLoader();
+            },
+            error: function (err) {
+                HideLoader();
+                ErrorMessage("Order Fullfilment faild for order " + OrderId + ", please try again later");
+            }
+        });
     }
 };
 
@@ -329,37 +359,54 @@ $(document).ready(function () {
     });
 });
 
-function updateStatus(productLink, data, OrderId, LogisticType) {
-    if (data.text == "Buy Now") {
-        data.text = "Ship Now";
-        data.outerHTML += '<input class="form-control tracking" name="txtTracking" type="text" style="margin-top:5px">'
-        window.open("http://" + productLink);
-    }
-    else {
-        ShowLoader();
-        $.ajax({
-            type: "POST",
-            url: "/Order/trackingOrder",
-            dataType: "json",
-            async: false,
-            data: { AliExpressOrderNumber: OrderId, OrignalProductLink: productLink, LogisticType: LogisticType },
-            success: function (data) {
-                if (data) {
-                    //SuccessMessage("Product Status Updated successfully");
-                }
-                HideLoader();
-            },
-            error: function (err) {
-                HideLoader();
-            }
-        });
-    }
+function BuyProduct(productLink, data, OrderId, TrackingNumber) {
+    //data.text = "Ship Now";
+    //data.outerHTML += '<input class="form-control tracking" name="txtTracking" type="text" style="margin-top:5px" value="' + TrackingNumber + '">'
+    window.open("http://" + productLink);
+
+    $('<a class="btn btn-info btn-sm shipOrder" data-orderid="' + OrderId + '" data-isfullship="false">Ship Now</a><input class="form-control tracking" name="txtTracking" type="text" style="margin-top:5px" value="' + TrackingNumber + '">').insertAfter(data)
+    $(data).remove();
+    UpdateOrderStatus(OrderId);
 }
+
+function BuyAllProduct(thisitem) {
+    var Order = $(thisitem).data('full');
+    $.each(Order.ChildOrderItemList, function (key, item) {
+        window.open("http://" + item.OrignalProductLink);
+    });
+
+    $('<a class="btn btn-info btn-sm shipOrder" data-orderid="' + Order.AliExpressOrderID + '" data-isfullship="true">Ship Now</a><input class="form-control tracking" name="txtTracking" type="text" style="margin-top:5px" value="' + Order.TrackingNumber + '">').insertAfter(thisitem);
+    $(thisitem).remove();
+    UpdateOrderStatus(Order.AliExpressOrderID);
+}
+
+function UpdateOrderStatus(OrderId) {
+    $.ajax({
+        type: "POST",
+        url: "/Order/BuyOrderFromSourceWebsite",
+        dataType: "json",
+        async: false,
+        data: { OrderID: OrderId },
+        success: function (data) {
+            if (data) {
+                //SuccessMessage("Product Status Updated successfully");
+            }
+            HideLoader();
+        },
+        error: function (err) {
+            HideLoader();
+        }
+    });
+}
+
+
 
 function format(data) {
     console.log(data.ChildOrderItemList);
     var trs = '';
     $.each($(data.ChildOrderItemList), function (key, value) {
+
+        var BuyNowLink = value.productExist ? '<a class="btn btn-info btn-sm" href="#" onclick=BuyProduct("' + value.OrignalProductLink + '",this,"' + data.AliExpressOrderNumber + '","' + data.TrackingNumber + '")>' + 'Buy Now' + '</a>' : '';
 
         console.log(value);
         trs +=
@@ -371,6 +418,7 @@ function format(data) {
             '</td><td>' + value.Price +
             '</td><td>' + value.Colour +
             '</td><td>' + value.Size +
+            '</td><td>' + BuyNowLink +
             '</td></tr>';
     });
     // `data` is the original data object for the row
@@ -383,6 +431,7 @@ function format(data) {
         '<th>Price</th>' +
         '<th>Colour</th>' +
         '<th>Size</th>' +
+        '<th>Action</th>' +
         '</thead><tbody>' +
         trs +
         '</tbody></table>';

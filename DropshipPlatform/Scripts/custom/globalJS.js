@@ -53,6 +53,9 @@
         var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
         return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
     },
+    build_full_attrData: function (str) {
+        return JSON.stringify(str).replace(/\'/g, "&apos;");
+    },
 }
 
 

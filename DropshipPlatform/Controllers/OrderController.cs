@@ -25,7 +25,7 @@ namespace DropshipPlatform.Controllers
             OrderService _orderService = new OrderService();
             //_orderService.getLogisticsServicByOrderId(1000102673302508);
             //_orderService.getPrintInfo("AEFP0000134813RU2");
-            
+
             return View();
         }
 
@@ -68,10 +68,23 @@ namespace DropshipPlatform.Controllers
         }
 
         [HttpPost]
-        public JsonResult trackingOrder(OrderData orderData)
+        public JsonResult FullFillAliExpressOrder(OrderData orderData, bool isFullShip)
+        {
+            bool result = false;
+            if (!string.IsNullOrEmpty(orderData.TrackingNumber) && !string.IsNullOrEmpty(orderData.AliExpressOrderNumber))
+            {
+                OrderService _orderService = new OrderService();
+                result = _orderService.FullFillAliExpressOrder(orderData, isFullShip);
+                
+            }
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public JsonResult BuyOrderFromSourceWebsite(string OrderID)
         {
             OrderService _orderService = new OrderService();
-            return Json(_orderService.trackingOrder(orderData), JsonRequestBehavior.AllowGet);
+            return Json(_orderService.BuyOrderFromSourceWebsite(OrderID), JsonRequestBehavior.AllowGet);
         }
     }
 }
