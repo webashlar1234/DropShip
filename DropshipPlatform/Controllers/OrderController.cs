@@ -30,7 +30,7 @@ namespace DropshipPlatform.Controllers
         }
 
         [HttpPost]
-        public ActionResult getOrdersData()
+        public ActionResult getOrdersData(string orderStatus, int? sellerPaymentStatus)
         {
             OrderService _orderService = new OrderService();
             int recordsTotal = 0;
@@ -43,12 +43,22 @@ namespace DropshipPlatform.Controllers
 
             List<OrderData> retvalue = _orderService.getAllOrdersFromDatabase();
 
+            if (orderStatus != "All")
+            {
+                retvalue = retvalue.Where(x => x.OrderStatus == orderStatus).ToList();
+            }
+            if (sellerPaymentStatus == 1)
+            {
+                retvalue = retvalue.Where(x => x.SellerPaymentStatus == true).ToList();
+            }
+            else if (sellerPaymentStatus == 2) {
+                retvalue = retvalue.Where(x => x.SellerPaymentStatus == false).ToList();
+            }
             if (!string.IsNullOrEmpty(search))
             {
-                retvalue = retvalue.Where(x => x.AliExpressOrderNumber != null && x.AliExpressOrderNumber.ToLower().Contains(search.ToLower()) ||
-                x.AliExpressProductId != null && x.AliExpressProductId.ToString().ToLower().Contains(search.ToLower()) ||
-                x.OrignalProductId != null && x.OrignalProductId.ToString().ToLower().Contains(search.ToLower()) ||
-                x.OrignalProductLink != null && x.OrignalProductLink.ToString().ToLower().Contains(search.ToLower())
+                retvalue = retvalue.Where(x => x.AliExpressOrderID != null && x.AliExpressOrderID.ToLower().Contains(search.ToLower()) ||
+                x.SellerID != null && x.SellerID.ToString().ToLower().Contains(search.ToLower()) ||
+                x.SellerEmail != null && x.SellerEmail.ToString().ToLower().Contains(search.ToLower())
                 ).ToList();
             }
             var data = new List<OrderData>();
