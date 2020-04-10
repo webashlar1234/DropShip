@@ -39,7 +39,8 @@ namespace DropshipPlatform.BLL.Models
         public string LogisticName { get; set; }
         //Logistic Number
         public string TrackingNumber { get; set; }
-        public Nullable<bool> productExistAny { get; set; }
+        public Nullable<bool> IsReadyToBuyAny { get; set; }
+        public Nullable<bool> IsReadyToShipAny { get; set; }
         public List<OrderViewModel> ChildOrderItemList { get; set; }
     }
 
@@ -53,7 +54,7 @@ namespace DropshipPlatform.BLL.Models
         public string Price { get; set; }
         public string Colour { get; set; }
         public string Size { get; set; }
-        public Nullable<bool> productExist { get; set; }
+        public Nullable<bool> IsReadyToBuy { get; set; }
 
     }
 

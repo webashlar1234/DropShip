@@ -16,7 +16,11 @@ var order = {
     },
     onclick: function () {
         $(document).on('click', '.shipOrder', function () {
-            order.ShipNow($(this).data('orderid'), $(this).data('isfullship'), $(this).parent('td').find('.tracking').val());
+            if ($(this).parent('td').find('.tracking').val()) {
+                order.ShipNow($(this).data('orderid'), $(this).data('isfullship'), $(this).parent('td').find('.tracking').val());
+            } else {
+                ErrorMessage("Please enter value for Tracking No");
+            }
         });
     },
     initCategoryTable: function () {
@@ -136,6 +140,9 @@ var order = {
                         if (data) {
                             return "<a class='btn btn-info btn-sm BuyAll' data-full='" + global.build_full_attrData(full) + "' onclick=BuyAllProduct(this)>Buy All</a>";
                         }
+                        else if (full.IsReadyToShipAny) {
+                            return '<a class="btn btn-info btn-sm shipOrder" data-orderid="' + full.AliExpressOrderID + '" data-isfullship="true">Ship Now</a><input class="form-control tracking" name="txtTracking" type="text" style="margin-top:5px" value="' + (full.TrackingNumber ? full.TrackingNumber : '') + '">';
+                        }
                     }
                 }
             ],
@@ -149,7 +156,7 @@ var order = {
                 { "sTitle": 'Payment Status', "mData": 'SellerPaymentStatus', sDefaultContent: "", className: "PaymentStatus" },
                 { "sTitle": 'Seller ID', "mData": 'SellerID', sDefaultContent: "", className: "SellerID" },
                 { "sTitle": 'Seller Email', "mData": 'SellerEmail', sDefaultContent: "", className: "SellerEmail" },
-                { "sTitle": 'Actions', "mData": 'productExistAny', sDefaultContent: "", className: "Actions" }
+                { "sTitle": 'Actions', "mData": 'IsReadyToBuyAny', sDefaultContent: "", className: "Actions" }
             ],
             "createdRow": function (row, data, dataIndex) {
                 if (data.ChildOrderItemList.length > 0) {
@@ -366,7 +373,7 @@ function BuyProduct(productLink, data, OrderId, TrackingNumber) {
     //data.outerHTML += '<input class="form-control tracking" name="txtTracking" type="text" style="margin-top:5px" value="' + TrackingNumber + '">'
     window.open("http://" + productLink);
 
-    $('<a class="btn btn-info btn-sm shipOrder" data-orderid="' + OrderId + '" data-isfullship="false">Ship Now</a><input class="form-control tracking" name="txtTracking" type="text" style="margin-top:5px" value="' + TrackingNumber + '">').insertAfter(data)
+    $('<a class="btn btn-info btn-sm shipOrder" data-orderid="' + OrderId + '" data-isfullship="false">Ship Now</a><input class="form-control tracking" name="txtTracking" type="text" style="margin-top:5px" value="' + (TrackingNumber ? TrackingNumber : '') + '">').insertAfter(data)
     $(data).remove();
     UpdateOrderStatus(OrderId);
 }
@@ -377,7 +384,7 @@ function BuyAllProduct(thisitem) {
         window.open("http://" + item.OrignalProductLink);
     });
 
-    $('<a class="btn btn-info btn-sm shipOrder" data-orderid="' + Order.AliExpressOrderID + '" data-isfullship="true">Ship Now</a><input class="form-control tracking" name="txtTracking" type="text" style="margin-top:5px" value="' + Order.TrackingNumber + '">').insertAfter(thisitem);
+    $('<a class="btn btn-info btn-sm shipOrder" data-orderid="' + Order.AliExpressOrderID + '" data-isfullship="true">Ship Now</a><input class="form-control tracking" name="txtTracking" type="text" style="margin-top:5px" value="' + (Order.TrackingNumber ? Order.TrackingNumber : '') + '">').insertAfter(thisitem);
     $(thisitem).remove();
     UpdateOrderStatus(Order.AliExpressOrderID);
 }
@@ -408,7 +415,7 @@ function format(data) {
     var trs = '';
     $.each($(data.ChildOrderItemList), function (key, value) {
 
-        var BuyNowLink = value.productExist ? '<a class="btn btn-info btn-sm" href="#" onclick=BuyProduct("' + value.OrignalProductLink + '",this,"' + data.AliExpressOrderNumber + '","' + data.TrackingNumber + '")>' + 'Buy Now' + '</a>' : '';
+        var BuyNowLink = value.IsReadyToBuy ? '<a class="btn btn-info btn-sm" href="#" onclick=BuyProduct("' + value.OrignalProductLink + '",this,"' + data.AliExpressOrderNumber + '","' + (data.TrackingNumber ? data.TrackingNumber : '') + '")>' + 'Buy Now' + '</a>' : '';
 
         console.log(value);
         trs +=

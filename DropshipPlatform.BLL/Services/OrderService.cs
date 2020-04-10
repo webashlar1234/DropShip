@@ -353,7 +353,8 @@ namespace DropshipPlatform.BLL.Services
                                   SellerPaymentStatus = o.SellerPaymentStatus,
                                   SellerID = u.AliExpressSellerID,
                                   SellerEmail = u.EmailID,
-                                  TrackingNumber = o.TrackingNo
+                                  TrackingNumber = o.TrackingNo,
+                                  IsReadyToShipAny = o.OrderStatus == "Waiting for Shipment" ? true : false
                               }).ToList();
 
                     List<OrderViewModel> childList = (from o in datacontext.orders
@@ -372,7 +373,7 @@ namespace DropshipPlatform.BLL.Services
                                                           Price = oi.Price,
                                                           Colour = oi.Color,
                                                           Size = oi.Size,
-                                                          productExist = !string.IsNullOrEmpty(sp.AliExpressProductID) && o.SellerPaymentStatus==true ? true : false
+                                                          IsReadyToBuy = !string.IsNullOrEmpty(sp.AliExpressProductID) && o.SellerPaymentStatus==true && o.OrderStatus == "Unpurchased" ? true : false
                                                       }).ToList();
 
                     if (Orders.Count > 0)
@@ -396,7 +397,7 @@ namespace DropshipPlatform.BLL.Services
                             //    }
                             //}
                             OrderdataModel.ChildOrderItemList = childList.Where(x => x.AliExpressOrderId == OrderdataModel.AliExpressOrderID).ToList();
-                            OrderdataModel.productExistAny = OrderdataModel.ChildOrderItemList.Where(x => x.productExist == true).Any();
+                            OrderdataModel.IsReadyToBuyAny = OrderdataModel.ChildOrderItemList.Where(x => x.IsReadyToBuy == true).Any();
                             //OrdersList.Add(OrderdataModel);
                         }
                     }
