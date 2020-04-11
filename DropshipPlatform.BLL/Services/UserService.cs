@@ -27,19 +27,7 @@ namespace DropshipPlatform.BLL.Services
                     user dbUser = datacontext.users.Where(m => m.EmailID == model.Email && m.Password == model.Password).FirstOrDefault();
                     if (dbUser != null)
                     {
-                        //UserModel userModel = new UserModel();
-                        //userModel.UserID = dbUser.UserID;
-                        //userModel.Name = dbUser.Name;
-                        //userModel.IsPolicyAccepted = dbUser.IsPolicyAccepted.Value;
-                        //userModel.AliExpressSellerID = dbUser.AliExpressSellerID;
-                        //userModel.StripeCustomerID = dbUser.StripeCustomerID;
-                        user_roles loggoeduser = datacontext.user_roles.Where(m => m.UserID == dbUser.UserID).FirstOrDefault();
-                        role loggeduserRole = datacontext.roles.Where(m => m.RoleID == loggoeduser.RoleID).FirstOrDefault();
-                        LoggedUserModel loggedUserModel = new LoggedUserModel();
-                        loggedUserModel.LoggedUserRoleName = loggeduserRole.Name;
-                        loggedUserModel.dbUser = dbUser;
-                        loggedUserModel.LoggedUserRoleID = loggeduserRole.RoleID;
-                        response.Data = loggedUserModel;
+                        response.Data = dbUser.UserID;
                         response.Message = "Success";
                         response.IsSuccess = true;
                     }
@@ -103,13 +91,28 @@ namespace DropshipPlatform.BLL.Services
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    user user = datacontext.users.Where(m => m.UserID == UserID).FirstOrDefault();
-                    user_roles loggoeduser = datacontext.user_roles.Where(m => m.UserID == user.UserID).FirstOrDefault();
-                    role loggeduserRole = datacontext.roles.Where(m => m.RoleID == loggoeduser.RoleID).FirstOrDefault();
-                    dbLoggedUser.dbUser = user;
-                    dbLoggedUser.LoggedUserRoleName = loggeduserRole.Name;
-                    dbLoggedUser.LoggedUserRoleID = loggeduserRole.RoleID;
 
+                    dbLoggedUser = (from u in datacontext.users
+                                    from ur in datacontext.user_roles.Where(x => x.UserID == u.UserID)
+                                    from r in datacontext.roles.Where(x => x.RoleID == ur.RoleID)
+                                    where u.IsActive == true && u.UserID == UserID
+                                    select new LoggedUserModel
+                                    {
+                                        UserID = u.UserID,
+                                        Name = u.Name,
+                                        EmailID = u.EmailID,
+                                        Phone = u.Phone,
+                                        Image = u.Image,
+                                        Country = u.Country,
+                                        AliExpressSellerID = u.AliExpressSellerID,
+                                        AliExpressLoginID = u.AliExpressLoginID,
+                                        AliExpressAccessToken = u.AliExpressAccessToken,
+                                        StripeCustomerID = u.StripeCustomerID,
+                                        IsActive = u.IsActive,
+                                        IsPolicyAccepted = u.IsPolicyAccepted,
+                                        LoggedUserRoleName = r.Name,
+                                        LoggedUserRoleID = r.RoleID,
+                                    }).FirstOrDefault();
                 }
             }
             catch (Exception ex)
@@ -165,28 +168,23 @@ namespace DropshipPlatform.BLL.Services
         //}
 
 
-        public List<user> getOperationalUsers()
+        public List<RegisterUserModel> getOperationalUsers()
         {
-            List<user> operationalUsers = new List<user>();
+            List<RegisterUserModel> operationalUsers = new List<RegisterUserModel>();
             try
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    List<user_roles> userList = datacontext.user_roles.Where(x => x.RoleID == 2).ToList();
-                    foreach (var item in userList)
-                    {
-                        user Obj = datacontext.users.Where(x => x.UserID == item.UserID).FirstOrDefault();
-                        if (Obj != null)
-                        {
-                            user users = new user();
-                            users.UserID = Obj.UserID;
-                            users.Name = Obj.Name;
-                            users.EmailID = Obj.EmailID;
-                            users.Phone = Obj.Phone;
-                            users.Country = Obj.Country;
-                            operationalUsers.Add(users);
-                        }
-                    }
+                    operationalUsers = (from u in datacontext.users
+                                        from ur in datacontext.user_roles.Where(x => x.RoleID == 2 && x.UserID == u.UserID)
+                                        select new RegisterUserModel
+                                        {
+                                            UserID = u.UserID,
+                                            Username = u.Name,
+                                            Email = u.EmailID,
+                                            Phone = u.Phone,
+                                            Country = u.Country
+                                        }).ToList();
                 }
             }
             catch (Exception ex)
@@ -228,24 +226,9 @@ namespace DropshipPlatform.BLL.Services
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    List<user_roles> userList = datacontext.user_roles.Where(x => x.RoleID == 3).ToList();
-                    foreach (var item in userList)
-                    {
-                        user Obj = datacontext.users.Where(x => x.UserID == item.UserID).FirstOrDefault();
-                        if (Obj != null)
-                        {
-                            user users = new user();
-                            users.Name = Obj.Name;
-                            users.EmailID = Obj.EmailID;
-                            users.Phone = Obj.Phone;
-                            users.AliExpressSellerID = Obj.AliExpressSellerID;
-                            users.StripeCustomerID = Obj.StripeCustomerID;
-                            users.IsActive = Obj.IsActive;
-                            users.IsPolicyAccepted = Obj.IsPolicyAccepted;
-                            users.ItemCreatedWhen = Obj.ItemCreatedWhen;
-                            SellerUsers.Add(users);
-                        }
-                    }
+                    SellerUsers = (from u in datacontext.users
+                                   from ur in datacontext.user_roles.Where(x => x.RoleID == 3 && x.UserID == u.UserID)
+                                   select u).ToList();
                 }
             }
             catch (Exception ex)

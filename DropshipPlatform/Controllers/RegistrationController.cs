@@ -1,6 +1,7 @@
 ﻿using DropshipPlatform.BLL.Models;
 using DropshipPlatform.BLL.Services;
 using DropshipPlatform.Entity;
+using DropshipPlatform.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,6 +51,7 @@ namespace DropshipPlatform.Controllers
         }
 
         [HttpPost]
+        [CustomAuthorize("Admin")]
         public ActionResult getOperationalUsers()
         {
             UserService userService = new UserService();
@@ -60,22 +62,8 @@ namespace DropshipPlatform.Controllers
             string search = Request.Form.GetValues("search[value]").FirstOrDefault();
             int pageSize = length != null ? Convert.ToInt32(length) : 0;
             int skip = start != null ? Convert.ToInt32(start) : 0;
-            List<user> resultList = userService.getOperationalUsers();
-            List<RegisterUserModel> retvalue = new List<RegisterUserModel>();
-            if (resultList != null)
-            {
-                foreach (var item in resultList)
-                {
-                    RegisterUserModel userData = new RegisterUserModel();
-                    userData.UserID = item.UserID;
-                    userData.Username = item.Name;
-                    userData.Email = item.EmailID;
-                    userData.Phone = item.Phone;
-                    userData.Country = item.Country;
-
-                    retvalue.Add(userData);
-                }
-            }
+            List<RegisterUserModel> retvalue = userService.getOperationalUsers();
+            
             var data = new List<RegisterUserModel>();
             if (pageSize != -1)
             {
@@ -93,6 +81,7 @@ namespace DropshipPlatform.Controllers
         }
 
         [HttpPost]
+        [CustomAuthorize("Admin")]
         public JsonResult deleteOperationalManager(int UserID)
         {
             UserService userService = new UserService();

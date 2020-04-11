@@ -31,17 +31,14 @@ namespace DropshipPlatform.Controllers
                 response = userService.LoginUser(model);
                 if (response.IsSuccess)
                 {
-                    LoggedUserModel loggedUserModel = (LoggedUserModel)response.Data;
-                    user user = loggedUserModel.dbUser;
+                    int userid = (int)response.Data;
+                    LoggedUserModel loggedUserModel = new UserService().GetUser(userid);
+                    
                     SessionManager.SetUserSession(loggedUserModel);
-                    if (!string.IsNullOrEmpty(user.AliExpressAccessToken))
+                    if (!string.IsNullOrEmpty(loggedUserModel.AliExpressAccessToken))
                     {
-                        SessionManager.SetAccessToken(Newtonsoft.Json.JsonConvert.DeserializeObject<AliExpressAccessToken>(user.AliExpressAccessToken));
+                        SessionManager.SetAccessToken(Newtonsoft.Json.JsonConvert.DeserializeObject<AliExpressAccessToken>(loggedUserModel.AliExpressAccessToken));
                     }
-                    //Session["UserName"] = user.Name;
-                    //Session["UserID"] = user.UserID;
-                    //Session["RoleName"] = loggedUserModel.LoggedUserRoleName;
-                    //Session["RoleID"] = userService.GetLoginUserRoleID(user.UserID);
                     return RedirectToAction("Index", "AliExpress");
                 }
             }
@@ -55,7 +52,7 @@ namespace DropshipPlatform.Controllers
 
         public void UpdateUserSession()
         {
-            LoggedUserModel user = new UserService().GetUser(SessionManager.GetUserSession().dbUser.UserID);
+            LoggedUserModel user = new UserService().GetUser(SessionManager.GetUserSession().UserID);
             if (user != null)
             {
                 SessionManager.SetUserSession(user);

@@ -43,19 +43,19 @@ namespace DropshipPlatform.Controllers
             try
             { 
                 LoggedUserModel user = SessionManager.GetUserSession();
-                if (string.IsNullOrEmpty(user.dbUser.StripeCustomerID))
+                if (string.IsNullOrEmpty(user.StripeCustomerID))
                 {
-                    hasPaymentMethod = _stripeService.stripe_CreateCustomer(user.dbUser, request.PaymentMethod);
+                    hasPaymentMethod = _stripeService.stripe_CreateCustomer(user, request.PaymentMethod);
                     new LoginController().UpdateUserSession();
                     user = SessionManager.GetUserSession();
                 }
                 else
                 {
-                    hasPaymentMethod = _stripeService.AddCardToExistingCustomer(request.PaymentMethod, user.dbUser.StripeCustomerID);
+                    hasPaymentMethod = _stripeService.AddCardToExistingCustomer(request.PaymentMethod, user.StripeCustomerID);
                 }
                 if (hasPaymentMethod)
                 {
-                    result = _stripeService.CreateSubscription(user.dbUser.StripeCustomerID, "plan_GiQrXsdH6vbs2u");
+                    result = _stripeService.CreateSubscription(user.StripeCustomerID, "plan_GiQrXsdH6vbs2u");
                 }
             }
             catch (Exception ex)
@@ -105,7 +105,7 @@ namespace DropshipPlatform.Controllers
             LoggedUserModel user = SessionManager.GetUserSession();
             if (user != null && subscription != null)
             {
-                result = _stripeService.SaveSubscriptionToDb(user.dbUser, subscription);
+                result = _stripeService.SaveSubscriptionToDb(user, subscription);
             }
             return Json(result, JsonRequestBehavior.AllowGet);
         }

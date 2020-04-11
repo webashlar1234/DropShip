@@ -43,7 +43,7 @@ namespace DropshipPlatform.BLL.Services
             return result;
         }
 
-        public bool stripe_CreateCustomer(user user, string PaymentMethodId)
+        public bool stripe_CreateCustomer(LoggedUserModel user, string PaymentMethodId)
         {
             bool result = true;
             try
@@ -128,7 +128,7 @@ namespace DropshipPlatform.BLL.Services
                 if (!string.IsNullOrEmpty(StripeCustomerID))
                 {
                     LoggedUserModel user = SessionManager.GetUserSession();
-                    AddCardToPaymentProfile(StripeCustomerID, user.dbUser.UserID, PaymentMethodId);
+                    AddCardToPaymentProfile(StripeCustomerID, user.UserID, PaymentMethodId);
                 }
             }
             catch (Exception ex)
@@ -293,7 +293,7 @@ namespace DropshipPlatform.BLL.Services
                         obj.StripePlanID = plan.Id;
                         obj.Type = planModel.interval;
                         obj.Price = (int)planModel.amount;
-                        obj.ItemCreatedBy = user.dbUser.UserID;
+                        obj.ItemCreatedBy = user.UserID;
                         obj.ItemCreatedWhen = DateTime.Now;
 
                         datacontext.membershiptypes.Add(obj);

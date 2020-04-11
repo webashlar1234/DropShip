@@ -1,3 +1,4 @@
+using DropshipPlatform.BLL.Models;
 using DropshipPlatform.BLL.Services;
 using DropshipPlatform.Entity;
 using System;
@@ -9,51 +10,93 @@ using System.Web.Routing;
 
 namespace DropshipPlatform.Infrastructure
 {
-    public class CustomAuthorizeAttribute : AuthorizeAttribute
+    public class CustomAuthorizeAttribute : ActionFilterAttribute
     {
         private readonly string[] allowedroles;
         public CustomAuthorizeAttribute(params string[] roles)
         {
             this.allowedroles = roles;
         }
-        protected override bool AuthorizeCore(HttpContextBase httpContext)
+
+        public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            bool authorize = false;
-            int userId = SessionManager.GetUserSession().dbUser.UserID;
-
+            LoggedUserModel user = SessionManager.GetUserSession();
+            int userId = user != null ? user.UserID : 0;
+            bool UserIsValid = false;
             if (userId > 0)
-
+            {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    var userRole = (from u in datacontext.users
-                                    join ur in datacontext.user_roles on u.UserID equals ur.UserID
-                                    join rl in datacontext.roles on ur.RoleID equals rl.RoleID
-                                    where u.UserID == userId
-                                    select new
-                                    {
-                                        rl.RoleID,
-                                        rl.Name
-                                    }).FirstOrDefault();
-
-                    if (userRole != null)
+                    if (!string.IsNullOrEmpty(user.LoggedUserRoleName))
                     {
                         foreach (var role in allowedroles)
                         {
-                            if (role == userRole.Name) return true;
+                            if (role == user.LoggedUserRoleName)
+                            {
+                                UserIsValid = true;
+                                break;
+                            }
+                        }
+                        if (UserIsValid)
+                        {
+
+                        }
+                        else
+                        {
+                            new RedirectHelper().RedirectToLogin(filterContext);
                         }
                     }
                 }
-            return authorize;
+            }
+            else
+            {
+                new RedirectHelper().RedirectToLogin(filterContext);
+            }
         }
+    }
 
-        protected override void HandleUnauthorizedRequest(AuthorizationContext filterContext)
+    public class AjaxFilterAttribute : ActionFilterAttribute
+    {
+        public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            filterContext.Result = new RedirectToRouteResult(
-               new RouteValueDictionary
-               {
-                    { "controller", "UnAutoriziedUser" },
-                    { "action", "Index" }
-               });
+            Dictionary<string, string> result = new Dictionary<string, string>();
+           
+            if (SessionManager.GetUserSession() != null)
+            {
+            }
+            else
+            {
+                new RedirectHelper().RedirectToLogin(filterContext);
+            }
+        }
+    }
+    public class RedirectHelper
+    {
+        public void RedirectToLogin(ActionExecutingContext filterContext)
+        {
+            if (filterContext.RequestContext.HttpContext.Request.IsAjaxRequest())
+            {
+                filterContext.HttpContext.Response.StatusCode = 401;
+                filterContext.HttpContext.Response.End();
+                //filterContext.Result = new JsonResult
+                //{
+                //    Data = new
+                //    {
+                //        Status = "login",
+                //        NextUrl = Url
+                //    },
+                //    JsonRequestBehavior = JsonRequestBehavior.AllowGet
+                //};
+            }
+            else
+            {
+                filterContext.Result = new RedirectToRouteResult(
+                new RouteValueDictionary
+                {
+                     { "controller", "Login" },
+                     { "action", "Index" }
+                });
+            }
         }
     }
 }

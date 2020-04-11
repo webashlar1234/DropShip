@@ -29,7 +29,7 @@
                     <div class="top_bar_content pull-right pt-2">
                         <div class="top_bar_user">
                             <div class="user_icon"><i class="fa fa-user-o pt-1" aria-hidden="true"></i></div>
-                            <div><b><a href="#">@SessionManager.GetUserSession().dbUser.Name</a></b></div>
+                            <div><b><a href="#">@SessionManager.GetUserSession().Name</a></b></div>
                             <div>
                                 <a href="@Url.Action("LogOut","Home")">Log out</a>
                             </div>
@@ -57,7 +57,6 @@
                                 {
                                     <li class="nav-item"><a href="@Url.Action("UserManagement", "Home")" class="nav-link">User Management</a></li>
                                 }
-                                <li class="nav-item"><a href="#" class="nav-link">Fulfillment</a></li>
                                 <li class="nav-item"><a href="@Url.Action("Membership","Home")" class="nav-link">Membership</a></li>
                                 <!-- Level one dropdown -->
                                 <li class="nav-item dropdown">

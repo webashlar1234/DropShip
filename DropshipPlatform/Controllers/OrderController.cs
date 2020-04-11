@@ -12,14 +12,7 @@ namespace DropshipPlatform.Controllers
 {
     public class OrderController : Controller
     {
-        // GET: Order
-        [CustomAuthorize("Admin", "Seller", "Developer")]
-        public ActionResult Index()
-        {
-            return View();
-        }
-
-        [CustomAuthorize("Admin", "Seller", "Developer")]
+        [CustomAuthorize("Admin", "Operational Manager","Seller", "Developer")]
         public ActionResult getOrders()
         {
             OrderService _orderService = new OrderService();
@@ -30,6 +23,7 @@ namespace DropshipPlatform.Controllers
         }
 
         [HttpPost]
+        [AjaxFilter]
         public ActionResult getOrdersData(string orderStatus, int? sellerPaymentStatus)
         {
             OrderService _orderService = new OrderService();
@@ -47,7 +41,7 @@ namespace DropshipPlatform.Controllers
             {
                 if (user.LoggedUserRoleName == StaticValues.seller)
                 {
-                    UserID = user.dbUser.UserID;
+                    UserID = user.UserID;
                 }
             }
 
@@ -89,7 +83,7 @@ namespace DropshipPlatform.Controllers
         }
 
         [HttpPost]
-        [CustomAuthorize("Admin", "Developer")]
+        [CustomAuthorize("Admin", "Operational Manager", "Developer")]
         public JsonResult FullFillAliExpressOrder(OrderData orderData, bool isFullShip)
         {
             bool result = false;
@@ -103,7 +97,7 @@ namespace DropshipPlatform.Controllers
         }
 
         [HttpPost]
-        [CustomAuthorize("Admin", "Developer")]
+        [CustomAuthorize("Admin", "Operational Manager", "Developer")]
         public JsonResult BuyOrderFromSourceWebsite(string OrderID)
         {
             OrderService _orderService = new OrderService();
@@ -116,7 +110,7 @@ namespace DropshipPlatform.Controllers
         {
             OrderService _orderService = new OrderService();
             LoggedUserModel user = SessionManager.GetUserSession();
-            return Json(_orderService.PayForOrderBySeller(OrderID, user.dbUser.UserID), JsonRequestBehavior.AllowGet);
+            return Json(_orderService.PayForOrderBySeller(OrderID, user.UserID), JsonRequestBehavior.AllowGet);
         }
     }
 }

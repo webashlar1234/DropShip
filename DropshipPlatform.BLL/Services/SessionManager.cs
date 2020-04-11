@@ -37,24 +37,6 @@ namespace DropshipPlatform.BLL.Services
 
             return token;
         }
-        public static int UserID
-        {
-            get
-            {
-                try
-                {
-                    return (HttpContext.Current.Session["UserID"] == null) ? 0 : (int.Parse(HttpContext.Current.Session["UserID"].ToString()));
-                }
-                catch
-                {
-                    return 0;
-                }
-            }
-            set
-            {
-                HttpContext.Current.Session["UserID"] = value;
-            }
-        }
 
         public static void SetUserSession(LoggedUserModel user)
         {
@@ -74,12 +56,21 @@ namespace DropshipPlatform.BLL.Services
                     string data = HttpContext.Current.Session["userSession"].ToString();
                     token = Newtonsoft.Json.JsonConvert.DeserializeObject<LoggedUserModel>(HttpUtility.UrlDecode(data));
                 }
+                else
+                {
+                    token = null;
+                }
             }
             catch (Exception ex)
             {
 
             }
             return token;
+        }
+        public static void RemoveUserSession()
+        {
+            HttpContext.Current.Session["userSession"] = null;
+            HttpContext.Current.Session["AliExpressAccessToken"] = null;
         }
     }
 }

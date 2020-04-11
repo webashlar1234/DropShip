@@ -189,7 +189,7 @@ namespace DropshipPlatform.BLL.Services
                                     int Alicategory = (int)category.AliExpressCategoryID;
                                     //UpdateProductModel updateProductModel = new UpdateProductModel();
                                     LoggedUserModel user = SessionManager.GetUserSession();
-                                    string productSKU = SyncWithAliExpress(product, Alicategory, user.dbUser);
+                                    string productSKU = SyncWithAliExpress(product, Alicategory, user);
                                 }
                             }
                         }
@@ -488,7 +488,7 @@ namespace DropshipPlatform.BLL.Services
             return result;
         }
 
-        public string SyncWithAliExpress(scproductModel scProduct, int AliCategoryID, user user)
+        public string SyncWithAliExpress(scproductModel scProduct, int AliCategoryID, LoggedUserModel user)
         {
             string result = String.Empty;
             try
