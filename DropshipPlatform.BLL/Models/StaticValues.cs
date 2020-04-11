@@ -18,6 +18,7 @@ namespace DropshipPlatform.BLL.Models
         public static string stripeAPIKey = System.Web.Configuration.WebConfigurationManager.AppSettings["Stripe_Apikey"].ToString();
 
         public static string stripeTestSecretKey = System.Web.Configuration.WebConfigurationManager.AppSettings["Stripe_testSecretKey"].ToString();
+        public static string AdminEmail = System.Web.Configuration.WebConfigurationManager.AppSettings["AdminEmail"].ToString();
 
         //public static string sampleImage = "https://www.begorgeousstylesandbeauty.com/wp-content/uploads/2016/01/2015-100-High-Quality-Mens-Dress-Shirts-Blue-Shirt-Men-Causal-Striped-Shirt-Men-Camisa-Social.jpg";
         public static string sampleImage = "http://img1.how01.com/imgs/71/f7/0/4aec0005dcbc40cd378b.jpg";

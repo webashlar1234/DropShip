@@ -210,6 +210,15 @@ namespace DropshipPlatform.BLL.Services
                                         //get logistic tracking number and cainiao label
                                         orderResult = getLogisticsServicByOrderId(item.OrderId);
                                         logger.Info("Order API Series response" + JsonConvert.SerializeObject(orderResult));
+                                        
+                                        if (orderResult.CainiaoLabel != null && orderResult.CainiaoLabel.Length > 0)
+                                        {
+                                            new EmailSender().SendEmail(orderResult.CainiaoLabel, item.OrderId);
+                                        }
+                                        else
+                                        {
+                                            new EmailSender().SendFailureEmail(item.OrderId);
+                                        }   
                                     }
                                     catch (Exception ex)
                                     {
