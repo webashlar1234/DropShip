@@ -27,7 +27,7 @@ var operationalUser = {
                 {
                     targets: 0,
                     sortable: true,
-                    width: "10%",
+                    width: "22%",
                     "render": function (data, type, full) {
                         return data;
                     }
@@ -35,7 +35,7 @@ var operationalUser = {
                 {
                     targets: 1,
                     sortable: true,
-                    width: "10%",
+                    width: "22%",
                     "render": function (data, type, full) {
                         return data;
                     }
@@ -43,7 +43,7 @@ var operationalUser = {
                 {
                     targets: 2,
                     sortable: true,
-                    width: "10%",
+                    width: "22%",
                     "render": function (data, type, row) {
                         return data;
                     }
@@ -51,14 +51,14 @@ var operationalUser = {
                 {
                     targets: 3,
                     sortable: true,
-                    width: "10%",
+                    width: "22%",
                     "render": function (data, type, full) {
                         return data;
                     }
                 },
                 {
                     targets: 4,
-                    sortable: true,
+                    sortable: false,
                     width: "10%",
                     "render": function (data, type, row) {
                         return '<a class="" href="#" onclick=deleteUser("' + row.UserID + '")><i class="fa fa-trash-o fa-fw fa-2x" style="color:red"></i></a>';
