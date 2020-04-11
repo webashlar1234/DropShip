@@ -42,20 +42,20 @@ namespace DropshipPlatform.Controllers
             bool hasPaymentMethod = true;
             try
             { 
-                user user = SessionManager.GetUserSession();
-                if (string.IsNullOrEmpty(user.StripeCustomerID))
+                LoggedUserModel user = SessionManager.GetUserSession();
+                if (string.IsNullOrEmpty(user.dbUser.StripeCustomerID))
                 {
-                    hasPaymentMethod = _stripeService.stripe_CreateCustomer(user, request.PaymentMethod);
+                    hasPaymentMethod = _stripeService.stripe_CreateCustomer(user.dbUser, request.PaymentMethod);
                     new LoginController().UpdateUserSession();
                     user = SessionManager.GetUserSession();
                 }
                 else
                 {
-                    hasPaymentMethod = _stripeService.AddCardToExistingCustomer(request.PaymentMethod, user.StripeCustomerID);
+                    hasPaymentMethod = _stripeService.AddCardToExistingCustomer(request.PaymentMethod, user.dbUser.StripeCustomerID);
                 }
                 if (hasPaymentMethod)
                 {
-                    result = _stripeService.CreateSubscription(user.StripeCustomerID, "plan_GiQrXsdH6vbs2u");
+                    result = _stripeService.CreateSubscription(user.dbUser.StripeCustomerID, "plan_GiQrXsdH6vbs2u");
                 }
             }
             catch (Exception ex)
@@ -102,10 +102,10 @@ namespace DropshipPlatform.Controllers
         public JsonResult SaveSubscriptionToDb(SubscriptionModel subscription)
         {
             bool result = true;
-            user user = SessionManager.GetUserSession();
+            LoggedUserModel user = SessionManager.GetUserSession();
             if (user != null && subscription != null)
             {
-                result = _stripeService.SaveSubscriptionToDb(user, subscription);
+                result = _stripeService.SaveSubscriptionToDb(user.dbUser, subscription);
             }
             return Json(result, JsonRequestBehavior.AllowGet);
         }

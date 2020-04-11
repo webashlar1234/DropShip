@@ -1,3 +1,4 @@
+using DropshipPlatform.BLL.Services;
 using DropshipPlatform.Entity;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ namespace DropshipPlatform.Infrastructure
         protected override bool AuthorizeCore(HttpContextBase httpContext)
         {
             bool authorize = false;
-            int userId = Convert.ToInt32(httpContext.Session["UserId"]);
+            int userId = SessionManager.GetUserSession().dbUser.UserID;
 
             if (userId > 0)
 

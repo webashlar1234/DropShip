@@ -31,7 +31,7 @@ namespace DropshipPlatform.Controllers
         [HttpPost]
         public JsonResult getProductManagementDT(int? category, int? filterOptions)
         {
-            user user = SessionManager.GetUserSession();
+            LoggedUserModel user = SessionManager.GetUserSession();
             DTRequestModel DTRequestModel = new DTRequestModel();
             var draw = Request.Form.GetValues("draw").FirstOrDefault();
             var start = Request.Form.GetValues("start").FirstOrDefault();
@@ -46,7 +46,7 @@ namespace DropshipPlatform.Controllers
             DTRequestModel.SortBy = (!string.IsNullOrEmpty(sortColumn) && !string.IsNullOrEmpty(sortColumnDir)) ? sortColumn + " " + sortColumnDir : "";
             DTRequestModel.Search = search;
             int recordsTotal = 0;
-            List<ProductGroupModel> list = _productService.GetParentProducts(user.UserID, DTRequestModel, category, filterOptions, out recordsTotal);
+            List<ProductGroupModel> list = _productService.GetParentProducts(user.dbUser.UserID, DTRequestModel, category, filterOptions, out recordsTotal);
 
 
 
@@ -82,9 +82,9 @@ namespace DropshipPlatform.Controllers
 
         public JsonResult pickSellerProducts(List<scproductModel> products)
         {
-            user user = SessionManager.GetUserSession();
+            LoggedUserModel user = SessionManager.GetUserSession();
 
-            bool result = _productService.AddSellersPickedProducts(products, user.UserID);
+            bool result = _productService.AddSellersPickedProducts(products, user.dbUser.UserID);
 
             return Json(result, JsonRequestBehavior.AllowGet);
         }
@@ -102,7 +102,7 @@ namespace DropshipPlatform.Controllers
 
         public JsonResult getPickedAliProducts(int? category)
         {
-            List<ProductGroupModel> list = _productService.GetPickedProducts(SessionManager.GetUserSession().UserID);
+            List<ProductGroupModel> list = _productService.GetPickedProducts(SessionManager.GetUserSession().dbUser.UserID);
             if (category > 0)
             {
                 list = list.Where(x => x.ParentProduct.CategoryID == category).ToList();
@@ -122,9 +122,9 @@ namespace DropshipPlatform.Controllers
         //public JsonResult Up
         public JsonResult UpdatePickedProduct(List<scproductModel> products)
         {
-            user user = SessionManager.GetUserSession();
+            LoggedUserModel user = SessionManager.GetUserSession();
 
-            bool result = _productService.UpdatePickedProduct(products, user.UserID);
+            bool result = _productService.UpdatePickedProduct(products, user.dbUser.UserID);
 
             return Json(result, JsonRequestBehavior.AllowGet);
         }

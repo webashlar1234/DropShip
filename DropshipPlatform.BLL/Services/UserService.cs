@@ -38,6 +38,7 @@ namespace DropshipPlatform.BLL.Services
                         LoggedUserModel loggedUserModel = new LoggedUserModel();
                         loggedUserModel.LoggedUserRoleName = loggeduserRole.Name;
                         loggedUserModel.dbUser = dbUser;
+                        loggedUserModel.LoggedUserRoleID = loggeduserRole.RoleID;
                         response.Data = loggedUserModel;
                         response.Message = "Success";
                         response.IsSuccess = true;
@@ -95,22 +96,28 @@ namespace DropshipPlatform.BLL.Services
             return response;
         }
 
-        public user GetUser(int UserID)
+        public LoggedUserModel GetUser(int UserID)
         {
-            user dbUser = new user();
+            LoggedUserModel dbLoggedUser = new LoggedUserModel();
             try
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    dbUser = datacontext.users.Where(m => m.UserID == UserID).FirstOrDefault();
+                    user user = datacontext.users.Where(m => m.UserID == UserID).FirstOrDefault();
+                    user_roles loggoeduser = datacontext.user_roles.Where(m => m.UserID == user.UserID).FirstOrDefault();
+                    role loggeduserRole = datacontext.roles.Where(m => m.RoleID == loggoeduser.RoleID).FirstOrDefault();
+                    dbLoggedUser.dbUser = user;
+                    dbLoggedUser.LoggedUserRoleName = loggeduserRole.Name;
+                    dbLoggedUser.LoggedUserRoleID = loggeduserRole.RoleID;
+
                 }
             }
             catch (Exception ex)
             {
-                dbUser = null;
+                dbLoggedUser = null;
                 logger.Error(ex.ToString());
             }
-            return dbUser;
+            return dbLoggedUser;
         }
 
         public user UpdateUserForAliExpress(int UserID, AliExpressAccessToken AccessToken)
@@ -139,23 +146,23 @@ namespace DropshipPlatform.BLL.Services
             return dbUser;
         }
 
-        public int GetLoginUserRoleID(int UserID)
-        {
-            int RoleID = 0;
-            try
-            {
-                using (DropshipDataEntities datacontext = new DropshipDataEntities())
-                {
-                    RoleID = datacontext.user_roles.Where(m => m.UserID == UserID).Select(x => x.RoleID).FirstOrDefault();
-                }
-            }
-            catch (Exception ex)
-            {
-                RoleID = 0;
-                logger.Error(ex.ToString());
-            }
-            return RoleID;
-        }
+        //public int GetLoginUserRoleID(int UserID)
+        //{
+        //    int RoleID = 0;
+        //    try
+        //    {
+        //        using (DropshipDataEntities datacontext = new DropshipDataEntities())
+        //        {
+        //            RoleID = datacontext.user_roles.Where(m => m.UserID == UserID).Select(x => x.RoleID).FirstOrDefault();
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        RoleID = 0;
+        //        logger.Error(ex.ToString());
+        //    }
+        //    return RoleID;
+        //}
 
 
         public List<user> getOperationalUsers()

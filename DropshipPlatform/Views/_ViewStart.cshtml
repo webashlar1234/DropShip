@@ -1,5 +1,6 @@
-﻿@{
-    if (Session["UserName"] != null)
+﻿@using DropshipPlatform.BLL.Services;
+@{
+    if (SessionManager.GetUserSession().dbUser.Name != null)
     {
         Layout = "~/Views/Shared/_Layout.cshtml";
     }

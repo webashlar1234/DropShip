@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using DropshipPlatform.BLL.Services;
+@using DropshipPlatform.BLL.Models;
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -27,7 +29,7 @@
                     <div class="top_bar_content pull-right pt-2">
                         <div class="top_bar_user">
                             <div class="user_icon"><i class="fa fa-user-o pt-1" aria-hidden="true"></i></div>
-                            <div><b><a href="#">@Session["UserName"].ToString()</a></b></div>
+                            <div><b><a href="#">@SessionManager.GetUserSession().dbUser.Name</a></b></div>
                             <div>
                                 <a href="@Url.Action("LogOut","Home")">Log out</a>
                             </div>
@@ -51,7 +53,7 @@
                                 <!-- End Level one -->
                                 <li class="nav-item"><a href="/AliExpress" class="nav-link">Connect to AliExpress</a></li>
                                 <li class="nav-item"><a href="/Category" class="nav-link">Category Mapping</a></li>
-                                @if (Session["RoleID"] != null && Session["RoleID"].ToString() == "1")
+                                @if (SessionManager.GetUserSession().LoggedUserRoleName == StaticValues.admin)
                                 {
                                     <li class="nav-item"><a href="@Url.Action("UserManagement", "Home")" class="nav-link">User Management</a></li>
                                 }

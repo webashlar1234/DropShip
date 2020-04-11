@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Mvc;
 using Stripe; 
 using System.Net;
+using DropshipPlatform.BLL.Models;
 
 namespace DropshipPlatform.Controllers
 {
@@ -90,14 +91,14 @@ namespace DropshipPlatform.Controllers
         public JsonResult AddCardToCustomer(SetupIntent intent)
         {
             bool result = true;
-            user user = SessionManager.GetUserSession();
-            if (string.IsNullOrEmpty(user.StripeCustomerID))
+            LoggedUserModel user = SessionManager.GetUserSession();
+            if (string.IsNullOrEmpty(user.dbUser.StripeCustomerID))
             {
-                result = _stripeService.stripe_CreateCustomer(user, intent.PaymentMethodId);
+                result = _stripeService.stripe_CreateCustomer(user.dbUser, intent.PaymentMethodId);
             }
             else
             {
-                result =_stripeService.AddCardToExistingCustomer(intent.PaymentMethodId, user.StripeCustomerID);
+                result = _stripeService.AddCardToExistingCustomer(intent.PaymentMethodId, user.dbUser.StripeCustomerID);
             }
             return Json(result, JsonRequestBehavior.AllowGet);
         }
@@ -105,15 +106,15 @@ namespace DropshipPlatform.Controllers
         
         public ActionResult ChargeSavedCard()
         {
-            user user = SessionManager.GetUserSession();
-            _stripeService.ChargeSavedCard(user.StripeCustomerID, 1000);
+            LoggedUserModel user = SessionManager.GetUserSession();
+            _stripeService.ChargeSavedCard(user.dbUser.StripeCustomerID, 1000);
             return View();
         }
 
         public JsonResult getStripePaymentMethodsList()
         {
-            user user = SessionManager.GetUserSession();
-            StripeList<PaymentMethod> list = _stripeService.ListPaymentMethods(user.StripeCustomerID);
+            LoggedUserModel user = SessionManager.GetUserSession();
+            StripeList<PaymentMethod> list = _stripeService.ListPaymentMethods(user.dbUser.StripeCustomerID);
             return Json(new
             {
                 data = list,
@@ -123,7 +124,7 @@ namespace DropshipPlatform.Controllers
         [HttpPost]
         public JsonResult DeletePaymentMethod(string paymentMethodID)
         {
-            user user = SessionManager.GetUserSession();
+            LoggedUserModel user = SessionManager.GetUserSession();
             return Json(_stripeService.DeletePaymentMethod(paymentMethodID), JsonRequestBehavior.AllowGet);
         }
     }

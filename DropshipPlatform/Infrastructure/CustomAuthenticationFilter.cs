@@ -1,3 +1,4 @@
+using DropshipPlatform.BLL.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace DropshipPlatform.Infrastructure
     {
         public void OnAuthentication(AuthenticationContext filterContext)
         {
-            if (string.IsNullOrEmpty(Convert.ToString(filterContext.HttpContext.Session["UserName"])))
+            if (string.IsNullOrEmpty(SessionManager.GetUserSession().dbUser.Name))
             {
                 filterContext.Result = new HttpUnauthorizedResult();
             }

@@ -1,4 +1,6 @@
-﻿@{
+﻿@using DropshipPlatform.BLL.Services;
+@using DropshipPlatform.BLL.Models;
+@{
     ViewBag.Title = "Orders";
     //Layout = "~/Views/Shared/_Layout.cshtml";
     <link href="~/Content/bootstrap-toggle.min.css" rel="stylesheet" />
@@ -17,13 +19,13 @@
         <div class="row">
             <div class="col-lg-12">
 
-                @if (Session["RoleName"] != null && Session["RoleName"].ToString() != "Seller")
+                @if (SessionManager.GetUserSession().LoggedUserRoleName != StaticValues.seller)
                     {
                         <p class="tbl-title">
                             Order Management - Operation Management
                         </p>
                     }
-                    @if (Session["RoleName"] != null && Session["RoleName"].ToString() == "Seller")
+                    @if (SessionManager.GetUserSession().LoggedUserRoleName == StaticValues.seller)
                     {
                 <p class="tbl-title">
                     Your Order List
@@ -62,19 +64,19 @@
 <section class="row">
     <div class="container-fluid">
 
-        @if (Session["RoleName"] != null && Session["RoleName"].ToString() != "Seller")
+        @if (SessionManager.GetUserSession().LoggedUserRoleName != StaticValues.seller)
             {
                 <div class="col-lg-12 table-responsive  mb-5">
                     <table id="orderDT" class="display" style="width:100%"></table>
                 </div>
             }
-            @if (Session["RoleName"] != null && Session["RoleName"].ToString() == "Seller")
+            @if (SessionManager.GetUserSession().LoggedUserRoleName == StaticValues.seller)
             {
         <div class="col-lg-12 table-responsive  mb-5">
             <table id="orderDTSeller" class="display" style="width:100%"></table>
         </div>
         }
-            @if (Session["RoleName"] == null)
+            @if (SessionManager.GetUserSession().LoggedUserRoleName == null)
             {
                 <p>You need to login !!</p>
             }

@@ -188,8 +188,8 @@ namespace DropshipPlatform.BLL.Services
                                 {
                                     int Alicategory = (int)category.AliExpressCategoryID;
                                     //UpdateProductModel updateProductModel = new UpdateProductModel();
-                                    user user = SessionManager.GetUserSession();
-                                    string productSKU = SyncWithAliExpress(product, Alicategory, user);
+                                    LoggedUserModel user = SessionManager.GetUserSession();
+                                    string productSKU = SyncWithAliExpress(product, Alicategory, user.dbUser);
                                 }
                             }
                         }

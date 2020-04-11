@@ -27,5 +27,8 @@ namespace DropshipPlatform.BLL.Models
         public static string mySqlDb = System.Web.Configuration.WebConfigurationManager.AppSettings["MySqlConnection"].ToString();
         public static string CainiaoFiles_path = System.Web.Configuration.WebConfigurationManager.AppSettings["CainiaoFiles_path"].ToString();
 
+        public static string seller = "Seller";
+        public static string admin = "Admin";
+        public static string operationalManager = "Operational Manager";
     }
 }

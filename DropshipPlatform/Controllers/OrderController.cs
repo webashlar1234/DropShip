@@ -41,13 +41,13 @@ namespace DropshipPlatform.Controllers
             int pageSize = length != null ? Convert.ToInt32(length) : 0;
             int skip = start != null ? Convert.ToInt32(start) : 0;
 
-            user user = SessionManager.GetUserSession();
+            LoggedUserModel user = SessionManager.GetUserSession();
             int UserID = 0;
-            if (Session["RoleName"] != null)
+            if (user.LoggedUserRoleName != null)
             {
-                if (Session["RoleName"].ToString() == "Seller")
+                if (user.LoggedUserRoleName == StaticValues.seller)
                 {
-                    UserID = user.UserID;
+                    UserID = user.dbUser.UserID;
                 }
             }
 
@@ -115,8 +115,8 @@ namespace DropshipPlatform.Controllers
         public JsonResult PayForOrderBySeller(string OrderID)
         {
             OrderService _orderService = new OrderService();
-            user user = SessionManager.GetUserSession();
-            return Json(_orderService.PayForOrderBySeller(OrderID, user.UserID), JsonRequestBehavior.AllowGet);
+            LoggedUserModel user = SessionManager.GetUserSession();
+            return Json(_orderService.PayForOrderBySeller(OrderID, user.dbUser.UserID), JsonRequestBehavior.AllowGet);
         }
     }
 }

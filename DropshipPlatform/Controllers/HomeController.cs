@@ -32,8 +32,8 @@ namespace DropshipPlatform.Controllers
         [HttpGet]
         public ActionResult LogOut()
         {
-            Session["UserName"] = null;
-            Session["UserID"] = null;
+            SessionManager.GetUserSession().dbUser.Name = null;
+            SessionManager.GetUserSession().dbUser.UserID = 0;
             return RedirectToAction("Index", "Home");
         }
 
