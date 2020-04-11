@@ -1,8 +1,10 @@
 ﻿@using DropshipPlatform.BLL.Services;
 @{
-    if (SessionManager.GetUserSession().dbUser.Name != null)
+    if (SessionManager.GetUserSession().dbUser != null)
     {
+        if (SessionManager.GetUserSession().dbUser.Name != null) { 
         Layout = "~/Views/Shared/_Layout.cshtml";
+        }
     }
     else
     {
