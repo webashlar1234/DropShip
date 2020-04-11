@@ -23,6 +23,7 @@ namespace DropshipPlatform.Controllers
         }
 
         [HttpPost]
+        [AjaxFilter]
         public ActionResult getCategoryDatatable(string ddlMappingValue)
         {
             var draw = Request.Form.GetValues("draw") != null ? Request.Form.GetValues("draw").FirstOrDefault() : null;
@@ -143,6 +144,7 @@ namespace DropshipPlatform.Controllers
         }
 
         [HttpPost]
+        [AjaxFilter]
         public JsonResult MapCategory(category category)
         {
             return Json(_categoryService.MapCategory(category), JsonRequestBehavior.AllowGet);

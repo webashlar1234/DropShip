@@ -35,7 +35,7 @@ namespace DropshipPlatform.BLL.Services
             try
             {
                 List<aliexpressjoblog> jobLogList = new List<aliexpressjoblog>();
-                int userid = SessionManager.GetUserSession().dbUser.UserID;
+                int userid = SessionManager.GetUserSession().UserID;
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
                     jobLogList = datacontext.aliexpressjoblogs.Where(x => x.UserID == userid && x.Result == "null" || x.Result == null || x.Result == string.Empty).ToList();

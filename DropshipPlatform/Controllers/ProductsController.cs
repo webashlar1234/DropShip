@@ -15,12 +15,7 @@ namespace DropshipPlatform.Controllers
     public class ProductsController : Controller
     {
         ProductService _productService = new ProductService();
-        // GET: Products
-        public ActionResult Index()
-        {
-            return View();
-        }
-
+       
         [CustomAuthorize("Admin", "Operational Manager", "Seller", "Developer")]
         public ActionResult PickupProducts()
         {
@@ -29,6 +24,7 @@ namespace DropshipPlatform.Controllers
         }
 
         [HttpPost]
+        [AjaxFilter]
         public JsonResult getProductManagementDT(int? category, int? filterOptions)
         {
             LoggedUserModel user = SessionManager.GetUserSession();
@@ -46,45 +42,18 @@ namespace DropshipPlatform.Controllers
             DTRequestModel.SortBy = (!string.IsNullOrEmpty(sortColumn) && !string.IsNullOrEmpty(sortColumnDir)) ? sortColumn + " " + sortColumnDir : "";
             DTRequestModel.Search = search;
             int recordsTotal = 0;
-            List<ProductGroupModel> list = _productService.GetParentProducts(user.dbUser.UserID, DTRequestModel, category, filterOptions, out recordsTotal);
-
-
-
-            //SORT
-            //if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
-            //{
-            //   list = list.OrderBy(sortColumn + " " + sortColumnDir).ToList();
-            //}
-            //if (category > 0)
-            //{
-            //    list = list.Where(x => x.ParentProduct.CategoryID == category).ToList();
-            //}
-            //if (filterOptions == 1)
-            //{
-            //    list = list.Where(x => x.ParentProduct.UserID == user.UserID).ToList();
-            //    list = list.Where(x => x.ParentProduct.isProductPicked == true).ToList();
-            //}
-            //else if (filterOptions == 2)
-            //{
-            //    list = list.Where(x => x.ParentProduct.UserID != user.UserID).ToList();
-            //    list = list.Where(x => x.ParentProduct.hasProductSkuSync == false && x.ParentProduct.isProductPicked == false).ToList();
-            //}
-            //else if (filterOptions == 3)
-            //{
-            //    list = list.Where(x => x.ParentProduct.UserID == user.UserID).ToList();
-            //    list = list.Where(x => x.ParentProduct.hasProductSkuSync == true && x.ParentProduct.isProductPicked == false).ToList();
-            //}
-
-            //recordsTotal = list.Count();
+            List<ProductGroupModel> list = _productService.GetParentProducts(user.UserID, DTRequestModel, category, filterOptions, out recordsTotal);
+            
             var data = list.ToList();
             return Json(new { draw = draw, recordsFiltered = recordsTotal, recordsTotal = recordsTotal, data = data }, JsonRequestBehavior.AllowGet);
         }
 
+        [AjaxFilter]
         public JsonResult pickSellerProducts(List<scproductModel> products)
         {
             LoggedUserModel user = SessionManager.GetUserSession();
 
-            bool result = _productService.AddSellersPickedProducts(products, user.dbUser.UserID);
+            bool result = _productService.AddSellersPickedProducts(products, user.UserID);
 
             return Json(result, JsonRequestBehavior.AllowGet);
         }
@@ -100,9 +69,10 @@ namespace DropshipPlatform.Controllers
             return View();
         }
 
+        [AjaxFilter]
         public JsonResult getPickedAliProducts(int? category)
         {
-            List<ProductGroupModel> list = _productService.GetPickedProducts(SessionManager.GetUserSession().dbUser.UserID);
+            List<ProductGroupModel> list = _productService.GetPickedProducts(SessionManager.GetUserSession().UserID);
             if (category > 0)
             {
                 list = list.Where(x => x.ParentProduct.CategoryID == category).ToList();
@@ -110,25 +80,19 @@ namespace DropshipPlatform.Controllers
             return Json(new { data = list.ToArray(), }, JsonRequestBehavior.AllowGet);
         }
 
-        //[HttpPost]
-        //public JsonResult UpdatePickedProduct(List<UpdateProductModel> UpdatedModels)
-        //{          
-        //    bool result = false;
-        //    result = _productService.UpdatePickedProduct(UpdatedModels, SessionManager.GetUserSession());
-        //    //string pId = _productService.SyncWithAliExpress();
-        //    return Json(result, JsonRequestBehavior.AllowGet);
-        //}
+        
         [HttpPost]
-        //public JsonResult Up
+        [AjaxFilter]
         public JsonResult UpdatePickedProduct(List<scproductModel> products)
         {
             LoggedUserModel user = SessionManager.GetUserSession();
 
-            bool result = _productService.UpdatePickedProduct(products, user.dbUser.UserID);
+            bool result = _productService.UpdatePickedProduct(products, user.UserID);
 
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
+        [AjaxFilter]
         public JsonResult checkResultByJobId(long id)
         {
             ProductService _productService = new ProductService();
@@ -138,6 +102,7 @@ namespace DropshipPlatform.Controllers
 
 
         [HttpPost]
+        [AjaxFilter]
         public JsonResult updateProductStatuts(string id, bool status)
         {
             ProductService _productService = new ProductService();

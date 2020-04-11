@@ -23,6 +23,8 @@ namespace DropshipPlatform.Controllers
         string secret = System.Web.Configuration.WebConfigurationManager.AppSettings["AliExpress_appSecreat"].ToString();
         string url = System.Web.Configuration.WebConfigurationManager.AppSettings["AliExpress_URL"].ToString();
         AliExpressAuthService _aliExpressAuthService = new AliExpressAuthService();
+
+        [AjaxFilter]
         public ActionResult Index()
         {
             ViewBag.authorizeUrl = _aliExpressAuthService.getAuthorizeUrl();
@@ -37,6 +39,7 @@ namespace DropshipPlatform.Controllers
         }
 
         [HttpGet]
+        [AjaxFilter]
         public ActionResult Authorize(string code)
         {
             AliExpressAccessToken accessToken = _aliExpressAuthService.getAccessToken(code);
@@ -46,13 +49,14 @@ namespace DropshipPlatform.Controllers
                 //TimeSpan timespan = TimeSpan.FromMilliseconds(float.Parse(accessToken.expire_time));
                 //DateTime dt = DateTime.Now.Add(timespan);
 
-                new UserService().UpdateUserForAliExpress(SessionManager.GetUserSession().dbUser.UserID, accessToken);
+                new UserService().UpdateUserForAliExpress(SessionManager.GetUserSession().UserID, accessToken);
                 SessionManager.SetAccessToken(accessToken);
             }
             return RedirectToAction("Index", "AliExpress");
         }
 
         [HttpGet]
+        [AjaxFilter]
         public JsonResult checkResultByJobId(long id)
         {
             ProductService _productService = new ProductService();
@@ -60,6 +64,7 @@ namespace DropshipPlatform.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
+        [AjaxFilter]
         public JsonResult getJobList()
         {
             ProductService _productService = new ProductService();
@@ -74,6 +79,7 @@ namespace DropshipPlatform.Controllers
         }
 
         [HttpPost]
+        [AjaxFilter]
         public ActionResult getJobLogData()
         {
             ProductService _productService = new ProductService();
@@ -111,6 +117,7 @@ namespace DropshipPlatform.Controllers
         }
 
         [HttpPost]
+        [AjaxFilter]
         public JsonResult updateJobLogResult(aliexpressjoblog aliExpressJobLog)
         {
             ProductService _productService = new ProductService();
@@ -119,6 +126,7 @@ namespace DropshipPlatform.Controllers
 
 
         [HttpGet]
+        [AjaxFilter]
         public JsonResult getResultByJobId(long id)
         {
             ProductService _productService = new ProductService();

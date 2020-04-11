@@ -1,4 +1,5 @@
 ﻿using DropshipPlatform.BLL.Services;
+using DropshipPlatform.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,11 +33,10 @@ namespace DropshipPlatform.Controllers
         [HttpGet]
         public ActionResult LogOut()
         {
-            SessionManager.GetUserSession().dbUser.Name = null;
-            SessionManager.GetUserSession().dbUser.UserID = 0;
+            SessionManager.RemoveUserSession();
             return RedirectToAction("Index", "Home");
         }
-
+        [CustomAuthorize("Admin")]
         public ActionResult UserManagement()
         {
             return View();

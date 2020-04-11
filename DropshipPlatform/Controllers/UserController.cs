@@ -23,6 +23,7 @@ namespace DropshipPlatform.Controllers
         }
 
         [HttpPost]
+        [AjaxFilter]
         public ActionResult getUserDatatable()
         {
             var draw = Request.Form.GetValues("draw") != null ? Request.Form.GetValues("draw").FirstOrDefault() : null;
