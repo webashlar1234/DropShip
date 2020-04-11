@@ -53,7 +53,7 @@ namespace DropshipPlatform.BLL.Services
                 Top.Api.Response.AliexpressSolutionOrderGetResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
                 result = JsonConvert.SerializeObject(rsp.Result);
                 orders = JsonConvert.DeserializeObject<ResultData>(result);
-                if(orders != null)
+                if (orders != null)
                 {
                     if (orders.TargetList.Count > 0)
                     {
@@ -196,7 +196,7 @@ namespace DropshipPlatform.BLL.Services
                                 AliexpressSolutionOrderInfoGetResponse.BaseResultDomain OrderDetails = rsp1.Result;
 
                                 OrderAPIResultModal orderResult = new OrderAPIResultModal();
-                                bool resultStripePayment = true;
+                                StripeResultModel resultStripePayment = null;
                                 if (item.OrderStatus == "WAIT_SELLER_SEND_GOODS" || item.OrderStatus == "SELLER_PART_SEND_GOODS")
                                 {
                                     try
@@ -273,8 +273,11 @@ namespace DropshipPlatform.BLL.Services
                                 OrderData.ItemCreatedWhen = DateTime.UtcNow;
                                 OrderData.ItemModifyBy = null;
                                 OrderData.ItemModifyWhen = DateTime.UtcNow;
-                                OrderData.SellerPaymentStatus = resultStripePayment;
-                                OrderData.SellerPaymentDetails = null;
+                                if (resultStripePayment != null)
+                                {
+                                    OrderData.SellerPaymentStatus = resultStripePayment.IsSuccess == true ? 1 : 0;
+                                    OrderData.SellerPaymentDetails = resultStripePayment.Result;
+                                }
                                 OrderData.TrackingNo = orderResult.LogisticsNumber;
                                 OrderData.CainiaoLable = orderResult.CainiaoLabel;
                                 OrderData.OrderApiError = orderResult.Error;
@@ -358,7 +361,8 @@ namespace DropshipPlatform.BLL.Services
                                   SellerID = u.AliExpressSellerID,
                                   SellerEmail = u.EmailID,
                                   TrackingNumber = o.TrackingNo,
-                                  IsReadyToShipAny = o.OrderStatus == "Waiting for Shipment" ? true : false
+                                  IsReadyToShipAny = o.OrderStatus == StaticValues.Waiting_for_Shipment ? true : false,
+                                  IsReadyToRefund = (o.SellerPaymentStatus == 1 && o.OrderStatus == StaticValues.Waiting_for_Shipment) ? true : false
                               }).ToList();
 
                     List<OrderViewModel> childList = (from o in datacontext.orders
@@ -377,7 +381,7 @@ namespace DropshipPlatform.BLL.Services
                                                           Price = oi.Price,
                                                           Colour = oi.Color,
                                                           Size = oi.Size,
-                                                          IsReadyToBuy = !string.IsNullOrEmpty(sp.AliExpressProductID) && o.SellerPaymentStatus == true && o.OrderStatus == "Unpurchased" ? true : false
+                                                          IsReadyToBuy = !string.IsNullOrEmpty(sp.AliExpressProductID) && o.SellerPaymentStatus == 1 && o.OrderStatus == StaticValues.Unpurchased ? true : false
                                                       }).ToList();
 
                     if (Orders.Count > 0)
@@ -712,7 +716,7 @@ namespace DropshipPlatform.BLL.Services
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
                     DbOrder = datacontext.orders.Where(x => x.AliExpressOrderID == OrderID).FirstOrDefault();
-                    DbOrder.OrderStatus = "Waiting for Shipment";
+                    DbOrder.OrderStatus = StaticValues.Waiting_for_Shipment;
                     datacontext.Entry(DbOrder).State = EntityState.Modified;
                     datacontext.SaveChanges();
                 }
@@ -727,7 +731,7 @@ namespace DropshipPlatform.BLL.Services
         }
         public bool PayForOrderBySeller(string OrderID, int UserID)
         {
-            bool resultStripePayment = true;
+            StripeResultModel resultStripePayment = new StripeResultModel();
             try
             {
                 //charge seller
@@ -751,10 +755,11 @@ namespace DropshipPlatform.BLL.Services
                         if (!string.IsNullOrEmpty(UserData.StripeCustomerID) && !string.IsNullOrEmpty(UserData.OrderAmount) && !string.IsNullOrEmpty(UserData.AliExpressLoginID))
                         {
                             resultStripePayment = _stripeservice.ChargeSavedCard(UserData.StripeCustomerID, Convert.ToInt64(UserData.OrderAmount));
-                            if (resultStripePayment)
+                            if (resultStripePayment != null)
                             {
                                 order order = datacontext.orders.Where(x => x.AliExpressOrderID == OrderID && x.AliExpressLoginID == UserData.AliExpressLoginID).FirstOrDefault();
-                                order.SellerPaymentStatus = true;
+                                order.SellerPaymentStatus = resultStripePayment.IsSuccess == true ? 1 : 0;
+                                order.SellerPaymentDetails = resultStripePayment.Result;
                                 datacontext.Entry(order).State = EntityState.Modified;
                                 datacontext.SaveChanges();
                             }
@@ -764,12 +769,59 @@ namespace DropshipPlatform.BLL.Services
             }
             catch (Exception ex)
             {
-                resultStripePayment = false;
+                resultStripePayment.IsSuccess = false;
                 logger.Info(ex.ToString());
             }
 
-            return resultStripePayment;
+            return resultStripePayment.IsSuccess;
         }
+
+
+        public bool RefundSellerForOrder(string OrderID)
+        {
+            StripeResultModel resultStripeRefund = new StripeResultModel();
+            try
+            {
+                StripeService _stripeservice = new StripeService();
+
+                using (DropshipDataEntities datacontext = new DropshipDataEntities())
+                {
+                    var UserData = (from o in datacontext.orders
+                                    from u in datacontext.users.Where(x => x.AliExpressLoginID == o.AliExpressLoginID)
+                                    where o.AliExpressOrderID == OrderID
+                                    select new
+                                    {
+                                        o.OrderAmount,
+                                        u.UserID,
+                                        o.AliExpressLoginID
+                                    }).FirstOrDefault();
+
+                    if (UserData != null)
+                    {
+                        if (!string.IsNullOrEmpty(UserData.OrderAmount) && UserData.UserID > 0)
+                        {
+                            resultStripeRefund = _stripeservice.RefundStripeUser(UserData.UserID, Convert.ToInt64(UserData.OrderAmount));
+                            if (resultStripeRefund != null)
+                            {
+                                order order = datacontext.orders.Where(x => x.AliExpressOrderID == OrderID && x.AliExpressLoginID == UserData.AliExpressLoginID).FirstOrDefault();
+                                order.SellerPaymentStatus = resultStripeRefund.IsSuccess == true ? 2 : 0;
+                                order.SellerPaymentDetails = resultStripeRefund.Result;
+                                datacontext.Entry(order).State = EntityState.Modified;
+                                datacontext.SaveChanges();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                resultStripeRefund.IsSuccess = false;
+                logger.Info(ex.ToString());
+            }
+
+            return resultStripeRefund.IsSuccess;
+        }
+
         public string getLocalOrderStatus(string AliOrderStatus)
         {
             string OrderStatus = string.Empty;
@@ -777,16 +829,16 @@ namespace DropshipPlatform.BLL.Services
             switch (AliOrderStatus)
             {
                 case "WAIT_SELLER_SEND_GOODS":
-                    OrderStatus = "Unpurchased";
+                    OrderStatus = StaticValues.Unpurchased;
                     break;
                 case "SELLER_PART_SEND_GOODS":
-                    OrderStatus = "Unpurchased";
+                    OrderStatus = StaticValues.Unpurchased;
                     break;
                 case "FINISH":
-                    OrderStatus = "Shipped";
+                    OrderStatus = StaticValues.Shipped;
                     break;
                 default:
-                    OrderStatus = "Shipped";
+                    OrderStatus = StaticValues.Shipped;
                     break;
             }
 

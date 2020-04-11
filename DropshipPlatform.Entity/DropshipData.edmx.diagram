@@ -28,10 +28,10 @@
         <EntityTypeShape EntityType="dropshipdataModel.aliexpressjoblog" Width="1.5" PointX="3.375" PointY="13.75" />
         <EntityTypeShape EntityType="dropshipdataModel.user" Width="1.5" PointX="14.375" PointY="14.75" />
         <EntityTypeShape EntityType="dropshipdataModel.aliexpressorder" Width="1.5" PointX="7.375" PointY="9.75" />
-        <EntityTypeShape EntityType="dropshipdataModel.order" Width="1.5" PointX="5.375" PointY="15.75" />
         <EntityTypeShape EntityType="dropshipdataModel.product" Width="1.5" PointX="9.375" PointY="9.75" />
         <EntityTypeShape EntityType="dropshipdataModel.defaultaddress" Width="1.5" PointX="11.375" PointY="14.75" />
         <EntityTypeShape EntityType="dropshipdataModel.paymentprofile" Width="1.5" PointX="16.375" PointY="8.75" />
+        <EntityTypeShape EntityType="dropshipdataModel.order" Width="1.5" PointX="5.375" PointY="15.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

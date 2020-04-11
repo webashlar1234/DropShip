@@ -44,9 +44,9 @@ namespace DropshipPlatform.Entity
         public virtual DbSet<aliexpressjoblog> aliexpressjoblogs { get; set; }
         public virtual DbSet<user> users { get; set; }
         public virtual DbSet<aliexpressorder> aliexpressorders { get; set; }
-        public virtual DbSet<order> orders { get; set; }
         public virtual DbSet<product> products { get; set; }
         public virtual DbSet<defaultaddress> defaultaddresses { get; set; }
         public virtual DbSet<paymentprofile> paymentprofiles { get; set; }
+        public virtual DbSet<order> orders { get; set; }
     }
 }

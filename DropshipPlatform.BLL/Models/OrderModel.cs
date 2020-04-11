@@ -32,7 +32,7 @@ namespace DropshipPlatform.BLL.Models
         public string OrderStatus { get; set; }
         public string AliExpressOrderID { get; set; }
         public string PaymentStatus { get; set; }
-        public bool? SellerPaymentStatus { get; set; }
+        public Nullable<int> SellerPaymentStatus { get; set; }
         public string SellerID { get; set; }
         public string SellerEmail { get; set; }
         public string LogisticType { get; set; }
@@ -41,6 +41,7 @@ namespace DropshipPlatform.BLL.Models
         public string TrackingNumber { get; set; }
         public Nullable<bool> IsReadyToBuyAny { get; set; }
         public Nullable<bool> IsReadyToShipAny { get; set; }
+        public Nullable<bool> IsReadyToRefund { get; set; }
         public List<OrderViewModel> ChildOrderItemList { get; set; }
     }
 

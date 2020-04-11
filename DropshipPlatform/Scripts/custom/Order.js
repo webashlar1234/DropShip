@@ -11,12 +11,14 @@ var order = {
         adminTable = $("#orderDT").length > 0 ? true :false;
         sellerTable = $("#orderDTSeller").length > 0 ? true : false;
 
+        console.log(adminTable + "," + sellerTable);
         if (adminTable) {
             order.initOrderTable();
         }
         else if (sellerTable) {
             order.initSeller();
         }
+        
     },
     initSeller: function () {
         order.initOrderTableSeller();
@@ -59,6 +61,31 @@ var order = {
                 error: function (err) {
                     HideLoader();
                     ErrorMessage("Your payment is faild for order " + OrderId + ", please try again later");
+                }
+            });
+        });
+
+        $(document).on('click', '.RefundOrder', function () {
+            ShowLoader();
+            var OrderId = $(this).data('full').AliExpressOrderID;
+            $.ajax({
+                type: "POST",
+                url: "/Order/RefundSellerForOrder",
+                dataType: "json",
+                async: false,
+                data: { OrderID: OrderId },
+                success: function (data) {
+                    if (data) {
+                        SuccessMessage("Refund is done successfully");
+                    }
+                    else {
+                        ErrorMessage("Refund is faild for order " + OrderId + ", please try again later");
+                    }
+                    HideLoader();
+                },
+                error: function (err) {
+                    HideLoader();
+                    ErrorMessage("Refund is faild for order " + OrderId + ", please try again later");
                 }
             });
         });
@@ -133,8 +160,8 @@ var order = {
             columnDefs: [
                 {
                     targets: 0,
-                    sortable: true,
-                    width: "3%",
+                    sortable: false,
+                    width: "2%",
                     "render": function (data, type, full) {
                         return data;
                     }
@@ -158,7 +185,7 @@ var order = {
                 {
                     targets: 3,
                     sortable: true,
-                    width: "10%",
+                    width: "5%",
                     "render": function (data, type, full) {
                         return data;
                     }
@@ -166,7 +193,7 @@ var order = {
                 {
                     targets: 4,
                     sortable: true,
-                    width: "10%",
+                    width: "5%",
                     "render": function (data, type, row) {
                         return data;
                     }
@@ -174,7 +201,7 @@ var order = {
                 {
                     targets: 5,
                     sortable: true,
-                    width: "15%",
+                    width: "12%",
                     "render": function (data, type, full) {
                         return data;
                     }
@@ -207,14 +234,20 @@ var order = {
                 {
                     targets: 9,
                     sortable: true,
-                    width: "8%",
+                    width: "20%",
                     "render": function (data, type, full) {
+                        var RawHTML = "";
+
                         if (data) {
-                            return "<a class='btn btn-info btn-sm BuyAll' data-full='" + global.build_full_attrData(full) + "' onclick=BuyAllProduct(this)>Buy All</a>";
+                            RawHTML = "<a class='btn btn-info btn-sm BuyAll' data-full='" + global.build_full_attrData(full) + "' onclick=BuyAllProduct(this)>Buy All</a>";
                         }
                         else if (full.IsReadyToShipAny) {
-                            return '<a class="btn btn-info btn-sm shipOrder" data-orderid="' + full.AliExpressOrderID + '" data-isfullship="true">Ship Now</a><input class="form-control tracking" name="txtTracking" type="text" style="margin-top:5px" value="' + (full.TrackingNumber ? full.TrackingNumber : '') + '">';
+                            RawHTML = '<a class="btn btn-info btn-sm shipOrder" data-orderid="' + full.AliExpressOrderID + '" data-isfullship="true">Ship Now</a><input class="form-control tracking" name="txtTracking" type="text" value="' + (full.TrackingNumber ? full.TrackingNumber : '') + '">';
                         }
+                        if (full.IsReadyToRefund) {
+                            RawHTML += "<a class='btn btn-info btn-sm RefundOrder' data-full='" + global.build_full_attrData(full) + "'>Refund</a>";
+                        }
+                        return RawHTML;
                     }
                 }
             ],
@@ -408,7 +441,7 @@ function BuyProduct(productLink, data, OrderId, TrackingNumber) {
     //data.outerHTML += '<input class="form-control tracking" name="txtTracking" type="text" style="margin-top:5px" value="' + TrackingNumber + '">'
     window.open("http://" + productLink);
 
-    $('<a class="btn btn-info btn-sm shipOrder" data-orderid="' + OrderId + '" data-isfullship="false">Ship Now</a><input class="form-control tracking" name="txtTracking" type="text" style="margin-top:5px" value="' + (TrackingNumber ? TrackingNumber : '') + '">').insertAfter(data)
+    $('<a class="btn btn-info btn-sm shipOrder" data-orderid="' + OrderId + '" data-isfullship="false">Ship Now</a><input class="form-control tracking" name="txtTracking" type="text" value="' + (TrackingNumber ? TrackingNumber : '') + '">').insertAfter(data)
     $(data).remove();
     UpdateOrderStatus(OrderId);
 }
@@ -419,7 +452,7 @@ function BuyAllProduct(thisitem) {
         window.open("http://" + item.OrignalProductLink);
     });
 
-    $('<a class="btn btn-info btn-sm shipOrder" data-orderid="' + Order.AliExpressOrderID + '" data-isfullship="true">Ship Now</a><input class="form-control tracking" name="txtTracking" type="text" style="margin-top:5px" value="' + (Order.TrackingNumber ? Order.TrackingNumber : '') + '">').insertAfter(thisitem);
+    $('<a class="btn btn-info btn-sm shipOrder" data-orderid="' + Order.AliExpressOrderID + '" data-isfullship="true">Ship Now</a><input class="form-control tracking" name="txtTracking" type="text" value="' + (Order.TrackingNumber ? Order.TrackingNumber : '') + '">').insertAfter(thisitem);
     $(thisitem).remove();
     UpdateOrderStatus(Order.AliExpressOrderID);
 }
@@ -462,7 +495,7 @@ function format(data) {
             '</td><td>' + value.Price +
             '</td><td>' + value.Colour +
             '</td><td>' + value.Size +
-            '</td><td>' + adminTable ? BuyNowLink : '' +
+            '</td><td>' + (adminTable ? BuyNowLink : '') +
             '</td></tr>';
     });
     // `data` is the original data object for the row

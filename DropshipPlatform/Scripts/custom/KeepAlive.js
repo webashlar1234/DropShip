@@ -4,7 +4,7 @@ var keepSessionAliveUrl = null;
 var KeepAlive = {
 
     KeepSessionAliveTimer: function () {
-        setTimeout("KeepAlive.KeepSessionAlive()", 60000);
+        setTimeout("KeepAlive.KeepSessionAlive()", 600000);
     },
 
     KeepSessionAlive: function () {

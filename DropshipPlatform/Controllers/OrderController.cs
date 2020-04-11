@@ -12,6 +12,8 @@ namespace DropshipPlatform.Controllers
 {
     public class OrderController : Controller
     {
+        readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         [CustomAuthorize("Admin", "Operational Manager","Seller", "Developer")]
         public ActionResult getOrders()
         {
@@ -46,18 +48,20 @@ namespace DropshipPlatform.Controllers
             }
 
             List<OrderData> retvalue = _orderService.getAllOrdersFromDatabase(UserID);
+            logger.Info("order count : "+retvalue.Count);
 
-            if (orderStatus != "All")
+            if (orderStatus != "All" && !string.IsNullOrEmpty(orderStatus))
             {
+                logger.Info("orderStatus : " + orderStatus);
                 retvalue = retvalue.Where(x => x.OrderStatus == orderStatus).ToList();
             }
             if (sellerPaymentStatus == 1)
             {
-                retvalue = retvalue.Where(x => x.SellerPaymentStatus == true).ToList();
+                retvalue = retvalue.Where(x => x.SellerPaymentStatus == 1).ToList();
             }
             else if (sellerPaymentStatus == 2)
             {
-                retvalue = retvalue.Where(x => x.SellerPaymentStatus == false).ToList();
+                retvalue = retvalue.Where(x => x.SellerPaymentStatus == 0).ToList();
             }
             if (!string.IsNullOrEmpty(search))
             {
@@ -111,6 +115,14 @@ namespace DropshipPlatform.Controllers
             OrderService _orderService = new OrderService();
             LoggedUserModel user = SessionManager.GetUserSession();
             return Json(_orderService.PayForOrderBySeller(OrderID, user.UserID), JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        [CustomAuthorize("Admin", "Operational Manager", "Developer")]
+        public JsonResult RefundSellerForOrder(string OrderID)
+        {
+            OrderService _orderService = new OrderService();
+            return Json(_orderService.RefundSellerForOrder(OrderID), JsonRequestBehavior.AllowGet);
         }
     }
 }

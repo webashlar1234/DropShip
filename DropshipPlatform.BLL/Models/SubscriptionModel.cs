@@ -93,4 +93,10 @@ namespace DropshipPlatform.BLL.Models
         
         public DateTime? TrialStart { get; set; }
     }
+
+    public class StripeResultModel
+    {
+        public bool IsSuccess { get; set; }
+        public string Result { get; set; }
+    }
 }

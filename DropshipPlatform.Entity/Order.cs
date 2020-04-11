@@ -23,12 +23,12 @@ namespace DropshipPlatform.Entity
         public string PaymentStatus { get; set; }
         public string AliExpressLoginID { get; set; }
         public string TrackingNo { get; set; }
+        public Nullable<int> SellerPaymentStatus { get; set; }
+        public string SellerPaymentDetails { get; set; }
         public Nullable<int> ItemCreatedBy { get; set; }
         public Nullable<System.DateTime> ItemCreatedWhen { get; set; }
         public Nullable<int> ItemModifyBy { get; set; }
         public Nullable<System.DateTime> ItemModifyWhen { get; set; }
-        public Nullable<bool> SellerPaymentStatus { get; set; }
-        public string SellerPaymentDetails { get; set; }
         public byte[] CainiaoLable { get; set; }
         public string OrderApiError { get; set; }
         public string OrderApiResult { get; set; }

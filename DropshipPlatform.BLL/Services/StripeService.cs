@@ -140,9 +140,9 @@ namespace DropshipPlatform.BLL.Services
             return result;
         }
 
-        public bool ChargeSavedCard(string StripeCustomerID, long amount)
+        public StripeResultModel ChargeSavedCard(string StripeCustomerID, long amount)
         {
-            bool result = false;
+            StripeResultModel StripeResultModel = new StripeResultModel();
             try
             {
                 var options = new PaymentMethodListOptions
@@ -166,11 +166,13 @@ namespace DropshipPlatform.BLL.Services
                         OffSession = true,
                     };
                     PIservice.Create(options_create);
-                    result = true;
+                    StripeResultModel.IsSuccess = true;
                 }
             }
             catch (StripeException e)
             {
+                StripeResultModel.IsSuccess = false;
+                StripeResultModel.Result = Newtonsoft.Json.JsonConvert.SerializeObject(e.StripeError);
                 switch (e.StripeError.ErrorType)
                 {
                     case "card_error":
@@ -179,7 +181,6 @@ namespace DropshipPlatform.BLL.Services
                         var paymentIntentId = e.StripeError.PaymentIntent.Id;
                         var service = new PaymentIntentService();
                         var paymentIntent = service.Get(paymentIntentId);
-                        result = false;
                         logger.Error(paymentIntent.Id);
                         break;
                     default:
@@ -188,7 +189,7 @@ namespace DropshipPlatform.BLL.Services
                 }
             }
 
-            return result;
+            return StripeResultModel;
         }
 
         public StripeList<PaymentMethod> ListPaymentMethods(string StripeCustomerID)
@@ -429,34 +430,46 @@ namespace DropshipPlatform.BLL.Services
             return result;
         }
 
-        public bool getChargedCardRefund(string AliExpressSellerID)
+        public StripeResultModel RefundStripeUser(int UserID, long amount)
         {
-            bool result = false;
+            StripeResultModel StripeResultModel = new StripeResultModel();
             string PaymentMethodId = string.Empty; 
             try
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    user admin = datacontext.users.Where(x => x.AliExpressSellerID == AliExpressSellerID).FirstOrDefault();
-                    paymentprofile payment = datacontext.paymentprofiles.Where(x => x.UserID == admin.UserID).FirstOrDefault();
-                    PaymentMethodId = payment.StripePaymentMethodId;
+                    PaymentMethodId = (from u in datacontext.users
+                                       from p in datacontext.paymentprofiles.Where(x => x.UserID == u.UserID)
+                                       where u.UserID == UserID && !string.IsNullOrEmpty(u.StripeCustomerID)
+                                       orderby p.IsDefault descending
+                                       select p.StripePaymentMethodId
+                                       ).FirstOrDefault();
                 }
-                var refundService = new RefundService();
-                var refundOptions = new RefundCreateOptions
-                {
-                    PaymentIntent = PaymentMethodId,
-                    //Amount = 1000//to refund part of the amount
-                };
-                var refund = refundService.Create(refundOptions);
-                result = true;
 
+                if (string.IsNullOrEmpty(PaymentMethodId))
+                {
+                    var refundService = new RefundService();
+                    var refundOptions = new RefundCreateOptions
+                    {
+                        PaymentIntent = PaymentMethodId,
+                        Amount = amount
+                    };
+                    var refund = refundService.Create(refundOptions);
+                    StripeResultModel.IsSuccess = true;
+                }
+                else
+                {
+                    StripeResultModel.IsSuccess = false;
+                    StripeResultModel.Result = "PaymentMethodId is null";
+                }
             }
-            catch (Exception ex)
+            catch (StripeException ex)
             {
+                StripeResultModel.IsSuccess = false;
+                StripeResultModel.Result = Newtonsoft.Json.JsonConvert.SerializeObject(ex.StripeError);
                 logger.Error(ex.ToString());
-                result = false;
             }
-            return result;
+            return StripeResultModel;
         }
     }
 }
