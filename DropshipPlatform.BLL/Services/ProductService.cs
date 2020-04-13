@@ -52,7 +52,7 @@ namespace DropshipPlatform.BLL.Services
                     mainproducts = (from p in datacontext.products
                                     join c in datacontext.categories on p.CategoryID equals c.CategoryID
                                     from sp in datacontext.sellerspickedproducts.Where(x => x.ParentProductID == p.ProductID && (filterOptions == 2 ? x.UserID != UserID : x.UserID == UserID)).DefaultIfEmpty()
-                                    where p.ParentProductID == null && !string.IsNullOrEmpty(p.Cost)
+                                    where p.ParentProductID == null && !string.IsNullOrEmpty(p.Cost) && p.IsActive == 1
                                     && (category > 0 ? category == p.CategoryID : true)
                                     && (filterOptions == 1 ? !string.IsNullOrEmpty(sp.AliExpressProductID) : true)
                                     && (filterOptions == 2 ? (string.IsNullOrEmpty(sp.AliExpressProductID) && sp == null) : true)
@@ -99,7 +99,7 @@ namespace DropshipPlatform.BLL.Services
                         List<ProductViewModel> childList = (from p in datacontext.products
                                                             join sps in datacontext.sellerpickedproductskus on p.ProductID equals sps.ProductId into sps1
                                                             from sku in sps1.Where(s => s.UserId == UserID).DefaultIfEmpty()
-                                                            where p.ParentProductID != null
+                                                            where p.ParentProductID != null && p.IsActive == 1
                                                             select new ProductViewModel
                                                             {
                                                                 ProductID = p.ProductID,
@@ -1130,7 +1130,7 @@ namespace DropshipPlatform.BLL.Services
             return result;
         }
 
-        public List<aliexpressjoblog> getJobLogData()
+        public List<aliexpressjoblog> getJobLogData(int userid)
         {
             logger.Info("Hi");
             List<aliexpressjoblog> list = new List<aliexpressjoblog>();
@@ -1139,7 +1139,7 @@ namespace DropshipPlatform.BLL.Services
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    list = datacontext.aliexpressjoblogs.ToList();
+                    list = datacontext.aliexpressjoblogs.Where(x => (userid > 0 ? x.UserID == userid : true)).ToList();
 
                 }
             }

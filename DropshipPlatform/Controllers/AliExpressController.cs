@@ -25,6 +25,7 @@ namespace DropshipPlatform.Controllers
         AliExpressAuthService _aliExpressAuthService = new AliExpressAuthService();
 
         [AjaxFilter]
+        [CustomAuthorize("Seller")]
         public ActionResult Index()
         {
             ViewBag.authorizeUrl = _aliExpressAuthService.getAuthorizeUrl();
@@ -72,7 +73,7 @@ namespace DropshipPlatform.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
-        [CustomAuthorize("Admin", "Operational Manager", "Developer")]
+        [CustomAuthorize("Admin", "Operational Manager", "Developer", "Seller")]
         public ActionResult jobLog()
         {
             return View();
@@ -89,7 +90,12 @@ namespace DropshipPlatform.Controllers
             var length = Request.Form.GetValues("length") != null ? Request.Form.GetValues("length").FirstOrDefault() : null;
             int pageSize = length != null ? Convert.ToInt32(length) : 0;
             int skip = start != null ? Convert.ToInt32(start) : 0;
-            List<aliexpressjoblog> resultList = _productService.getJobLogData();
+
+            int userid = 0;
+            LoggedUserModel user = SessionManager.GetUserSession();
+            if(user.LoggedUserRoleName == StaticValues.seller) { userid = user.UserID; }
+
+            List<aliexpressjoblog> resultList = _productService.getJobLogData(userid);
             List<JobLog> retvalue = resultList.Select(x => new JobLog()
             {
                 Id = x.Id,

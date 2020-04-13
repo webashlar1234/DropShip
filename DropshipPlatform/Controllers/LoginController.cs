@@ -39,7 +39,14 @@ namespace DropshipPlatform.Controllers
                     {
                         SessionManager.SetAccessToken(Newtonsoft.Json.JsonConvert.DeserializeObject<AliExpressAccessToken>(loggedUserModel.AliExpressAccessToken));
                     }
-                    return RedirectToAction("Index", "AliExpress");
+                    if(loggedUserModel.LoggedUserRoleName == StaticValues.seller)
+                    {
+                        return RedirectToAction("Index", "AliExpress");
+                    }
+                    else
+                    {
+                        return RedirectToAction("getOrders", "Order");
+                    } 
                 }
             }
             catch (Exception ex)

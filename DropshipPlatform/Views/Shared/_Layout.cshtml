@@ -50,31 +50,45 @@
                         </button>
                         <div id="navbarContent" class="collapse navbar-collapse">
                             <ul class="navbar-nav mr-auto">
+                                @{ LoggedUserModel user = SessionManager.GetUserSession();}
                                 <!-- End Level one -->
-                                <li class="nav-item"><a href="/AliExpress" class="nav-link">Connect to AliExpress</a></li>
-                                <li class="nav-item"><a href="/Category" class="nav-link">Category Mapping</a></li>
-                                @if (SessionManager.GetUserSession().LoggedUserRoleName == StaticValues.admin)
+                                @if (user.LoggedUserRoleName == StaticValues.seller)
+                                {
+                                    <li class="nav-item"><a href="/AliExpress" class="nav-link">Connect to AliExpress</a></li>
+                                }
+                                @if (user.LoggedUserRoleName == StaticValues.admin || user.LoggedUserRoleName == StaticValues.operationalManager)
+                                {
+                                    <li class="nav-item"><a href="/Category" class="nav-link">Category Mapping</a></li>
+                                }
+                                @if (user.LoggedUserRoleName == StaticValues.admin)
                                 {
                                     <li class="nav-item"><a href="@Url.Action("UserManagement", "Home")" class="nav-link">User Management</a></li>
                                 }
-                                <li class="nav-item"><a href="@Url.Action("Membership","Home")" class="nav-link">Membership</a></li>
+                                @if (user.LoggedUserRoleName == StaticValues.admin || user.LoggedUserRoleName == StaticValues.operationalManager)
+                                {
+                                    <li class="nav-item"><a href="@Url.Action("Membership","Home")" class="nav-link">Membership</a></li>
+                                }
                                 <!-- Level one dropdown -->
                                 <li class="nav-item dropdown">
                                     <a id="dropdownMenu1" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">Product</a>
                                     <ul aria-labelledby="dropdownMenu1" class="dropdown-menu border-0 shadow">
-                                        <li><a href="/Products/PickupProducts" class="dropdown-item">Pickup Products</a></li>
-                                        <li><a href="/Products/MyProduct" class="dropdown-item">My Product</a></li>
+                                        @if (user.LoggedUserRoleName == StaticValues.seller)
+                                        {
+                                            <li><a href="/Products/PickupProducts" class="dropdown-item">Pickup Products</a></li>
+                                            <li><a href="/Products/MyProduct" class="dropdown-item">My Product</a></li>
+                                        }
                                         <li><a href="/AliExpress/jobLog" class="dropdown-item">JobLog Details</a></li>
-
-
-
                                         <!-- Level two dropdown-->
                                         <!-- End Level two -->
                                     </ul>
                                 </li>
                                 <li class="nav-item"><a href="/MyAccount" class="nav-link">My Account</a></li>
                                 <li class="nav-item"><a href="/Order/getOrders" class="nav-link">Orders</a></li>
-                                <li class="nav-item"><a href="/User" class="nav-link">User</a></li>
+                                @if (user.LoggedUserRoleName == StaticValues.admin || user.LoggedUserRoleName == StaticValues.operationalManager)
+                                {
+                                    <li class="nav-item"><a href="/User" class="nav-link">User</a></li>
+                                }
+                                
                             </ul>
                         </div>
                     </div>

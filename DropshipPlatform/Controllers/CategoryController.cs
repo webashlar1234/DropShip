@@ -40,8 +40,9 @@ namespace DropshipPlatform.Controllers
             string sortOrder = "";
 
             List<category> Categorylist = _categoryService.getCategories();
-
-            List<CategoryData> result = Categorylist.Where(x => x.Isleafcategory == "true" || x.Isleafcategory == "1").Select(x => new CategoryData()
+            List<category> AvlCategorylist = _categoryService.getCategoriesOnlyAvailableProd();
+            
+            List<CategoryData> result = AvlCategorylist.Select(x => new CategoryData()
             {
                 CategoryID = x.CategoryID,
                 Name = x.Name,
