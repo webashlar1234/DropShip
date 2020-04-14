@@ -206,7 +206,6 @@ function BindData(jsonProducts) {
     table = $('#TblPickedProduct').DataTable({
         "data": jsonProducts,
         "columns": [{
-            "class": 'details-control',
             "orderable": false,
             "data": null,
             "defaultContent": ''
@@ -231,8 +230,12 @@ function BindData(jsonProducts) {
         },
         { "data": "check" },
         { "data": "IsOnline" }
-
-        ]
+        ],
+        "createdRow": function (row, data, dataIndex) {
+        if (data.ChildProductList.length > 0) {
+            $(row).find("td:eq(0)").addClass('details-control');
+        }
+    }
     });
 
 }
