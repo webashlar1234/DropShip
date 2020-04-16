@@ -133,7 +133,7 @@ namespace DropshipPlatform.BLL.Services
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    list = (from c in datacontext.categories.Where(x => x.Isleafcategory == "true" || x.Isleafcategory == "1")
+                    list = (from c in datacontext.categories
                             from p in datacontext.products.Where(x => x.CategoryID == c.CategoryID)
                             where p.ParentProductID == null && !string.IsNullOrEmpty(p.Cost) && p.IsActive == 1
                             select c).GroupBy(x => x.CategoryID).Select(g => g.FirstOrDefault()).ToList();

@@ -19,7 +19,7 @@ namespace DropshipPlatform.Controllers
         [CustomAuthorize("Admin", "Operational Manager", "Seller", "Developer")]
         public ActionResult PickupProducts()
         {
-            ViewBag.AliCategory = new CategoryService().getCategories();
+            ViewBag.AliCategory = new CategoryService().getCategoriesOnlyAvailableProd();
             return View();
         }
 
@@ -89,14 +89,6 @@ namespace DropshipPlatform.Controllers
 
             bool result = _productService.UpdatePickedProduct(products, user.UserID);
 
-            return Json(result, JsonRequestBehavior.AllowGet);
-        }
-
-        [AjaxFilter]
-        public JsonResult checkResultByJobId(long id)
-        {
-            ProductService _productService = new ProductService();
-            string result = _productService.checkResultByJobId(id);
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 

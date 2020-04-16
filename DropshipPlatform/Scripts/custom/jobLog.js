@@ -139,9 +139,14 @@ function updateResult(jobId) {
                     async: false,
                     data: { JobId: jobId, Result: res },
                     success: function (data) {
-                        SuccessMessage("Job Result Updated successfully");
-                        jobLogDT.clear().draw(false);
                         $('.spinner').hide();
+                        if (data) {
+                            SuccessMessage("Job Result Updated successfully");
+                            jobLogDT.clear().draw(false);
+                        }
+                        else {
+                            ErrorMessage("Result still not fetched, pelase try after some time");
+                        }
                     }
                 });
             }

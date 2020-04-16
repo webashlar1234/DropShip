@@ -60,8 +60,8 @@ namespace DropshipPlatform.Controllers
         [AjaxFilter]
         public JsonResult checkResultByJobId(long id)
         {
-            ProductService _productService = new ProductService();
-            string result = _productService.checkResultByJobId(id);
+            new BackendHelper().RefreshAliExpressJobLog();
+            string result = new ProductService().getResultByJobId(id);
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 

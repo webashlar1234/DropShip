@@ -197,34 +197,42 @@ $(document).ready(function () {
         }
     });
 
-    $("#ProductsDt tbody").on("change", ".parentChk", function () {
+    $("#ProductsDt tbody").on("click", ".parentChk", function (e) {
         //ProductFormValidate();
         console.log($(this).text());
         var parentProductID = $(this).attr('productid');
-        if (event.target.checked) {
-            var parentCheckboxes = $('.parentChk');
-            var allchecked = true;
-            if (parentCheckboxes && parentCheckboxes.length > 0) {
-                for (var i = 0; i < parentCheckboxes.length; i++) {
-                    if (!($(parentCheckboxes[i]).prop('checked'))) {
-                        allchecked = false;
-                        break;
+        if ($(this).attr('aliexpresscategoryid') > 0) {
+            if (event.target.checked) {
+                var parentCheckboxes = $('.parentChk');
+                var allchecked = true;
+                if (parentCheckboxes && parentCheckboxes.length > 0) {
+                    for (var i = 0; i < parentCheckboxes.length; i++) {
+                        if (!($(parentCheckboxes[i]).prop('checked'))) {
+                            allchecked = false;
+                            break;
+                        }
                     }
                 }
-            }
-            if (allchecked) {
-                $('#chkAllProduct').prop('checked', true);
-            }
+                if (allchecked) {
+                    $('#chkAllProduct').prop('checked', true);
+                }
 
-            $('.txtEdit_' + parentProductID + '').prop("disabled", false);
-            $('.txtParent_' + parentProductID + '').prop("disabled", false);
-            $('#btnSave').prop('disabled', false);
+                $('.txtEdit_' + parentProductID + '').prop("disabled", false);
+                $('.txtParent_' + parentProductID + '').prop("disabled", false);
+                $('#btnSave').prop('disabled', false);
 
+            }
+            else {
+                $('#chkAllProduct').prop('checked', false);
+                $('.txtEdit_' + parentProductID + '').prop("disabled", true);
+                $('.txtParent_' + parentProductID + '').prop("disabled", true);
+            }
         }
         else {
-            $('#chkAllProduct').prop('checked', false);
-            $('.txtEdit_' + parentProductID + '').prop("disabled", true);
-            $('.txtParent_' + parentProductID + '').prop("disabled", true);
+            e.preventDefault();
+            e.stopPropagation();
+            ErrorMessage("Product you select doesn't have mapped category, please contact admin to map it.");
+            return false;
         }
     });
 
@@ -280,7 +288,8 @@ function FormatData(json) {
             "check": "<label class='mt-checkbox'><input type='checkbox' class='parentChk' data-SKU=" + json[i].ParentProduct.ProductID + " value='1'><span></span></label>",
             "ChildProductList": json[i].ChildProductList,
             "SellerPickedCount": json[i].ParentProduct.SellerPickedCount,
-            "IsActive": json[i].ParentProduct.IsActive
+            "IsActive": json[i].ParentProduct.IsActive,
+            "AliExpressCategoryID": json[i].ParentProduct.AliExpressCategoryID
         };
         jsonData.push(productGroup);
     }
@@ -396,10 +405,10 @@ function BindData() {
                     rawHTML = "Picked";
                 }
                 else if (full.hasProductSkuSync) {
-                    rawHTML = '<label class="mt-checkbox mt-checkbox-outline disabled"><input disabled type="checkbox" productid=' + full.ProductID + ' id="chk_prod_' + full.ProductID + '" class="chkProducts parentChk"><span></span></label>';
+                    rawHTML = '<label class="mt-checkbox mt-checkbox-outline disabled"><input disabled type="checkbox" aliexpresscategoryid=' + full.AliExpressCategoryID + ' productid=' + full.ProductID + ' id="chk_prod_' + full.ProductID + '" class="chkProducts parentChk"><span></span></label>';
                 }
                 else {
-                    rawHTML = '<label class="mt-checkbox mt-checkbox-outline"><input type="checkbox" productid=' + full.ProductID + ' id="chk_prod_' + full.ProductID + '" class="chkProducts parentChk"><span></span></label>';
+                    rawHTML = '<label class="mt-checkbox mt-checkbox-outline"><input type="checkbox" productid=' + full.ProductID + ' aliexpresscategoryid=' + full.AliExpressCategoryID + ' id="chk_prod_' + full.ProductID + '" class="chkProducts parentChk"><span></span></label>';
                 }
                 return rawHTML;
             }
