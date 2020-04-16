@@ -182,22 +182,22 @@ $(document).ready(function () {
     });
 
     $('#chkAllProduct').change(function (e) {
-        var parentCheckboxes = $('.parentChk');
+        var parentCheckboxes = $('.parentChk').not(":disabled");
         //ProductFormValidate();
         if (event.target.checked) {
-            parentCheckboxes.prop('checked', true);
-            $('#btnSave').prop('disabled', false);
             $('input[name=updatedPrice]').prop("disabled", false);
+            parentCheckboxes.prop('checked', true).change();
+            $('#btnSave').prop('disabled', false);
             SetPickedDisable();
         }
         else {
             parentCheckboxes.prop('checked', false);
-            $('#btnSave').prop('disabled', true);
+            $('#btnSave').prop('disabled', true).change();
             $('input[name=updatedPrice]').prop("disabled", true);
         }
     });
 
-    $("#ProductsDt tbody").on("click", ".parentChk", function (e) {
+    $("#ProductsDt tbody").on("change", ".parentChk", function (e) {
         //ProductFormValidate();
         console.log($(this).text());
         var parentProductID = $(this).attr('productid');
@@ -231,6 +231,8 @@ $(document).ready(function () {
         else {
             e.preventDefault();
             e.stopPropagation();
+            $(this).prop('checked', false);
+            $(this).parents('tr').find('input[name=updatedPrice]').prop("disabled", true);
             ErrorMessage("Product you select doesn't have mapped category, please contact admin to map it.");
             return false;
         }
