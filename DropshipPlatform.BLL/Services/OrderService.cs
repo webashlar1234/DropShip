@@ -28,36 +28,53 @@ namespace DropshipPlatform.BLL.Services
             try
             {
                 ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret);
-                AliexpressSolutionOrderGetRequest req = new AliexpressSolutionOrderGetRequest();
-
-                AliexpressSolutionOrderGetRequest.OrderQueryDomain obj1 = new AliexpressSolutionOrderGetRequest.OrderQueryDomain();
-
-                //var todayDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                //obj1.CreateDateEnd = DateTime.Now.AddMinutes(-5).ToString("yyyy-MM-dd HH:mm:ss");
-                //obj1.CreateDateStart = todayDate;
-                //obj1.ModifiedDateStart = todayDate;
-
-                var todayDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                obj1.CreateDateEnd = todayDate;
-                obj1.CreateDateStart = "2020-03-01 00:00:00";
-                obj1.ModifiedDateStart = "2020-03-01 00:00:00";
-
-                obj1.OrderStatusList = new List<string> { "SELLER_PART_SEND_GOODS", "PLACE_ORDER_SUCCESS", "IN_CANCEL", "WAIT_SELLER_SEND_GOODS", "WAIT_BUYER_ACCEPT_GOODS", "FUND_PROCESSING", "IN_ISSUE", "IN_FROZEN", "WAIT_SELLER_EXAMINE_MONEY", "RISK_CONTROL", "FINISH" };
-                //obj1.BuyerLoginId = "edacan0107@aol.com";
-                obj1.PageSize = 20L;
-                //obj1.ModifiedDateEnd = DateTime.Now.AddMinutes(-5).ToString("yyyy-MM-dd HH:mm:ss");
-                obj1.ModifiedDateEnd = todayDate;
-                obj1.CurrentPage = 1L;
-                //obj1.OrderStatus = "SELLER_PART_SEND_GOODS";
-                req.Param0_ = obj1;
-                Top.Api.Response.AliexpressSolutionOrderGetResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
-                result = JsonConvert.SerializeObject(rsp.Result);
-                orders = JsonConvert.DeserializeObject<ResultData>(result);
-                if (orders != null)
+                List<user> users = new List<user>();
+                using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    if (orders.TargetList.Count > 0)
+                    users = datacontext.users.Where(x => x.IsActive == true && x.AliExpressSellerID != null).ToList();
+                }
+                    
+                foreach (user user in users)
+                {
+                    string access_token = StaticValues.getAccessTokenObjFromStr(user.AliExpressAccessToken);
+                    if (!string.IsNullOrEmpty(access_token))
                     {
-                        InsertOrUpdateOrderData(orders);
+                        AliexpressSolutionOrderGetRequest req = new AliexpressSolutionOrderGetRequest();
+
+                        AliexpressSolutionOrderGetRequest.OrderQueryDomain obj1 = new AliexpressSolutionOrderGetRequest.OrderQueryDomain();
+
+                        //var todayDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                        //obj1.CreateDateEnd = DateTime.Now.AddMinutes(-5).ToString("yyyy-MM-dd HH:mm:ss");
+                        //obj1.CreateDateStart = todayDate;
+                        //obj1.ModifiedDateStart = todayDate;
+
+                        var todayDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                        obj1.CreateDateEnd = todayDate;
+                        obj1.CreateDateStart = "2020-03-01 00:00:00";
+                        obj1.ModifiedDateStart = "2020-03-01 00:00:00";
+
+                        obj1.OrderStatusList = new List<string> { "SELLER_PART_SEND_GOODS", "PLACE_ORDER_SUCCESS", "IN_CANCEL", "WAIT_SELLER_SEND_GOODS", "WAIT_BUYER_ACCEPT_GOODS", "FUND_PROCESSING", "IN_ISSUE", "IN_FROZEN", "WAIT_SELLER_EXAMINE_MONEY", "RISK_CONTROL", "FINISH" };
+                        //obj1.BuyerLoginId = "edacan0107@aol.com";
+                        obj1.PageSize = 20L;
+                        //obj1.ModifiedDateEnd = DateTime.Now.AddMinutes(-5).ToString("yyyy-MM-dd HH:mm:ss");
+                        obj1.ModifiedDateEnd = todayDate;
+                        obj1.CurrentPage = 1L;
+                        //obj1.OrderStatus = "SELLER_PART_SEND_GOODS";
+                        req.Param0_ = obj1;
+                        Top.Api.Response.AliexpressSolutionOrderGetResponse rsp = client.Execute(req, access_token);
+                        result = JsonConvert.SerializeObject(rsp.Result);
+                        orders = JsonConvert.DeserializeObject<ResultData>(result);
+                        if (orders != null)
+                        {
+                            if (orders.TargetList.Count > 0)
+                            {
+                                InsertOrUpdateOrderData(orders, access_token);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        logger.Error("Access Token is null for user "+user.UserID);
                     }
                 }
             }
@@ -166,7 +183,7 @@ namespace DropshipPlatform.BLL.Services
             return result;
         }
 
-        public void InsertOrUpdateOrderData(ResultData orders)
+        public void InsertOrUpdateOrderData(ResultData orders, string access_token)
         {
             try
             {
@@ -191,7 +208,7 @@ namespace DropshipPlatform.BLL.Services
                                 obj.ExtInfoBitFlag = 11111L;
                                 obj.OrderId = item.OrderId;
                                 req1.Param1_ = obj;
-                                AliexpressSolutionOrderInfoGetResponse rsp1 = client.Execute(req1, SessionManager.GetAccessToken().access_token);
+                                AliexpressSolutionOrderInfoGetResponse rsp1 = client.Execute(req1, access_token);
                                 var resultdata1 = JsonConvert.SerializeObject(rsp1.Result);
                                 AliexpressSolutionOrderInfoGetResponse.BaseResultDomain OrderDetails = rsp1.Result;
 
@@ -208,9 +225,9 @@ namespace DropshipPlatform.BLL.Services
                                         resultStripePayment = _stripeservice.ChargeSavedCard(stripeCustomerId, Convert.ToInt64(amount));
 
                                         //get logistic tracking number and cainiao label
-                                        orderResult = getLogisticsServicByOrderId(item.OrderId);
+                                        orderResult = getLogisticsServicByOrderId(item.OrderId, access_token);
                                         logger.Info("Order API Series response" + JsonConvert.SerializeObject(orderResult));
-                                        
+
                                         if (orderResult.CainiaoLabel != null && orderResult.CainiaoLabel.Length > 0)
                                         {
                                             new EmailSender().SendEmail(orderResult.CainiaoLabel, item.OrderId);
@@ -218,7 +235,7 @@ namespace DropshipPlatform.BLL.Services
                                         else
                                         {
                                             new EmailSender().SendFailureEmail(item.OrderId);
-                                        }   
+                                        }
                                     }
                                     catch (Exception ex)
                                     {
@@ -428,7 +445,7 @@ namespace DropshipPlatform.BLL.Services
         }
 
 
-        public OrderAPIResultModal getLogisticsServicByOrderId(long OrderID)
+        public OrderAPIResultModal getLogisticsServicByOrderId(long OrderID, string access_token)
         {
             OrderAPIResultModal OrderResult = new OrderAPIResultModal();
             OrderResult.IsSuccess = true;
@@ -444,14 +461,14 @@ namespace DropshipPlatform.BLL.Services
                 req.GoodsWeight = "1.5"; //optional
                 req.GoodsLength = 1L; //optional
                 req.OrderId = OrderID; //required OrderId
-                AliexpressLogisticsRedefiningGetonlinelogisticsservicelistbyorderidResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
+                AliexpressLogisticsRedefiningGetonlinelogisticsservicelistbyorderidResponse rsp = client.Execute(req, access_token);
 
                 if (!rsp.IsError && rsp.ResultList.Count > 0)
                 {
                     resultdata = JsonConvert.SerializeObject(rsp.ResultList);
                     orderLogisticData = JsonConvert.DeserializeObject<List<LogisticServiceData>>(resultdata);
                     OrderResult.LogisticsServiceId = orderLogisticData[0].LogisticsServiceId;
-                    OrderResult = createWarehouseOrder(orderLogisticData, OrderID, OrderResult);
+                    OrderResult = createWarehouseOrder(orderLogisticData, OrderID, access_token, OrderResult);
                 }
                 else
                 {
@@ -467,7 +484,7 @@ namespace DropshipPlatform.BLL.Services
             return OrderResult;
         }
 
-        public OrderAPIResultModal createWarehouseOrder(List<LogisticServiceData> orderLogisticData, long OrderID, OrderAPIResultModal OrderResult)
+        public OrderAPIResultModal createWarehouseOrder(List<LogisticServiceData> orderLogisticData, long OrderID, string access_token, OrderAPIResultModal OrderResult)
         {
             string resultdata = String.Empty;
             try
@@ -479,7 +496,7 @@ namespace DropshipPlatform.BLL.Services
                 obj.ExtInfoBitFlag = 11111L;
                 obj.OrderId = OrderID;
                 req1.Param1_ = obj;
-                AliexpressSolutionOrderInfoGetResponse rsp1 = client.Execute(req1, SessionManager.GetAccessToken().access_token);
+                AliexpressSolutionOrderInfoGetResponse rsp1 = client.Execute(req1, access_token);
                 var resultdata1 = JsonConvert.SerializeObject(rsp1.Result);
                 AliexpressSolutionOrderInfoGetResponse.BaseResultDomain OrderDetails = rsp1.Result;
 
@@ -619,13 +636,13 @@ namespace DropshipPlatform.BLL.Services
                 req.WarehouseCarrierService = orderLogisticData[0].LogisticsServiceId;
                 req.InvoiceNumber = "";
                 //req.TopUserKey = "xxxxxxx";
-                AliexpressLogisticsCreatewarehouseorderResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
+                AliexpressLogisticsCreatewarehouseorderResponse rsp = client.Execute(req, access_token);
 
                 if (rsp.ResultSuccess)
                 {
                     string res = JsonConvert.SerializeObject(rsp.Result);
                     OrderResult.WarehouseOrderId = rsp.Result.WarehouseOrderId;
-                    getInternationalLogisticNoByOrderId(OrderID, OrderResult);
+                    getInternationalLogisticNoByOrderId(OrderID, access_token, OrderResult);
                 }
                 else
                 {
@@ -642,7 +659,7 @@ namespace DropshipPlatform.BLL.Services
             return OrderResult;
         }
 
-        public OrderAPIResultModal getInternationalLogisticNoByOrderId(long OrderID, OrderAPIResultModal OrderResult)
+        public OrderAPIResultModal getInternationalLogisticNoByOrderId(long OrderID, string access_token, OrderAPIResultModal OrderResult)
         {
             string resultdata = String.Empty;
             try
@@ -650,14 +667,14 @@ namespace DropshipPlatform.BLL.Services
                 ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret);
                 AliexpressLogisticsQuerylogisticsorderdetailRequest req = new AliexpressLogisticsQuerylogisticsorderdetailRequest();
                 req.TradeOrderId = OrderID; //required OrderId
-                AliexpressLogisticsQuerylogisticsorderdetailResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
+                AliexpressLogisticsQuerylogisticsorderdetailResponse rsp = client.Execute(req, access_token);
                 resultdata = JsonConvert.SerializeObject(rsp.Result);
 
                 if (rsp.Result.Success)
                 {
                     List<AliexpressLogisticsQuerylogisticsorderdetailResponse.AeopLogisticsOrderDetailDtoDomain> OrderDetailDto = rsp.Result.ResultList;
                     OrderResult.LogisticsNumber = OrderDetailDto.FirstOrDefault().InternationalLogisticsNum;
-                    getPrintInfo(OrderDetailDto.FirstOrDefault().InternationalLogisticsNum, OrderResult);
+                    getPrintInfo(OrderDetailDto.FirstOrDefault().InternationalLogisticsNum, access_token, OrderResult);
                 }
                 else
                 {
@@ -673,7 +690,7 @@ namespace DropshipPlatform.BLL.Services
             return OrderResult;
         }
 
-        public OrderAPIResultModal getPrintInfo(string international_logistics_id, OrderAPIResultModal OrderResult)
+        public OrderAPIResultModal getPrintInfo(string international_logistics_id, string access_token, OrderAPIResultModal OrderResult)
         {
             string resultdata = String.Empty;
             try
@@ -681,7 +698,7 @@ namespace DropshipPlatform.BLL.Services
                 ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret);
                 AliexpressLogisticsRedefiningGetprintinfoRequest req = new AliexpressLogisticsRedefiningGetprintinfoRequest();
                 req.InternationalLogisticsId = international_logistics_id; //required InternationalLogisticsId from getInternationalLogisticNoByOrderId result
-                AliexpressLogisticsRedefiningGetprintinfoResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
+                AliexpressLogisticsRedefiningGetprintinfoResponse rsp = client.Execute(req, access_token);
                 resultdata = JsonConvert.SerializeObject(rsp.Result);
 
                 if (!rsp.IsError)

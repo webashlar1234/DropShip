@@ -78,15 +78,12 @@ namespace DropshipPlatform.Infrastructure
             {
                 filterContext.HttpContext.Response.StatusCode = 401;
                 filterContext.HttpContext.Response.End();
-                //filterContext.Result = new JsonResult
-                //{
-                //    Data = new
-                //    {
-                //        Status = "login",
-                //        NextUrl = Url
-                //    },
-                //    JsonRequestBehavior = JsonRequestBehavior.AllowGet
-                //};
+                filterContext.Result = new RedirectToRouteResult(
+                new RouteValueDictionary
+                {
+                     { "controller", "Login" },
+                     { "action", "Index" }
+                });
             }
             else
             {

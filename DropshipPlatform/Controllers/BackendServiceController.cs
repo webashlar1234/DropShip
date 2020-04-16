@@ -14,12 +14,10 @@ namespace DropshipPlatform.Controllers
         [AjaxFilter]
         public JsonResult Index()
         {
-            if (SessionManager.GetAccessToken().access_token != null && SessionManager.GetUserSession() != null)
-            {
-                new BackendHelper().RefreshAliExpressJobLog();
-                //new BackendHelper().RefreshAliExpressInventory();
-                new BackendHelper().RefreshAliExpressOrders();
-            }
+            new BackendHelper().RefreshAliExpressJobLog();
+            //new BackendHelper().RefreshAliExpressInventory();
+            //new BackendHelper().RefreshAliExpressOrders();
+
             return new JsonResult { Data = "Success" };
         }
     }

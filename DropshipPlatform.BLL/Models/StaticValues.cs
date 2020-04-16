@@ -35,5 +35,19 @@ namespace DropshipPlatform.BLL.Models
         public static string Unpurchased = "Unpurchased";
         public static string Shipped = "Shipped";
         public static string Waiting_for_Shipment = "Waiting for Shipment";
+
+        public static string getAccessTokenObjFromStr(string TokenStr) {
+
+            string Token = string.Empty;
+            if (!string.IsNullOrEmpty(TokenStr))
+            {
+                AliExpressAccessToken tokenObj = Newtonsoft.Json.JsonConvert.DeserializeObject<AliExpressAccessToken>(TokenStr);
+                if(tokenObj != null)
+                {
+                    Token = tokenObj.access_token;
+                }
+            }
+            return Token;
+        }
     }
 }

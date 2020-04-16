@@ -35,52 +35,55 @@ namespace DropshipPlatform.BLL.Services
             try
             {
                 List<aliexpressjoblog> jobLogList = new List<aliexpressjoblog>();
-                int userid = SessionManager.GetUserSession().UserID;
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    jobLogList = datacontext.aliexpressjoblogs.Where(x => x.UserID == userid && x.Result == "null" || x.Result == null || x.Result == string.Empty).ToList();
+                    jobLogList = datacontext.aliexpressjoblogs.Where(x => x.Result == "null" || x.Result == null || x.Result == string.Empty).ToList();
 
                     foreach (aliexpressjoblog item in jobLogList)
                     {
-                        ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret, "json");
-
-                        AliexpressSolutionFeedQueryRequest fqReq = new AliexpressSolutionFeedQueryRequest();
-                        fqReq.JobId = item.JobId;
-                        //fqReq.JobId = 200000020380394453;
-
-                        AliexpressSolutionFeedQueryResponse fqRsp = client.Execute(fqReq, SessionManager.GetAccessToken().access_token);
-
-                        if (fqRsp != null)
+                        user user = datacontext.users.Where(x => x.UserID == item.UserID).FirstOrDefault();
+                        if(user != null && !string.IsNullOrEmpty(user.AliExpressAccessToken))
                         {
-                            item.Result = JsonConvert.SerializeObject(fqRsp.ResultList);
-                            datacontext.Entry(item).State = System.Data.Entity.EntityState.Modified;
+                            ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret, "json");
 
-                            if(fqRsp.ResultList != null)
+                            AliexpressSolutionFeedQueryRequest fqReq = new AliexpressSolutionFeedQueryRequest();
+                            fqReq.JobId = item.JobId;
+                            //fqReq.JobId = 200000020380394453;
+
+                            AliexpressSolutionFeedQueryResponse fqRsp = client.Execute(fqReq, StaticValues.getAccessTokenObjFromStr(user.AliExpressAccessToken));
+
+                            if (fqRsp != null)
                             {
-                                if (fqRsp.ResultList.Count > 0)
-                                {
-                                    var result = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(fqRsp.ResultList.FirstOrDefault().ItemExecutionResult);
+                                item.Result = JsonConvert.SerializeObject(fqRsp.ResultList);
+                                datacontext.Entry(item).State = System.Data.Entity.EntityState.Modified;
 
-                                    int productOriginalId = int.Parse(item.ProductID);
-                                    product prodObj = datacontext.products.Where(x => x.ProductID == productOriginalId).FirstOrDefault();
-                                    if (prodObj != null)
+                                if (fqRsp.ResultList != null)
+                                {
+                                    if (fqRsp.ResultList.Count > 0)
                                     {
-                                        sellerspickedproduct obj = datacontext.sellerspickedproducts.Where(x => x.UserID == userid && x.ParentProductID == prodObj.ProductID).FirstOrDefault();
-                                        if (obj != null)
+                                        var result = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(fqRsp.ResultList.FirstOrDefault().ItemExecutionResult);
+
+                                        int productOriginalId = int.Parse(item.ProductID);
+                                        product prodObj = datacontext.products.Where(x => x.ProductID == productOriginalId).FirstOrDefault();
+                                        if (prodObj != null)
                                         {
-                                            if (result.success == true)
+                                            sellerspickedproduct obj = datacontext.sellerspickedproducts.Where(x => x.UserID == user.UserID && x.ParentProductID == prodObj.ProductID).FirstOrDefault();
+                                            if (obj != null)
                                             {
-                                                obj.AliExpressProductID = result.productId;
-                                                datacontext.Entry(obj).State = System.Data.Entity.EntityState.Modified;
-                                            }
-                                            else
-                                            {
-                                                List<sellerpickedproductsku> skulist = datacontext.sellerpickedproductskus.Where(x => x.SellerPickedId == obj.SellersPickedID).ToList();
-                                                foreach (var sku in skulist)
+                                                if (result.success == true)
                                                 {
-                                                    datacontext.sellerpickedproductskus.Remove(sku);
+                                                    obj.AliExpressProductID = result.productId;
+                                                    datacontext.Entry(obj).State = System.Data.Entity.EntityState.Modified;
                                                 }
-                                                datacontext.sellerspickedproducts.Remove(obj);
+                                                else
+                                                {
+                                                    List<sellerpickedproductsku> skulist = datacontext.sellerpickedproductskus.Where(x => x.SellerPickedId == obj.SellersPickedID).ToList();
+                                                    foreach (var sku in skulist)
+                                                    {
+                                                        datacontext.sellerpickedproductskus.Remove(sku);
+                                                    }
+                                                    datacontext.sellerspickedproducts.Remove(obj);
+                                                }
                                             }
                                         }
                                     }
@@ -195,13 +198,13 @@ namespace DropshipPlatform.BLL.Services
                             list2.Add(obj3);
                         }
                         req.ItemList_ = list2;
-                        
-                        if (SessionManager.GetAccessToken().access_token != null)
+                        string access_token = StaticValues.getAccessTokenObjFromStr(user.AliExpressAccessToken);
+                        if (!string.IsNullOrEmpty(access_token))
                         {
-                            AliexpressSolutionFeedSubmitResponse rsp = client.Execute(req, SessionManager.GetAccessToken().access_token);
+                            AliexpressSolutionFeedSubmitResponse rsp = client.Execute(req, access_token);
                             AliexpressSolutionFeedQueryRequest fqReq = new AliexpressSolutionFeedQueryRequest();
                             fqReq.JobId = rsp.JobId;
-                            AliexpressSolutionFeedQueryResponse fqRsp = client.Execute(fqReq, SessionManager.GetAccessToken().access_token);
+                            AliexpressSolutionFeedQueryResponse fqRsp = client.Execute(fqReq, access_token);
                             result = JsonConvert.SerializeObject(fqRsp.ResultList);
                             AliExpressJobLogService _aliExpressJobLogService = new AliExpressJobLogService();
                             //_aliExpressJobLogService.AddAliExpressJobLog(new AliExpressJobLog()
