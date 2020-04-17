@@ -137,28 +137,23 @@ function FormatData(json) {
 function format(d) {
     console.log(d.ChildProductList);
     var trs = '';
+    var parentProductTitle = d.Title;
+    var parentProductBrand = d.Brand || "null";
+    var parentProductCost = d.cost;
     $.each($(d.ChildProductList), function (key, value) {
 
-        var brandsHTML = "";
-        var colorHTML = "";
-        var unitHTML = "";
-        var sizeHTML = "";
-
-        if (value.schemaProprtiesModel) {
-            brandsHTML = GeneratePropertyList(value.schemaProprtiesModel.ProductBrands, "ddlBrand", value.OriginalProductID);
-            colorHTML = GeneratePropertyList(value.schemaProprtiesModel.ProductColors, "ddlColor", value.OriginalProductID);
-            unitHTML = GeneratePropertyList(value.schemaProprtiesModel.ProductUnits, "ddlUnit", value.OriginalProductID);
-            sizeHTML = GeneratePropertyList(value.schemaProprtiesModel.ProductSizes, "ddlSize", value.OriginalProductID);
-        }
+        var childProductTitle = value.Title || parentProductTitle;
+        var childProductBrand = value.Brand || parentProductBrand;
+        var childProductCost = value.Cost || parentProductCost;
 
         trs +=
-            '<tr class="skuRow" data-for="' + d.AliExpressProductID + '"><td>' + value.Title +
-            '</td> <td>' + brandsHTML + value.Brand +
-            '</td><td>' + unitHTML + value.NetWeight +
-            '</td><td>' + colorHTML + value.Color +
-            '</td><td>' + sizeHTML + value.Size +
+            '<tr class="skuRow" data-for="' + d.AliExpressProductID + '"><td>' + childProductTitle +
+            '</td> <td>' + parentProductBrand +
+            '</td><td>' +  value.NetWeight +
+            '</td><td>' +  value.Color +
+            '</td><td>' +  value.Size +
             '</td><td>' + value.Inventory +
-            '</td><td>' + "$" + value.Cost +
+            '</td><td>' + (childProductCost ? "$" + childProductCost : null) +
             '</td>' +
         '<td>' + "<input name='updatedPrice' data-isUpdated='false' onkeypress='return IsNumeric(event);' disabled data-sku='" + value.SkuID + "' data-productid='" + value.ProductID + "' type='text' value=" + value.UpdatedPrice + " class='updatedPrice txtEdit_" + value.ParentProductID + "'>" +
             //'</td><td>' + value.Description +

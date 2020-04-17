@@ -292,64 +292,28 @@ namespace DropshipPlatform.BLL.Services
 
                                     List<product> childProducts = datacontext.products.Where(x => x.ParentProductID == dbParentProduct.ProductID).ToList();
 
-                                    double num;
-                                    if (double.TryParse(dbParentProduct.Cost, out num))
+                                    productGroup.ParentProduct = GenerateProductViewModel(dbParentProduct);
+                                    productGroup.ParentProduct.IsOnline = item.IsOnline;
+                                    productGroup.ParentProduct.SellerPrice = item.SellerPrice;
+                                    if (productGroup.ParentProduct != null)
                                     {
-
-                                        productGroup.ParentProduct = GenerateProductViewModel(dbParentProduct);
-                                        productGroup.ParentProduct.IsOnline = item.IsOnline;
-                                        productGroup.ParentProduct.SellerPrice = item.SellerPrice;
-                                        if (productGroup.ParentProduct != null)
-                                        {
-                                            productGroup.ParentProduct.AliExpressProductID = item.AliExpressProductID; //datacontext.SellersPickedProducts.Where(x => x.ParentProductID == dbParentProduct.ProductID).Select(x => x.AliExpressProductID).FirstOrDefault();
-                                        }
+                                        productGroup.ParentProduct.AliExpressProductID = item.AliExpressProductID; //datacontext.SellersPickedProducts.Where(x => x.ParentProductID == dbParentProduct.ProductID).Select(x => x.AliExpressProductID).FirstOrDefault();
                                     }
-                                    ////--------------Schema Model Properties--------------------------------------
-                                    //SchemaProprtiesModel schemaProprtiesModel = schemaProprtiesModelList.Where(sp => sp.AliExpressID == productGroup.ParentProduct.AliExpressCategoryID).FirstOrDefault();
-                                    //if (schemaProprtiesModel == null)
-                                    //{
-                                    //    schemaProprtiesModel = GenerateSchemaPropertyModel(productGroup.ParentProduct.AliExpressCategoryID);
-                                    //    schemaProprtiesModelList.Add(schemaProprtiesModel);
-                                    //}
+
                                     List<sellerpickedproductsku> sellerPickedProductSKUs = datacontext.sellerpickedproductskus.Where(x => x.ProductId == dbParentProduct.ProductID && x.UserId == UserID).ToList();
                                     productGroup.ChildProductList = new List<ProductViewModel>();
-                                    long parentInvetoryTotal = 0;
-                                    long parentPriceTotal = 0;
-
-
-                                    bool hasChild = false;
+                                    
                                     if (childProducts.Count > 0)
                                     {
-                                        hasChild = true;
                                         foreach (product dbChildProduct in childProducts)
                                         {
-                                            if (double.TryParse(dbChildProduct.Cost, out num) == false)
-                                            {
-                                                productGroup.ChildProductList = new List<ProductViewModel>();
-                                                break;
-                                            }
                                             ProductViewModel childProductModel = GenerateProductViewModel(dbChildProduct);
                                             //childProductModel.schemaProprtiesModel = schemaProprtiesModel;
                                             childProductModel = AddUpdatedValues(childProductModel);
-                                            productGroup.ChildProductList.Add(childProductModel);
-                                            //parentInvetoryTotal = parentInvetoryTotal + Convert.ToInt32(childProductModel.Inventory);
-                                            //parentPriceTotal = parentPriceTotal + Convert.ToInt32(childProductModel.Cost);
-                                        }
-                                        //productGroup.ParentProduct.Inventory = parentInvetoryTotal.ToString();
-                                        //productGroup.ParentProduct.Cost = parentPriceTotal;
-                                        // productGroupList.Add(productGroup);
-                                    }
-                                    if (hasChild == false)
-                                    {
-                                        productGroupList.Add(productGroup);
-                                    }
-                                    else
-                                    {
-                                        if (productGroup.ChildProductList.Count > 0)
-                                        {
-                                            productGroupList.Add(productGroup);
+                                            productGroup.ChildProductList.Add(childProductModel);  
                                         }
                                     }
+                                    productGroupList.Add(productGroup);
                                 }
                             }
                         }
@@ -958,7 +922,7 @@ namespace DropshipPlatform.BLL.Services
                                 {
                                     product originalSKU = datacontext.products.Where(x => x.SkuID == productSKU.skuCode).FirstOrDefault();
                                     MySqlConnection mcon1 = new MySqlConnection(StaticValues.mySqlDb);
-                                    MySqlCommand SelectCommand1 = new MySqlCommand(" SELECT MediaLink FROM dropshipdata.productmedia where ProductID=" + originalSKU.ProductID, mcon1);
+                                    MySqlCommand SelectCommand1 = new MySqlCommand(" SELECT MediaLink FROM productmedia where ProductID=" + originalSKU.ProductID, mcon1);
 
                                     string tempchildImages = string.Empty;
                                     MySqlDataReader myReader1;
@@ -995,7 +959,7 @@ namespace DropshipPlatform.BLL.Services
                     string packageHeight = dbProduct.PackageHeight != null ? dbProduct.PackageHeight : "1";
                     string packageLength = dbProduct.PackageLength != null ? dbProduct.PackageLength : "1";
                     string packageWidth = dbProduct.PackageWidth != null ? dbProduct.PackageWidth : "1";
-                    string productWeight = dbProduct.NetWeight != null ? dbProduct.NetWeight.Split(' ')[0] : "234";
+                    string productWeight = dbProduct.NetWeight != null ? dbProduct.NetWeight.Split(' ')[0] : "0.5";
 
                     string description = string.Empty;
                     if (!string.IsNullOrEmpty(dbProduct.Description))
@@ -1132,7 +1096,6 @@ namespace DropshipPlatform.BLL.Services
 
         public List<aliexpressjoblog> getJobLogData(int userid)
         {
-            logger.Info("Hi");
             List<aliexpressjoblog> list = new List<aliexpressjoblog>();
 
             try

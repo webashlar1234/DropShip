@@ -121,16 +121,7 @@ namespace DropshipPlatform.Controllers
             jsonResult.MaxJsonLength = int.MaxValue;
             return jsonResult;
         }
-
-        [HttpPost]
-        [AjaxFilter]
-        public JsonResult updateJobLogResult(aliexpressjoblog aliExpressJobLog)
-        {
-            ProductService _productService = new ProductService();
-            return Json(_productService.updateJobLogResult(aliExpressJobLog), JsonRequestBehavior.AllowGet);
-        }
-
-
+        
         [HttpGet]
         [AjaxFilter]
         public JsonResult getResultByJobId(long id)

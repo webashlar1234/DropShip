@@ -48,11 +48,9 @@ namespace DropshipPlatform.Controllers
             }
 
             List<OrderData> retvalue = _orderService.getAllOrdersFromDatabase(UserID);
-            logger.Info("order count : "+retvalue.Count);
 
             if (orderStatus != "All" && !string.IsNullOrEmpty(orderStatus))
             {
-                logger.Info("orderStatus : " + orderStatus);
                 retvalue = retvalue.Where(x => x.OrderStatus == orderStatus).ToList();
             }
             if (sellerPaymentStatus == 1)

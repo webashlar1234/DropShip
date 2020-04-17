@@ -131,24 +131,13 @@ function updateResult(jobId) {
         dataType: 'json',
         data: { id: jobId },
         success: function (res) {
-            if (res != "null") {
-                $.ajax({
-                    type: "POST",
-                    url: "/AliExpress/updateJobLogResult",
-                    dataType: "json",
-                    async: false,
-                    data: { JobId: jobId, Result: res },
-                    success: function (data) {
-                        $('.spinner').hide();
-                        if (data) {
-                            SuccessMessage("Job Result Updated successfully");
-                            jobLogDT.clear().draw(false);
-                        }
-                        else {
-                            ErrorMessage("Result still not fetched, pelase try after some time");
-                        }
-                    }
-                });
+            $('.spinner').hide();
+            if (res != 'null') {
+                SuccessMessage("Job Result Updated successfully");
+                jobLogDT.clear().draw(false);
+            }
+            else {
+                ErrorMessage("Result still not fetched, pelase try after some time");
             }
         },
         error: function (err) {
