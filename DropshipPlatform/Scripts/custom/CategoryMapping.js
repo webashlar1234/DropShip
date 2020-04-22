@@ -145,7 +145,7 @@ $(document).ready(function () {
                 data: { CategoryID: JSON.parse(unescape(categoryObj)).CategoryID, AliExpressCategoryName: alicategory.text(), AliExpressCategoryId: $(this).val() },
                 success: function (data) {
                     SuccessMessage("Category mapped successfully");
-                    categoryDT.clear().draw();
+                    categoryDT.clear().draw(false);
                 }
             });
         }
