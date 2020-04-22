@@ -24,5 +24,6 @@ namespace DropshipPlatform.Entity
         public string ProductDetails { get; set; }
         public Nullable<System.DateTime> CreatedOn { get; set; }
         public Nullable<int> CreatedBy { get; set; }
+        public string ErrorType { get; set; }
     }
 }

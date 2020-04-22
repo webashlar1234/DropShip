@@ -40,6 +40,7 @@
           <Property Name="ProductID" Type="varchar" MaxLength="50" />
           <Property Name="UserID" Type="int" />
           <Property Name="ProductDetails" Type="text" />
+          <Property Name="ErrorType" Type="varchar" MaxLength="45" />
           <Property Name="CreatedOn" Type="datetime" Precision="0" />
           <Property Name="CreatedBy" Type="int" />
         </EntityType>
@@ -819,6 +820,7 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <Property Name="ProductDetails" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
           <Property Name="CreatedOn" Type="DateTime" />
           <Property Name="CreatedBy" Type="Int32" />
+          <Property Name="ErrorType" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="user">
           <Key>
@@ -1219,6 +1221,7 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <EntitySetMapping Name="aliexpressjoblogs">
             <EntityTypeMapping TypeName="dropshipdataModel.aliexpressjoblog">
               <MappingFragment StoreEntitySet="aliexpressjoblog">
+                <ScalarProperty Name="ErrorType" ColumnName="ErrorType" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
                 <ScalarProperty Name="ProductDetails" ColumnName="ProductDetails" />
