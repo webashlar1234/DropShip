@@ -146,7 +146,7 @@ namespace DropshipPlatform.BLL.Services
 
         public bool AddSellersPickedProducts(List<scproductModel> products, int UserID)
         {
-            bool result = true;
+            bool result = false;
             try
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
@@ -190,6 +190,7 @@ namespace DropshipPlatform.BLL.Services
                                     //UpdateProductModel updateProductModel = new UpdateProductModel();
                                     LoggedUserModel user = SessionManager.GetUserSession();
                                     string productSKU = SyncWithAliExpress(product, Alicategory, user);
+                                    result = true;
                                 }
                             }
                         }
@@ -198,6 +199,7 @@ namespace DropshipPlatform.BLL.Services
             }
             catch (Exception ex)
             {
+                result = false;
                 logger.Error(ex.ToString());
             }
             return result;
@@ -302,7 +304,7 @@ namespace DropshipPlatform.BLL.Services
 
                                     List<sellerpickedproductsku> sellerPickedProductSKUs = datacontext.sellerpickedproductskus.Where(x => x.ProductId == dbParentProduct.ProductID && x.UserId == UserID).ToList();
                                     productGroup.ChildProductList = new List<ProductViewModel>();
-                                    
+
                                     if (childProducts.Count > 0)
                                     {
                                         foreach (product dbChildProduct in childProducts)
@@ -310,7 +312,7 @@ namespace DropshipPlatform.BLL.Services
                                             ProductViewModel childProductModel = GenerateProductViewModel(dbChildProduct);
                                             //childProductModel.schemaProprtiesModel = schemaProprtiesModel;
                                             childProductModel = AddUpdatedValues(childProductModel);
-                                            productGroup.ChildProductList.Add(childProductModel);  
+                                            productGroup.ChildProductList.Add(childProductModel);
                                         }
                                     }
                                     productGroupList.Add(productGroup);
@@ -521,6 +523,7 @@ namespace DropshipPlatform.BLL.Services
             }
             catch (Exception ex)
             {
+                result = String.Empty;
                 logger.Info(ex.ToString());
             }
             return result;
@@ -854,6 +857,7 @@ namespace DropshipPlatform.BLL.Services
 
                         string jsonstr = JsonConvert.SerializeObject(ali_SKUModel, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
                         skuStr.Add(jsonstr);
+
                         //only required
                         //skuStr.Add("{\"inventory\":" + dbProduct.Inventory + ",\"price\":" + scproduct.price + ",\"sku_attributes\":{\"Color\":{\"alias\":\"32\",\"sku_image_url\":\"" + StaticValues.sampleImage + "\",\"value\":\"" + color + "\"}},\"sku_code\":\"" + dbProduct.OriginalProductID + "\"}");
                         //all
@@ -862,6 +866,8 @@ namespace DropshipPlatform.BLL.Services
                     else
                     {
                         int sizecount = 0, colorcount = 0;
+                        var duplicateColorList = new Dictionary<string, string>();
+                        var duplicateSizeList = new Dictionary<string, string>();
                         foreach (ProductSKUModel productSKU in scproduct.SKUModels)
                         {
                             product originalSKU = datacontext.products.Where(x => x.SkuID == productSKU.skuCode).FirstOrDefault();
@@ -872,6 +878,32 @@ namespace DropshipPlatform.BLL.Services
                             //string color = colors.Where(x => x.PropertyName.ToLower() == originalSKU.Color.ToLower()).Select(x => x.PropertyID).FirstOrDefault();
                             string defaultColor = colors.Count() > 0 ? colors[colorcount].PropertyID : null;
                             string color = originalSKU.Color;
+
+                            if (!string.IsNullOrEmpty(color))
+                            {
+                                var colorExist = duplicateColorList.Where(x => x.Key == color).ToList();
+                                if (colorExist.Count == 0)
+                                {
+                                    duplicateColorList.Add(color, defaultColor);
+                                }
+                                else
+                                {
+                                    defaultColor = colorExist[0].Value;
+                                }
+                            }
+                            if (!string.IsNullOrEmpty(Size))
+                            {
+                                var sizeExist = duplicateSizeList.Where(x => x.Key == Size).ToList();
+                                if (sizeExist.Count == 0)
+                                {
+                                    duplicateSizeList.Add(Size, defaultSize);
+                                }
+                                else
+                                {
+                                    defaultSize = sizeExist[0].Value;
+                                }
+                            }
+
 
                             ali_SKUModel ali_SKUModel = new ali_SKUModel();
                             ali_SKUModel.inventory = productSKU.inventory > 0 ? productSKU.inventory.ToString() : "10";
@@ -904,9 +936,12 @@ namespace DropshipPlatform.BLL.Services
                     }
                     mcon.Close();
                     List<string> productImages = new List<string>();
-                    tempparentImages = tempparentImages.Trim().Replace("[", "");
-                    tempparentImages = tempparentImages.Replace("]", "");
-                    productImages = tempparentImages.Split(',').ToList();
+                    if (!String.IsNullOrEmpty(tempparentImages))
+                    {
+                        tempparentImages = tempparentImages.Trim().Replace("[", "");
+                        tempparentImages = tempparentImages.Replace("]", "");
+                        productImages = tempparentImages.Split(',').ToList();
+                    }
                     //List<string> productImages = datacontext.productmedias.Where(x => x.ProductID == dbProduct.ProductID && x.IsMainImage == "true").Select(x => x.MediTaext).ToList();
 
                     if (productImages.Count < 6)
@@ -934,11 +969,17 @@ namespace DropshipPlatform.BLL.Services
                                     }
                                     mcon1.Close();
                                     List<string> childproductImages = new List<string>();
-                                    tempchildImages = tempchildImages.Trim().Replace("[", "");
-                                    tempchildImages = tempchildImages.Replace("]", "");
-                                    childproductImages = tempchildImages.Split(',').ToList();
+                                    if (!String.IsNullOrEmpty(tempchildImages))
+                                    {
+                                        tempchildImages = tempchildImages.Trim().Replace("[", "");
+                                        tempchildImages = tempchildImages.Replace("]", "");
+                                        childproductImages = tempchildImages.Split(',').ToList();
+                                    }
                                     //List<string> childproductImages = datacontext.productmedias.Where(x => x.ProductID == originalSKU.ProductID && x.IsMainImage == "true").Select(x => x.MediTaext).ToList();
-                                    productImages.AddRange(childproductImages);
+                                    if (childproductImages.Count > 0)
+                                    {
+                                        productImages.AddRange(childproductImages);
+                                    }
                                 }
                             }
                         }
@@ -984,14 +1025,14 @@ namespace DropshipPlatform.BLL.Services
             string skuStr = string.Empty;
 
             custom_sku_attributes sku_attributes_obj = new custom_sku_attributes();
-            if (categorySchemaModel.properties.sku_info_list.items.properties.sku_attributes.properties.Size != null && size != null)
+            if (categorySchemaModel.properties.sku_info_list.items.properties.sku_attributes.properties.Size != null && !string.IsNullOrEmpty(size))
             {
                 sku_attributes_obj.Size = new custom_Size();
                 sku_attributes_obj.Size.value = defaultSize;
                 sku_attributes_obj.Size.alias = size;
 
             }
-            if (categorySchemaModel.properties.sku_info_list.items.properties.sku_attributes.properties.Color != null && color != null)
+            if (categorySchemaModel.properties.sku_info_list.items.properties.sku_attributes.properties.Color != null && !string.IsNullOrEmpty(color))
             {
                 sku_attributes_obj.Color = new custom_color();
                 sku_attributes_obj.Color.value = defaultColor;
