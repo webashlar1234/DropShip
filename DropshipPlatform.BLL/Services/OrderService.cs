@@ -33,7 +33,7 @@ namespace DropshipPlatform.BLL.Services
                 {
                     users = datacontext.users.Where(x => x.IsActive == true && x.AliExpressSellerID != null).ToList();
                 }
-                    
+
                 foreach (user user in users)
                 {
                     string access_token = StaticValues.getAccessTokenObjFromStr(user.AliExpressAccessToken);
@@ -51,9 +51,9 @@ namespace DropshipPlatform.BLL.Services
                         var todayDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                         obj1.CreateDateEnd = todayDate;
                         obj1.CreateDateStart = "2020-03-01 00:00:00";
-                        obj1.ModifiedDateStart = "2020-03-01 00:00:00";
+                        //obj1.ModifiedDateStart = "2020-03-01 00:00:00";//don't add this, latest orders aren't fetching using this
 
-                        obj1.OrderStatusList = new List<string> { "SELLER_PART_SEND_GOODS", "PLACE_ORDER_SUCCESS", "IN_CANCEL", "WAIT_SELLER_SEND_GOODS", "WAIT_BUYER_ACCEPT_GOODS", "FUND_PROCESSING", "IN_ISSUE", "IN_FROZEN", "WAIT_SELLER_EXAMINE_MONEY", "RISK_CONTROL", "FINISH" };
+                        //obj1.OrderStatusList = new List<string> { "SELLER_PART_SEND_GOODS", "PLACE_ORDER_SUCCESS", "IN_CANCEL", "WAIT_SELLER_SEND_GOODS", "WAIT_BUYER_ACCEPT_GOODS", "FUND_PROCESSING", "IN_ISSUE", "IN_FROZEN", "WAIT_SELLER_EXAMINE_MONEY", "RISK_CONTROL", "FINISH" };
                         //obj1.BuyerLoginId = "edacan0107@aol.com";
                         obj1.PageSize = 20L;
                         //obj1.ModifiedDateEnd = DateTime.Now.AddMinutes(-5).ToString("yyyy-MM-dd HH:mm:ss");
@@ -74,7 +74,7 @@ namespace DropshipPlatform.BLL.Services
                     }
                     else
                     {
-                        logger.Error("Access Token is null for user "+user.UserID);
+                        logger.Error("Access Token is null for user " + user.UserID);
                     }
                 }
             }
@@ -86,21 +86,41 @@ namespace DropshipPlatform.BLL.Services
 
         }
 
-        public sellerspickedproduct GetProductById(string Id)
+        public product GetProductByAliId(string Id, string sku)
         {
-            sellerspickedproduct products = new sellerspickedproduct();
+            product Product = new product();
             try
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    products = datacontext.sellerspickedproducts.Where(x => x.AliExpressProductID == Id).FirstOrDefault();
+                   long? ProductId = (from sp in datacontext.sellerspickedproducts
+                                from sps in datacontext.sellerpickedproductskus.Where(x => x.SellerPickedId == sp.SellersPickedID && x.SKUCode == sku).DefaultIfEmpty()
+                                where sp.AliExpressProductID == Id
+                                select sps.ProductId > 0 ? sps.ProductId : sp.ParentProductID //if product is sku get sku productid else parent productid
+                                ).FirstOrDefault();
+
+                    Product = datacontext.products.Where(x => x.ProductID == ProductId).FirstOrDefault();
+                    if(Product != null)
+                    {
+                        if(Product.Cost == null)
+                        {
+                            product ParentProduct = datacontext.products.Where(x => x.ProductID == Product.ParentProductID).FirstOrDefault();
+                            Product.Cost = ParentProduct.Cost;
+                        }
+                        currencyrate currency = datacontext.currencyrates.Where(x => x.CurrencyCode == Product.SellingPriceCurrency).FirstOrDefault();
+                        if(currency != null && !string.IsNullOrEmpty(Product.Cost))
+                        {
+                            Product.Cost = String.Format("{0:0.00}", (double.Parse(Product.Cost) * currency.Rate));
+                        }
+                    }
+                    
                 }
             }
             catch (Exception ex)
             {
                 logger.Error(ex.ToString());
             }
-            return products;
+            return Product;
         }
 
         public bool FullFillAliExpressOrder(OrderData orderData, bool isFullShip)
@@ -191,7 +211,7 @@ namespace DropshipPlatform.BLL.Services
                 {
                     using (DropshipDataEntities datacontext = new DropshipDataEntities())
                     {
-                        foreach (var item in orders.TargetList)
+                        foreach (var item in orders.TargetList.Take(1))
                         {
                             aliexpressorder AliExpressOrderData = new aliexpressorder();
                             aliexpressorderitem AliExpressOrderItemData = new aliexpressorderitem();
@@ -214,34 +234,7 @@ namespace DropshipPlatform.BLL.Services
 
                                 OrderAPIResultModal orderResult = new OrderAPIResultModal();
                                 StripeResultModel resultStripePayment = null;
-                                if (item.OrderStatus == "WAIT_SELLER_SEND_GOODS" || item.OrderStatus == "SELLER_PART_SEND_GOODS")
-                                {
-                                    try
-                                    {
-                                        //charge seller
-                                        StripeService _stripeservice = new StripeService();
-                                        string amount = item.PayAmount != null ? item.PayAmount.Amount : null;
-                                        string stripeCustomerId = datacontext.users.Where(x => x.AliExpressLoginID == item.SellerLoginId).Select(x => x.StripeCustomerID).FirstOrDefault();
-                                        resultStripePayment = _stripeservice.ChargeSavedCard(stripeCustomerId, Convert.ToInt64(amount));
-
-                                        //get logistic tracking number and cainiao label
-                                        orderResult = getLogisticsServicByOrderId(item.OrderId, access_token);
-                                        logger.Info("Order API Series response" + JsonConvert.SerializeObject(orderResult));
-
-                                        if (orderResult.CainiaoLabel != null && orderResult.CainiaoLabel.Length > 0)
-                                        {
-                                            new EmailSender().SendEmail(orderResult.CainiaoLabel, item.OrderId);
-                                        }
-                                        else
-                                        {
-                                            new EmailSender().SendFailureEmail(item.OrderId);
-                                        }
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        logger.Info(ex);
-                                    }
-                                }
+                                double sellerChargeAmount = 0;
 
                                 AliExpressOrderData.AliExpressOrderID = item.OrderId;
                                 AliExpressOrderData.BuyerLoginId = item.BuyerLoginId;
@@ -263,11 +256,12 @@ namespace DropshipPlatform.BLL.Services
                                 foreach (var product in item.ProductList)
                                 {
                                     AliExpressOrderItemData.AliExpressProductID = product.ProductId.ToString();
-                                    sellerspickedproduct productData = GetProductById(AliExpressOrderItemData.AliExpressProductID);
+                                    product DbProduct = GetProductByAliId(AliExpressOrderItemData.AliExpressProductID, product.SkuCode);
 
-                                    if (productData != null)
+                                    if (DbProduct != null)
                                     {
-                                        AliExpressOrderItemData.ProductID = Convert.ToInt64(productData.ParentProductID);
+                                        sellerChargeAmount = sellerChargeAmount + double.Parse(DbProduct.Cost);
+                                        AliExpressOrderItemData.ProductID = Convert.ToInt64(DbProduct.ProductID);
                                     }
                                     AliExpressOrderItemData.ProductName = product.ProductName;
                                     AliExpressOrderItemData.Price = product.TotalProductAmount.Amount;
@@ -279,12 +273,55 @@ namespace DropshipPlatform.BLL.Services
                                     AliExpressOrderItemData.SCOrderId = null;
                                     var myJonString = OrderDetails.Data.ChildOrderExtInfoList[0].Sku;
                                     var jo = JObject.Parse(myJonString);
-                                    var colour = jo["sku"][0]["pValue"].ToString();
-                                    var size = jo["sku"][1]["pValue"].ToString();
-                                    AliExpressOrderItemData.Size = size;
-                                    AliExpressOrderItemData.Color = colour;
-
+                                    if (jo["sku"].HasValues)
+                                    {
+                                        foreach(var item1 in jo["sku"])
+                                        {
+                                            if(item1["pName"].ToString().Trim() == "Color")
+                                            {
+                                                var colour = item1["pValue"].ToString();
+                                                AliExpressOrderItemData.Color = colour;
+                                            }
+                                            else if (item1["pName"].ToString().Trim() == "Size")
+                                            {
+                                                var size = item1["pValue"].ToString();
+                                                AliExpressOrderItemData.Size = size;
+                                            }
+                                        }
+                                    }
                                     datacontext.aliexpressorderitems.Add(AliExpressOrderItemData);
+                                }
+
+
+                                if (item.OrderStatus == "WAIT_SELLER_SEND_GOODS" || item.OrderStatus == "SELLER_PART_SEND_GOODS")
+                                {
+                                    try
+                                    {
+                                        //charge seller
+                                        StripeService _stripeservice = new StripeService();
+                                        string stripeCustomerId = datacontext.users.Where(x => x.AliExpressLoginID == item.SellerLoginId).Select(x => x.StripeCustomerID).FirstOrDefault();
+                                        if (!string.IsNullOrEmpty(stripeCustomerId) && sellerChargeAmount > 0)
+                                        {
+                                            resultStripePayment = _stripeservice.ChargeSavedCard(stripeCustomerId, (long)sellerChargeAmount);
+                                        }
+
+                                        //get logistic tracking number and cainiao label
+                                        orderResult = getLogisticsServicByOrderId(item.OrderId, access_token);
+                                        logger.Info("Order API Series response" + JsonConvert.SerializeObject(orderResult));
+
+                                        if (orderResult.CainiaoLabel != null && orderResult.CainiaoLabel.Length > 0)
+                                        {
+                                            new EmailSender().SendEmail(orderResult.CainiaoLabel, item.OrderId);
+                                        }
+                                        else
+                                        {
+                                            new EmailSender().SendFailureEmail(item.OrderId);
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        logger.Info(ex);
+                                    }
                                 }
 
                                 //var OrderId = datacontext.Orders.Where(x => x.OrderID == item.OrderId).Any();
@@ -669,7 +706,7 @@ namespace DropshipPlatform.BLL.Services
                 req.TradeOrderId = OrderID; //required OrderId
                 AliexpressLogisticsQuerylogisticsorderdetailResponse rsp = client.Execute(req, access_token);
                 resultdata = JsonConvert.SerializeObject(rsp.Result);
-
+                
                 if (rsp.Result.Success)
                 {
                     List<AliexpressLogisticsQuerylogisticsorderdetailResponse.AeopLogisticsOrderDetailDtoDomain> OrderDetailDto = rsp.Result.ResultList;

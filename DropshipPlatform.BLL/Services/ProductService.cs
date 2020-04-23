@@ -78,7 +78,7 @@ namespace DropshipPlatform.BLL.Services
                                         SellerPrice = sp.SellerPrice,
                                         isProductPicked = string.IsNullOrEmpty(sp.AliExpressProductID) ? false : true,
                                         OriginalCost = p.Cost,
-                                        Rate = cur.Rate
+                                        Rate = cur.Rate != null && cur.Rate > 0 ? cur.Rate : 1
                                     }).ToList().Where(x => double.TryParse(x.Cost, out num) == true).ToList();
 
                     products = mainproducts;
@@ -88,6 +88,7 @@ namespace DropshipPlatform.BLL.Services
                     {
                         mainproducts = mainproducts.OrderBy(DTReqModel.SortBy).ToList();
                     }
+                    //use do while when products list based on pagesize descresses after null cost
                     do
                     {
                         if (count > 0)
@@ -127,7 +128,7 @@ namespace DropshipPlatform.BLL.Services
                             {
                                 ProductGroupModel productGroup = new ProductGroupModel();
                                 productGroup.ChildProductList = childList.Where(x => x.ParentProductID == productViewModel.ProductID).ToList().Select(x => new ProductViewModel() {
-                                    Cost = !string.IsNullOrEmpty(x.Cost) ? Math.Round(double.Parse(x.Cost) * Convert.ToDouble(productViewModel.Rate), 2).ToString() : "",
+                                    Cost = !string.IsNullOrEmpty(x.Cost) && double.TryParse(x.Cost, out num) ? Math.Round(double.Parse(x.Cost) * Convert.ToDouble(productViewModel.Rate), 2).ToString() : x.Cost,
                                 }).ToList();
                                 productViewModel.Cost = Math.Round(double.Parse(productViewModel.Cost) * Convert.ToDouble(productViewModel.Rate),2).ToString(); 
                                 productGroup.ParentProduct = productViewModel;

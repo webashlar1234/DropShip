@@ -159,7 +159,7 @@ namespace DropshipPlatform.BLL.Services
                     var options_create = new PaymentIntentCreateOptions
                     {
                         Amount = amount,
-                        Currency = "hkd",
+                        Currency = "usd",
                         Customer = StripeCustomerID,
                         PaymentMethod = paymentMethodList.FirstOrDefault().Id,
                         Confirm = true,
