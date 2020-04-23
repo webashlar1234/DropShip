@@ -51,6 +51,7 @@ namespace DropshipPlatform.BLL.Services
                     double num;
                     mainproducts = (from p in datacontext.products
                                     join c in datacontext.categories on p.CategoryID equals c.CategoryID
+                                    from cur in datacontext.currencyrates.Where(x => x.CurrencyCode == p.SellingPriceCurrency).DefaultIfEmpty()
                                     from sp in datacontext.sellerspickedproducts.Where(x => x.ParentProductID == p.ProductID && (filterOptions == 2 ? x.UserID != UserID : x.UserID == UserID)).DefaultIfEmpty()
                                     where p.ParentProductID == null && !string.IsNullOrEmpty(p.Cost) && p.IsActive == 1
                                     && (category > 0 ? category == p.CategoryID : true)
@@ -75,7 +76,9 @@ namespace DropshipPlatform.BLL.Services
                                         AliExpressCategoryID = c.AliExpressCategoryID ?? 0,
                                         hasProductSkuSync = sp == null ? false : true,
                                         SellerPrice = sp.SellerPrice,
-                                        isProductPicked = string.IsNullOrEmpty(sp.AliExpressProductID) ? false : true
+                                        isProductPicked = string.IsNullOrEmpty(sp.AliExpressProductID) ? false : true,
+                                        OriginalCost = p.Cost,
+                                        Rate = cur.Rate
                                     }).ToList().Where(x => double.TryParse(x.Cost, out num) == true).ToList();
 
                     products = mainproducts;
@@ -115,6 +118,7 @@ namespace DropshipPlatform.BLL.Services
                                                                 IsActive = p.IsActive,
                                                                 UpdatedPrice = sku.UpdatedPrice,
                                                                 SkuID = p.SkuID,
+                                                                OriginalCost = p.Cost,
                                                             }).ToList();
 
                         if (products.Count > 0)
@@ -122,8 +126,10 @@ namespace DropshipPlatform.BLL.Services
                             foreach (ProductViewModel productViewModel in products)
                             {
                                 ProductGroupModel productGroup = new ProductGroupModel();
-                                productGroup.ChildProductList = childList.Where(x => x.ParentProductID == productViewModel.ProductID).ToList();
-
+                                productGroup.ChildProductList = childList.Where(x => x.ParentProductID == productViewModel.ProductID).ToList().Select(x => new ProductViewModel() {
+                                    Cost = !string.IsNullOrEmpty(x.Cost) ? Math.Round(double.Parse(x.Cost) * Convert.ToDouble(productViewModel.Rate), 2).ToString() : "",
+                                }).ToList();
+                                productViewModel.Cost = Math.Round(double.Parse(productViewModel.Cost) * Convert.ToDouble(productViewModel.Rate),2).ToString(); 
                                 productGroup.ParentProduct = productViewModel;
 
                                 productGroupList.Add(productGroup);

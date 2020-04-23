@@ -45,7 +45,8 @@ namespace DropshipPlatform.BLL.Models
         public bool isProductPicked { get; set; }
         public string AliExpressProductID { get; set; }
         public string SkuID { get; set; }
-
+        public float? Rate { get; set; }
+        public string OriginalCost { get; set; }
     }
 
     public class ProductGroupModel
