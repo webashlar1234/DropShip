@@ -65,7 +65,7 @@ namespace DropshipPlatform.Controllers
             //{
             //    return RedirectToAction("Index", "AliExpress");
             //}
-            ViewBag.AliCategory = new CategoryService().getCategories();
+            ViewBag.AliCategory = new CategoryService().getCategoriesOnlyAvailableProd();
             return View();
         }
 
