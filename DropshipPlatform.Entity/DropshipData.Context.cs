@@ -48,5 +48,6 @@ namespace DropshipPlatform.Entity
         public virtual DbSet<defaultaddress> defaultaddresses { get; set; }
         public virtual DbSet<paymentprofile> paymentprofiles { get; set; }
         public virtual DbSet<order> orders { get; set; }
+        public virtual DbSet<currencyrate> currencyrates { get; set; }
     }
 }

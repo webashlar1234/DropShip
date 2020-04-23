@@ -135,6 +135,14 @@
           <Property Name="Name" Type="varchar" MaxLength="150" />
           <Property Name="CountryCode" Type="varchar" MaxLength="50" />
         </EntityType>
+        <EntityType Name="currencyrates">
+          <Key>
+            <PropertyRef Name="CurrencyratesID" />
+          </Key>
+          <Property Name="CurrencyratesID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CurrencyCode" Type="varchar" MaxLength="45" />
+          <Property Name="CurrencyRate" Type="float" />
+        </EntityType>
         <EntityType Name="defaultaddress">
           <Key>
             <PropertyRef Name="DefaultAddressID" />
@@ -456,6 +464,7 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <EntitySet Name="applicationlogs" EntityType="Self.applicationlogs" Schema="dropshipdata" store:Type="Tables" />
           <EntitySet Name="category" EntityType="Self.category" Schema="dropshipdata" store:Type="Tables" />
           <EntitySet Name="country" EntityType="Self.country" Schema="dropshipdata" store:Type="Tables" />
+          <EntitySet Name="currencyrates" EntityType="Self.currencyrates" Schema="dropshipdata" store:Type="Tables" />
           <EntitySet Name="defaultaddress" EntityType="Self.defaultaddress" Schema="dropshipdata" store:Type="Tables" />
           <EntitySet Name="frequencyupdate" EntityType="Self.frequencyupdate" Schema="dropshipdata" store:Type="Tables" />
           <EntitySet Name="layout" EntityType="Self.layout" Schema="dropshipdata" store:Type="Tables" />
@@ -732,6 +741,7 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <EntitySet Name="defaultaddresses" EntityType="dropshipdataModel.defaultaddress" />
           <EntitySet Name="paymentprofiles" EntityType="dropshipdataModel.paymentprofile" />
           <EntitySet Name="orders" EntityType="dropshipdataModel.order" />
+          <EntitySet Name="currencyrates" EntityType="dropshipdataModel.currencyrate" />
         </EntityContainer>
         <EntityType Name="sellerspickedproduct">
           <Key>
@@ -978,6 +988,14 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <Property Name="OrderApiError" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
           <Property Name="OrderApiResult" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
           <Property Name="orderscol" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="currencyrate">
+          <Key>
+            <PropertyRef Name="CurrencyratesID" />
+          </Key>
+          <Property Name="CurrencyratesID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CurrencyCode" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+          <Property Name="CurrencyRate1" Type="Single" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -1395,6 +1413,15 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
                 <ScalarProperty Name="DeliveryCountry" ColumnName="DeliveryCountry" />
                 <ScalarProperty Name="AliExpressOrderID" ColumnName="AliExpressOrderID" />
                 <ScalarProperty Name="OrderID" ColumnName="OrderID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="currencyrates">
+            <EntityTypeMapping TypeName="dropshipdataModel.currencyrate">
+              <MappingFragment StoreEntitySet="currencyrates">
+                <ScalarProperty Name="CurrencyRate1" ColumnName="CurrencyRate" />
+                <ScalarProperty Name="CurrencyCode" ColumnName="CurrencyCode" />
+                <ScalarProperty Name="CurrencyratesID" ColumnName="CurrencyratesID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
