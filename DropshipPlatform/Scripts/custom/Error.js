@@ -12,7 +12,7 @@ function showToast(Message, Type) {
         "positionClass": "toast-top-center",
         "onclick": null,
         "showDuration": "400",
-        "hideDuration": "1000",
+        "hideDuration": "2000",
         "timeOut": "4000",
         "extendedTimeOut": "1000",
         "showEasing": "swing",

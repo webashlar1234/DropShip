@@ -58,10 +58,10 @@ namespace DropshipPlatform.Controllers
 
         [HttpGet]
         [AjaxFilter]
-        public JsonResult checkResultByJobId(long id)
+        public JsonResult checkResultByJobId(long jobid,int id)
         {
             new BackendHelper().RefreshAliExpressJobLog();
-            string result = new ProductService().getResultByJobId(id);
+            string result = new ProductService().getResultByJobId(jobid,id);
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
@@ -103,6 +103,7 @@ namespace DropshipPlatform.Controllers
                 SuccessItemCount = x.SuccessItemCount.ToString(),
                 ContentId = x.ContentId,
                 Result = x.Result,
+                ErrorType = x.ErrorType,
                 CreatedOn = x.CreatedOn,
                 CreatedBy = x.CreatedBy
             }).ToList();
@@ -124,10 +125,10 @@ namespace DropshipPlatform.Controllers
         
         [HttpGet]
         [AjaxFilter]
-        public JsonResult getResultByJobId(long id)
+        public JsonResult getResultByJobId(long jobId,int id)
         {
             ProductService _productService = new ProductService();
-            string result = _productService.getResultByJobId(id);
+            string result = _productService.getResultByJobId(jobId,id);
             return Json(result, JsonRequestBehavior.AllowGet);
         }
     }

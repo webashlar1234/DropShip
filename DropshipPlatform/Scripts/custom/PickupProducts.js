@@ -94,7 +94,12 @@ var product = {
                 async: false,
                 data: { products: pickedProducts },
                 success: function (data) {
-                    SuccessMessage("Submitted to aliExpress for pickup process");
+                    if (data) {
+                        SuccessMessage("Submitted to aliExpress for pickup process");
+                    }
+                    else {
+                        ErrorMessage("Product not submitted");
+                    }
                     BindData();
                     $('.spinner').hide();
                 }

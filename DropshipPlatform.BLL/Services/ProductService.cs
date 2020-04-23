@@ -147,12 +147,14 @@ namespace DropshipPlatform.BLL.Services
         public bool AddSellersPickedProducts(List<scproductModel> products, int UserID)
         {
             bool result = false;
+            int productId = 0;
             try
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
                     foreach (scproductModel product in products)
                     {
+                        productId = product.productId;
                         sellerspickedproduct obj = datacontext.sellerspickedproducts.Where(x => x.UserID == UserID && x.ParentProductID == product.productId).FirstOrDefault();
                         if (obj == null)
                         {
@@ -190,7 +192,10 @@ namespace DropshipPlatform.BLL.Services
                                     //UpdateProductModel updateProductModel = new UpdateProductModel();
                                     LoggedUserModel user = SessionManager.GetUserSession();
                                     string productSKU = SyncWithAliExpress(product, Alicategory, user);
-                                    result = true;
+                                    if (string.IsNullOrEmpty(productSKU))
+                                    {
+                                        result = true;
+                                    }
                                 }
                             }
                         }
@@ -200,6 +205,27 @@ namespace DropshipPlatform.BLL.Services
             catch (Exception ex)
             {
                 result = false;
+                List<aliexpressjoblog> list = getSystemJobLogData(UserID, productId);
+                if (list.Count() > 0)
+                {
+                    list[0].Result += ex.ToString();
+                    updateSystemJobLogResult(list[0]);
+                }
+                else
+                {
+                    _aliExpressJobLogService.AddAliExpressJobLog(new aliexpressjoblog()
+                    {
+                        JobId = 0,
+                        ContentId = "",
+                        SuccessItemCount = 0,
+                        UserID = UserID,
+                        ProductID = productId.ToString(),
+                        ProductDetails = "MethodName:AddSellersPickedProducts",
+                        Result = ex.ToString(),
+                        ErrorType = "system"
+                    });
+                }
+                deleteSellerPickedProducts();
                 logger.Error(ex.ToString());
             }
             return result;
@@ -509,7 +535,8 @@ namespace DropshipPlatform.BLL.Services
                             UserID = user.UserID,
                             ProductID = scProduct.productId.ToString(),
                             ProductDetails = obj3.ItemContent,
-                            Result = result
+                            Result = result,
+                            ErrorType = "aliexpress"
                         });
 
                         List<AliexpressSolutionFeedResponseModel> solutionResponse = JsonConvert.DeserializeObject<List<AliexpressSolutionFeedResponseModel>>(result);
@@ -524,6 +551,27 @@ namespace DropshipPlatform.BLL.Services
             catch (Exception ex)
             {
                 result = String.Empty;
+                List<aliexpressjoblog> list = getSystemJobLogData(user.UserID, scProduct.productId);
+                if (list.Count() > 0)
+                {
+                    list[0].Result += ex.ToString();
+                    updateSystemJobLogResult(list[0]);
+                }
+                else
+                {
+                    _aliExpressJobLogService.AddAliExpressJobLog(new aliexpressjoblog()
+                    {
+                        JobId = 0,
+                        ContentId = "",
+                        SuccessItemCount = 0,
+                        UserID = user.UserID,
+                        ProductID = scProduct.productId.ToString(),
+                        ProductDetails = "MethodName:SyncWithAliExpress",
+                        Result = ex.ToString(),
+                        ErrorType = "system"
+                    });
+                }
+                deleteSellerPickedProducts();
                 logger.Info(ex.ToString());
             }
             return result;
@@ -584,7 +632,8 @@ namespace DropshipPlatform.BLL.Services
                         UserID = userId,
                         ProductID = "0",
                         ProductDetails = obj3.ProductId.ToString(),
-                        Result = rsp.Body
+                        Result = rsp.Body,
+                        ErrorType = "aliexpress"
                     });
                     Console.WriteLine(rsp.Body);
                 }
@@ -600,6 +649,7 @@ namespace DropshipPlatform.BLL.Services
         public string UpdatePriceOnAliExpressJson(List<scproductModel> scProducts, int userId)
         {
             string result = String.Empty;
+            string productID = string.Empty;
             try
             {
                 ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret, "json");
@@ -647,6 +697,7 @@ namespace DropshipPlatform.BLL.Services
                         //fqReq.JobId = 200000021289874453;
                         AliexpressSolutionFeedQueryResponse fqRsp = client.Execute(fqReq, SessionManager.GetAccessToken().access_token);
                         result = JsonConvert.SerializeObject(fqRsp.ResultList);
+                        productID = scproductModel.productId.ToString();
                         _aliExpressJobLogService.AddAliExpressJobLog(new aliexpressjoblog()
                         {
                             JobId = rsp.JobId,
@@ -655,7 +706,8 @@ namespace DropshipPlatform.BLL.Services
                             UserID = userId,
                             ProductID = scproductModel.productId.ToString(),
                             ProductDetails = obj3.ItemContent,
-                            Result = result
+                            Result = result,
+                            ErrorType = "aliexpress"
                         });
 
                         List<AliexpressSolutionFeedResponseModel> solutionResponse = JsonConvert.DeserializeObject<List<AliexpressSolutionFeedResponseModel>>(result);
@@ -674,7 +726,7 @@ namespace DropshipPlatform.BLL.Services
             return result;
         }
 
-        public string GetSchemaByCategory(long AliCategoryID)
+        public string GetSchemaByCategory(long AliCategoryID, int productId)
         {
             string SchemaString = String.Empty;
             try
@@ -689,6 +741,28 @@ namespace DropshipPlatform.BLL.Services
             }
             catch (Exception ex)
             {
+                LoggedUserModel user = SessionManager.GetUserSession();
+                List<aliexpressjoblog> list = getSystemJobLogData(user.UserID, productId);
+                if (list.Count() > 0)
+                {
+                    list[0].Result += ex.ToString();
+                    updateSystemJobLogResult(list[0]);
+                }
+                else
+                {
+                    _aliExpressJobLogService.AddAliExpressJobLog(new aliexpressjoblog()
+                    {
+                        JobId = 0,
+                        ContentId = "",
+                        SuccessItemCount = 0,
+                        UserID = user.UserID,
+                        ProductID = productId.ToString(),
+                        ProductDetails = "MethodName:GetSchemaByCategory",
+                        Result = ex.ToString(),
+                        ErrorType = "system"
+                    });
+                }
+                deleteSellerPickedProducts();
                 logger.Info(ex.ToString());
             }
             return SchemaString;
@@ -777,7 +851,7 @@ namespace DropshipPlatform.BLL.Services
             using (DropshipDataEntities datacontext = new DropshipDataEntities())
             {
                 product dbProduct = datacontext.products.Where(x => x.ProductID == scproduct.productId).FirstOrDefault();
-                string CategorySchema = GetSchemaByCategory(AliCategoryID);
+                string CategorySchema = GetSchemaByCategory(AliCategoryID, scproduct.productId);
                 CategorySchemaModel categorySchemaModel = JsonConvert.DeserializeObject<CategorySchemaModel>(CategorySchema);
                 List<PropertyModel> colors = new List<PropertyModel>();
                 List<PropertyModel> sizes = new List<PropertyModel>();
@@ -828,193 +902,196 @@ namespace DropshipPlatform.BLL.Services
                             units.Add(propertyModel);
                         }
                     }
-                }
 
-
-                if (dbProduct != null)
-                {
-                    List<string> skuStr = new List<string>();
-                    List<int> listSizeDefaultNumbers = new List<int>();
-                    List<int> listColorDefaultNumbers = new List<int>();
-                    if (scproduct.SKUModels == null)
+                    if (dbProduct != null)
                     {
-                        //string Size = sizes.Where(x => x.PropertyName == dbProduct.Size).Select(x => x.PropertyID).FirstOrDefault();
-                        string defaultSize = sizes.Count() > 0 ? sizes[0].PropertyID : null;
-
-                        //string color = colors.Where(x => x.PropertyName.ToLower() == originalSKU.Color.ToLower()).Select(x => x.PropertyID).FirstOrDefault();
-                        string defaultColor = colors.Count() > 0 ? colors[0].PropertyID : null;
-                        string Size = dbProduct.Size;
-                        string dbProductColor = dbProduct.Color != null ? dbProduct.Color.ToLower() : dbProduct.Color;
-                        //string color = colors.Where(x => x.PropertyName.ToLower() == dbProductColor).Select(x => x.PropertyID).FirstOrDefault();
-                        string color = dbProduct.Color;
-
-                        ali_SKUModel ali_SKUModel = new ali_SKUModel();
-                        ali_SKUModel.inventory = dbProduct.Inventory > 0 ? dbProduct.Inventory.ToString() : "10";
-                        ali_SKUModel.price = scproduct.price;
-                        ali_SKUModel.sku_code = dbProduct.ProductID.ToString();
-                        //string skuIMage = datacontext.ProductMedias.Where(x => x.ProductID == dbProduct.ProductID && x.IsMainImage == true).Select(x => x.MediaLink).FirstOrDefault();
-                        ali_SKUModel.sku_attributes = getSKUattrStr(categorySchemaModel, Size, color, defaultSize, defaultColor);
-
-                        string jsonstr = JsonConvert.SerializeObject(ali_SKUModel, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-                        skuStr.Add(jsonstr);
-
-                        //only required
-                        //skuStr.Add("{\"inventory\":" + dbProduct.Inventory + ",\"price\":" + scproduct.price + ",\"sku_attributes\":{\"Color\":{\"alias\":\"32\",\"sku_image_url\":\"" + StaticValues.sampleImage + "\",\"value\":\"" + color + "\"}},\"sku_code\":\"" + dbProduct.OriginalProductID + "\"}");
-                        //all
-                        //skuStr.Add("{\"inventory\":" + dbProduct.Inventory + ",\"price\":" + scproduct.price + ",\"sku_attributes\":{\"Size\":{\"value\":\"" + Size + "\"},\"Color\":{\"alias\":\"32\",\"sku_image_url\":\"" + StaticValues.sampleImage + "\",\"value\":\"" + color + "\"}},\"sku_code\":\"" + dbProduct.OriginalProductID + "\"}");
-                    }
-                    else
-                    {
-                        int sizecount = 0, colorcount = 0;
-                        var duplicateColorList = new Dictionary<string, string>();
-                        var duplicateSizeList = new Dictionary<string, string>();
-                        foreach (ProductSKUModel productSKU in scproduct.SKUModels)
+                        List<string> skuStr = new List<string>();
+                        List<int> listSizeDefaultNumbers = new List<int>();
+                        List<int> listColorDefaultNumbers = new List<int>();
+                        if (scproduct.SKUModels == null)
                         {
-                            product originalSKU = datacontext.products.Where(x => x.SkuID == productSKU.skuCode).FirstOrDefault();
-                            //string Size = sizes.Where(x => x.PropertyName == originalSKU.Size).Select(x => x.PropertyID).FirstOrDefault();
-                            string defaultSize = sizes.Count() > 0 ? sizes[sizecount].PropertyID : null;
-                            string Size = originalSKU.Size;
+                            //string Size = sizes.Where(x => x.PropertyName == dbProduct.Size).Select(x => x.PropertyID).FirstOrDefault();
+                            string defaultSize = sizes.Count() > 0 ? sizes[0].PropertyID : null;
 
                             //string color = colors.Where(x => x.PropertyName.ToLower() == originalSKU.Color.ToLower()).Select(x => x.PropertyID).FirstOrDefault();
-                            string defaultColor = colors.Count() > 0 ? colors[colorcount].PropertyID : null;
-                            string color = originalSKU.Color;
-
-                            if (!string.IsNullOrEmpty(color))
-                            {
-                                var colorExist = duplicateColorList.Where(x => x.Key == color).ToList();
-                                if (colorExist.Count == 0)
-                                {
-                                    duplicateColorList.Add(color, defaultColor);
-                                }
-                                else
-                                {
-                                    defaultColor = colorExist[0].Value;
-                                }
-                            }
-                            if (!string.IsNullOrEmpty(Size))
-                            {
-                                var sizeExist = duplicateSizeList.Where(x => x.Key == Size).ToList();
-                                if (sizeExist.Count == 0)
-                                {
-                                    duplicateSizeList.Add(Size, defaultSize);
-                                }
-                                else
-                                {
-                                    defaultSize = sizeExist[0].Value;
-                                }
-                            }
-
+                            string defaultColor = colors.Count() > 0 ? colors[0].PropertyID : null;
+                            string Size = dbProduct.Size;
+                            string dbProductColor = dbProduct.Color != null ? dbProduct.Color.ToLower() : dbProduct.Color;
+                            //string color = colors.Where(x => x.PropertyName.ToLower() == dbProductColor).Select(x => x.PropertyID).FirstOrDefault();
+                            string color = dbProduct.Color;
 
                             ali_SKUModel ali_SKUModel = new ali_SKUModel();
-                            ali_SKUModel.inventory = productSKU.inventory > 0 ? productSKU.inventory.ToString() : "10";
-                            ali_SKUModel.price = productSKU.price;
-                            ali_SKUModel.sku_code = originalSKU.SkuID;
-                            //string skuIMage = datacontext.ProductMedias.Where(x => x.ProductID == productSKU.childproductId).Select(x => x.MediaLink).FirstOrDefault();
+                            ali_SKUModel.inventory = dbProduct.Inventory > 0 ? dbProduct.Inventory.ToString() : "10";
+                            ali_SKUModel.price = scproduct.price;
+                            ali_SKUModel.sku_code = dbProduct.ProductID.ToString();
+                            //string skuIMage = datacontext.ProductMedias.Where(x => x.ProductID == dbProduct.ProductID && x.IsMainImage == true).Select(x => x.MediaLink).FirstOrDefault();
                             ali_SKUModel.sku_attributes = getSKUattrStr(categorySchemaModel, Size, color, defaultSize, defaultColor);
 
                             string jsonstr = JsonConvert.SerializeObject(ali_SKUModel, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
                             skuStr.Add(jsonstr);
 
-                            sizecount++; colorcount++;
-                            if (sizes.Count() <= sizecount) { sizecount = 0; }
-                            if (colors.Count() <= colorcount) { colorcount = 0; }
-                        }
-                    }
-
-                    string brandname = brands.Where(x => x.PropertyName == dbProduct.Brand).Select(x => x.PropertyID).FirstOrDefault();
-                    string unit = units.Where(x => x.PropertyName == dbProduct.Unit).Select(x => x.PropertyID).FirstOrDefault();
-                    MySqlConnection mcon = new MySqlConnection(StaticValues.mySqlDb);
-                    MySqlCommand SelectCommand = new MySqlCommand(" SELECT MediaLink FROM productmedia where ProductID=" + dbProduct.ProductID, mcon);
-
-                    string tempparentImages = string.Empty;
-                    MySqlDataReader myReader;
-                    mcon.Open();
-                    myReader = SelectCommand.ExecuteReader();
-                    while (myReader.Read())
-                    {
-                        tempparentImages = myReader["MediaLink"].ToString();
-                    }
-                    mcon.Close();
-                    List<string> productImages = new List<string>();
-                    if (!String.IsNullOrEmpty(tempparentImages))
-                    {
-                        tempparentImages = tempparentImages.Trim().Replace("[", "");
-                        tempparentImages = tempparentImages.Replace("]", "");
-                        productImages = tempparentImages.Split(',').ToList();
-                    }
-                    //List<string> productImages = datacontext.productmedias.Where(x => x.ProductID == dbProduct.ProductID && x.IsMainImage == "true").Select(x => x.MediTaext).ToList();
-
-                    if (productImages.Count < 6)
-                    {
-                        if (scproduct.SKUModels == null)
-                        {
+                            //only required
+                            //skuStr.Add("{\"inventory\":" + dbProduct.Inventory + ",\"price\":" + scproduct.price + ",\"sku_attributes\":{\"Color\":{\"alias\":\"32\",\"sku_image_url\":\"" + StaticValues.sampleImage + "\",\"value\":\"" + color + "\"}},\"sku_code\":\"" + dbProduct.OriginalProductID + "\"}");
+                            //all
+                            //skuStr.Add("{\"inventory\":" + dbProduct.Inventory + ",\"price\":" + scproduct.price + ",\"sku_attributes\":{\"Size\":{\"value\":\"" + Size + "\"},\"Color\":{\"alias\":\"32\",\"sku_image_url\":\"" + StaticValues.sampleImage + "\",\"value\":\"" + color + "\"}},\"sku_code\":\"" + dbProduct.OriginalProductID + "\"}");
                         }
                         else
                         {
+                            int sizecount = 0, colorcount = 0;
+                            var duplicateColorList = new Dictionary<string, string>();
+                            var duplicateSizeList = new Dictionary<string, string>();
                             foreach (ProductSKUModel productSKU in scproduct.SKUModels)
                             {
-                                if (productImages.Count < 6)
-                                {
-                                    product originalSKU = datacontext.products.Where(x => x.SkuID == productSKU.skuCode).FirstOrDefault();
-                                    MySqlConnection mcon1 = new MySqlConnection(StaticValues.mySqlDb);
-                                    MySqlCommand SelectCommand1 = new MySqlCommand(" SELECT MediaLink FROM productmedia where ProductID=" + originalSKU.ProductID, mcon1);
+                                product originalSKU = datacontext.products.Where(x => x.SkuID == productSKU.skuCode).FirstOrDefault();
+                                //string Size = sizes.Where(x => x.PropertyName == originalSKU.Size).Select(x => x.PropertyID).FirstOrDefault();
+                                string defaultSize = sizes.Count() > 0 ? sizes[sizecount].PropertyID : null;
+                                string Size = originalSKU.Size;
 
-                                    string tempchildImages = string.Empty;
-                                    MySqlDataReader myReader1;
-                                    mcon1.Open();
-                                    myReader1 = SelectCommand1.ExecuteReader();
-                                    while (myReader1.Read())
+                                //string color = colors.Where(x => x.PropertyName.ToLower() == originalSKU.Color.ToLower()).Select(x => x.PropertyID).FirstOrDefault();
+                                string defaultColor = colors.Count() > 0 ? colors[colorcount].PropertyID : null;
+                                string color = originalSKU.Color;
+
+                                if (!string.IsNullOrEmpty(color))
+                                {
+                                    var colorExist = duplicateColorList.Where(x => x.Key == color).ToList();
+                                    if (colorExist.Count == 0)
                                     {
-                                        tempchildImages = myReader1["MediaLink"].ToString();
+                                        duplicateColorList.Add(color, defaultColor);
                                     }
-                                    mcon1.Close();
-                                    List<string> childproductImages = new List<string>();
-                                    if (!String.IsNullOrEmpty(tempchildImages))
+                                    else
                                     {
-                                        tempchildImages = tempchildImages.Trim().Replace("[", "");
-                                        tempchildImages = tempchildImages.Replace("]", "");
-                                        childproductImages = tempchildImages.Split(',').ToList();
+                                        defaultColor = colorExist[0].Value;
                                     }
-                                    //List<string> childproductImages = datacontext.productmedias.Where(x => x.ProductID == originalSKU.ProductID && x.IsMainImage == "true").Select(x => x.MediTaext).ToList();
-                                    if (childproductImages.Count > 0)
+                                }
+                                if (!string.IsNullOrEmpty(Size))
+                                {
+                                    var sizeExist = duplicateSizeList.Where(x => x.Key == Size).ToList();
+                                    if (sizeExist.Count == 0)
                                     {
-                                        productImages.AddRange(childproductImages);
+                                        duplicateSizeList.Add(Size, defaultSize);
+                                    }
+                                    else
+                                    {
+                                        defaultSize = sizeExist[0].Value;
+                                    }
+                                }
+
+
+                                ali_SKUModel ali_SKUModel = new ali_SKUModel();
+                                ali_SKUModel.inventory = productSKU.inventory > 0 ? productSKU.inventory.ToString() : "10";
+                                ali_SKUModel.price = productSKU.price;
+                                ali_SKUModel.sku_code = originalSKU.SkuID;
+                                //string skuIMage = datacontext.ProductMedias.Where(x => x.ProductID == productSKU.childproductId).Select(x => x.MediaLink).FirstOrDefault();
+                                ali_SKUModel.sku_attributes = getSKUattrStr(categorySchemaModel, Size, color, defaultSize, defaultColor);
+
+                                string jsonstr = JsonConvert.SerializeObject(ali_SKUModel, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+                                skuStr.Add(jsonstr);
+
+                                sizecount++; colorcount++;
+                                if (sizes.Count() <= sizecount) { sizecount = 0; }
+                                if (colors.Count() <= colorcount) { colorcount = 0; }
+                            }
+                        }
+
+                        string brandname = brands.Where(x => x.PropertyName == dbProduct.Brand).Select(x => x.PropertyID).FirstOrDefault();
+                        string unit = units.Where(x => x.PropertyName == dbProduct.Unit).Select(x => x.PropertyID).FirstOrDefault();
+                        MySqlConnection mcon = new MySqlConnection(StaticValues.mySqlDb);
+                        MySqlCommand SelectCommand = new MySqlCommand(" SELECT MediaLink FROM productmedia where ProductID=" + dbProduct.ProductID, mcon);
+
+                        string tempparentImages = string.Empty;
+                        MySqlDataReader myReader;
+                        mcon.Open();
+                        myReader = SelectCommand.ExecuteReader();
+                        while (myReader.Read())
+                        {
+                            tempparentImages = myReader["MediaLink"].ToString();
+                        }
+                        mcon.Close();
+                        List<string> productImages = new List<string>();
+                        if (!String.IsNullOrEmpty(tempparentImages))
+                        {
+                            tempparentImages = tempparentImages.Trim().Replace("[", "");
+                            tempparentImages = tempparentImages.Replace("]", "");
+                            productImages = tempparentImages.Split(',').ToList();
+                        }
+                        //List<string> productImages = datacontext.productmedias.Where(x => x.ProductID == dbProduct.ProductID && x.IsMainImage == "true").Select(x => x.MediTaext).ToList();
+
+                        if (productImages.Count < 6)
+                        {
+                            if (scproduct.SKUModels == null)
+                            {
+                            }
+                            else
+                            {
+                                foreach (ProductSKUModel productSKU in scproduct.SKUModels)
+                                {
+                                    if (productImages.Count < 6)
+                                    {
+                                        product originalSKU = datacontext.products.Where(x => x.SkuID == productSKU.skuCode).FirstOrDefault();
+                                        MySqlConnection mcon1 = new MySqlConnection(StaticValues.mySqlDb);
+                                        MySqlCommand SelectCommand1 = new MySqlCommand(" SELECT MediaLink FROM productmedia where ProductID=" + originalSKU.ProductID, mcon1);
+
+                                        string tempchildImages = string.Empty;
+                                        MySqlDataReader myReader1;
+                                        mcon1.Open();
+                                        myReader1 = SelectCommand1.ExecuteReader();
+                                        while (myReader1.Read())
+                                        {
+                                            tempchildImages = myReader1["MediaLink"].ToString();
+                                        }
+                                        mcon1.Close();
+                                        List<string> childproductImages = new List<string>();
+                                        if (!String.IsNullOrEmpty(tempchildImages))
+                                        {
+                                            tempchildImages = tempchildImages.Trim().Replace("[", "");
+                                            tempchildImages = tempchildImages.Replace("]", "");
+                                            childproductImages = tempchildImages.Split(',').ToList();
+                                        }
+                                        //List<string> childproductImages = datacontext.productmedias.Where(x => x.ProductID == originalSKU.ProductID && x.IsMainImage == "true").Select(x => x.MediTaext).ToList();
+                                        if (childproductImages.Count > 0)
+                                        {
+                                            productImages.AddRange(childproductImages);
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
 
-                    if (productImages.Count > 6)
-                    {
-                        productImages = productImages.Take(6).ToList();
-                    }
-                    List<string> uploadImages = new List<string>();
-                    foreach (string img in productImages)
-                    {
-                        uploadImages.Add(img);
-                    }
-                    //long? serviceTemplateID = dbProduct.ServiceTemplateID;
-                    //int? shippingPreparationTime = dbProduct.ShippingPreparationTime;
-                    //long? shippingTemplateID = dbProduct.ShippingTemplateID;
-                    string packageHeight = dbProduct.PackageHeight != null ? dbProduct.PackageHeight : "1";
-                    string packageLength = dbProduct.PackageLength != null ? dbProduct.PackageLength : "1";
-                    string packageWidth = dbProduct.PackageWidth != null ? dbProduct.PackageWidth : "1";
-                    string productWeight = dbProduct.NetWeight != null ? dbProduct.NetWeight.Split(' ')[0] : "0.5";
+                        if (productImages.Count > 6)
+                        {
+                            productImages = productImages.Take(6).ToList();
+                        }
+                        List<string> uploadImages = new List<string>();
+                        foreach (string img in productImages)
+                        {
+                            uploadImages.Add(img);
+                        }
+                        //long? serviceTemplateID = dbProduct.ServiceTemplateID;
+                        //int? shippingPreparationTime = dbProduct.ShippingPreparationTime;
+                        //long? shippingTemplateID = dbProduct.ShippingTemplateID;
+                        string packageHeight = dbProduct.PackageHeight != null ? dbProduct.PackageHeight : "1";
+                        string packageLength = dbProduct.PackageLength != null ? dbProduct.PackageLength : "1";
+                        string packageWidth = dbProduct.PackageWidth != null ? dbProduct.PackageWidth : "1";
+                        string productWeight = dbProduct.NetWeight != null ? dbProduct.NetWeight.Split(' ')[0] : "0.5";
 
-                    string description = string.Empty;
-                    if (!string.IsNullOrEmpty(dbProduct.Description))
-                    {
-                        dbProduct.Description = dbProduct.Description.Trim('"');
-                        string replacement = Regex.Replace(dbProduct.Description, @"\t|\n|\r", "");
-                        description = replacement.Replace("\"", "\\\"");
-                    }
+                        string description = string.Empty;
+                        if (!string.IsNullOrEmpty(dbProduct.Description))
+                        {
+                            dbProduct.Description = dbProduct.Description.Trim('"');
+                            string replacement = Regex.Replace(dbProduct.Description, @"\t|\n|\r", "");
+                            description = replacement.Replace("\"", "\\\"");
+                        }
 
-                    //only requred
-                    //result = "{\"category_id\":" + AliCategoryID + ",\"brand_name\":" + (brandname ?? "201470514") + ",\"description_multi_language_list\":[{\"locale\":\"" + locale + "\",\"module_list\":[{\"html\":{\"content\":\"" + dbProduct.Description + "\"},\"type\":\"html\"}]}],\"image_url_list\":[" + string.Join(",", uploadImages.ToArray()) + "],\"inventory_deduction_strategy\":\""+ inventoryDeductionStrategy + "\",\"locale\":\"" + locale + "\",\"package_height\":" + packageHeight + ",\"package_length\":" + packageLength + ",\"package_weight\":" + productWeight + ",\"package_width\":" + packageWidth + ",\"product_units_type\":\"" + (unit ?? "100000015") + "\",\"service_template_id\":"+ serviceTemplateID + ",\"shipping_preparation_time\":"+ shippingPreparationTime + ",\"shipping_template_id\":"+ shippingTemplateID + ",\"sku_info_list\":[" + string.Join(",", skuStr) + "],\"title_multi_language_list\":[{\"locale\":\"" + locale + "\",\"title\":\"" + dbProduct.Title + "\"}]}";
-                    result = "{\"category_id\":" + AliCategoryID + ",\"brand_name\":" + (brandname ?? "201512802") + ",\"description_multi_language_list\":[{\"locale\":\"tr_TR\",\"module_list\":[{\"html\":{\"content\":\"" + description + "\"},\"type\":\"html\"}]}],\"image_url_list\":[" + string.Join(",", uploadImages.ToArray()) + "],\"inventory_deduction_strategy\":\"place_order_withhold\",\"locale\":\"tr_TR\",\"package_height\":" + packageHeight + ",\"package_length\":" + packageLength + ",\"package_weight\":" + productWeight + ",\"package_width\":" + packageWidth + ",\"product_units_type\":\"" + (unit ?? "100000015") + "\",\"service_template_id\":\"" + StaticValues.serviceTemplateID + "\",\"shipping_preparation_time\":" + StaticValues.shippingPreparationTime + ",\"shipping_template_id\":\"" + StaticValues.shippingTemplateID + "\",\"sku_info_list\":[" + string.Join(",", skuStr) + "],\"title_multi_language_list\":[{\"locale\":\"tr_TR\",\"title\":\"" + dbProduct.Title + "\"}]}";
-                    //all
-                    //result = "{\"category_attributes\":{\"Brand Name\":{\"value\":\"201470514\"},\"Material\":{\"value\":[\"47\",\"49\"]}},\"category_id\":" + AliCategoryID + ",\"description_multi_language_list\":[{\"locale\":\"en_US\",\"module_list\":[{\"html\":{\"content\":\"" + dbProduct.Description + "\"},\"type\":\"html\"}]}],\"image_url_list\":[\"" + StaticValues.sampleImage + "\"],\"inventory_deduction_strategy\":\"place_order_withhold\",\"locale\":\"en_US\",\"package_height\":234,\"package_length\":234,\"package_weight\":234.00,\"package_width\":234,\"product_units_type\":\"100000015\",\"service_template_id\":\"0\",\"shipping_preparation_time\":20,\"shipping_template_id\":\"1013213014\",\"sku_info_list\":[" + string.Join(",", skuStr) + "],\"title_multi_language_list\":[{\"locale\":\"en_US\",\"title\":\"" + dbProduct.Title + "\"}]}";
+                        //only requred
+                        //result = "{\"category_id\":" + AliCategoryID + ",\"brand_name\":" + (brandname ?? "201470514") + ",\"description_multi_language_list\":[{\"locale\":\"" + locale + "\",\"module_list\":[{\"html\":{\"content\":\"" + dbProduct.Description + "\"},\"type\":\"html\"}]}],\"image_url_list\":[" + string.Join(",", uploadImages.ToArray()) + "],\"inventory_deduction_strategy\":\""+ inventoryDeductionStrategy + "\",\"locale\":\"" + locale + "\",\"package_height\":" + packageHeight + ",\"package_length\":" + packageLength + ",\"package_weight\":" + productWeight + ",\"package_width\":" + packageWidth + ",\"product_units_type\":\"" + (unit ?? "100000015") + "\",\"service_template_id\":"+ serviceTemplateID + ",\"shipping_preparation_time\":"+ shippingPreparationTime + ",\"shipping_template_id\":"+ shippingTemplateID + ",\"sku_info_list\":[" + string.Join(",", skuStr) + "],\"title_multi_language_list\":[{\"locale\":\"" + locale + "\",\"title\":\"" + dbProduct.Title + "\"}]}";
+                        result = "{\"category_id\":" + AliCategoryID + ",\"brand_name\":" + (brandname ?? "201512802") + ",\"description_multi_language_list\":[{\"locale\":\"tr_TR\",\"module_list\":[{\"html\":{\"content\":\"" + description + "\"},\"type\":\"html\"}]}],\"image_url_list\":[" + string.Join(",", uploadImages.ToArray()) + "],\"inventory_deduction_strategy\":\"place_order_withhold\",\"locale\":\"tr_TR\",\"package_height\":" + packageHeight + ",\"package_length\":" + packageLength + ",\"package_weight\":" + productWeight + ",\"package_width\":" + packageWidth + ",\"product_units_type\":\"" + (unit ?? "100000015") + "\",\"service_template_id\":\"" + StaticValues.serviceTemplateID + "\",\"shipping_preparation_time\":" + StaticValues.shippingPreparationTime + ",\"shipping_template_id\":\"" + StaticValues.shippingTemplateID + "\",\"sku_info_list\":[" + string.Join(",", skuStr) + "],\"title_multi_language_list\":[{\"locale\":\"tr_TR\",\"title\":\"" + dbProduct.Title + "\"}]}";
+                        //all
+                        //result = "{\"category_attributes\":{\"Brand Name\":{\"value\":\"201470514\"},\"Material\":{\"value\":[\"47\",\"49\"]}},\"category_id\":" + AliCategoryID + ",\"description_multi_language_list\":[{\"locale\":\"en_US\",\"module_list\":[{\"html\":{\"content\":\"" + dbProduct.Description + "\"},\"type\":\"html\"}]}],\"image_url_list\":[\"" + StaticValues.sampleImage + "\"],\"inventory_deduction_strategy\":\"place_order_withhold\",\"locale\":\"en_US\",\"package_height\":234,\"package_length\":234,\"package_weight\":234.00,\"package_width\":234,\"product_units_type\":\"100000015\",\"service_template_id\":\"0\",\"shipping_preparation_time\":20,\"shipping_template_id\":\"1013213014\",\"sku_info_list\":[" + string.Join(",", skuStr) + "],\"title_multi_language_list\":[{\"locale\":\"en_US\",\"title\":\"" + dbProduct.Title + "\"}]}";
+                    }
+                }
+                else
+                {
+                    deleteSellerPickedProducts();
                 }
             }
             return result;
@@ -1025,22 +1102,25 @@ namespace DropshipPlatform.BLL.Services
             string skuStr = string.Empty;
 
             custom_sku_attributes sku_attributes_obj = new custom_sku_attributes();
-            if (categorySchemaModel.properties.sku_info_list.items.properties.sku_attributes.properties.Size != null && !string.IsNullOrEmpty(size))
+            if (categorySchemaModel != null)
             {
-                sku_attributes_obj.Size = new custom_Size();
-                sku_attributes_obj.Size.value = defaultSize;
-                sku_attributes_obj.Size.alias = size;
+                if (categorySchemaModel.properties.sku_info_list.items.properties.sku_attributes.properties.Size != null && !string.IsNullOrEmpty(size))
+                {
+                    sku_attributes_obj.Size = new custom_Size();
+                    sku_attributes_obj.Size.value = defaultSize;
+                    sku_attributes_obj.Size.alias = size;
 
-            }
-            if (categorySchemaModel.properties.sku_info_list.items.properties.sku_attributes.properties.Color != null && !string.IsNullOrEmpty(color))
-            {
-                sku_attributes_obj.Color = new custom_color();
-                sku_attributes_obj.Color.value = defaultColor;
-                sku_attributes_obj.Color.alias = color;
-            }
-            if (sku_attributes_obj.Size == null && sku_attributes_obj.Color == null)
-            {
-                sku_attributes_obj = null;
+                }
+                if (categorySchemaModel.properties.sku_info_list.items.properties.sku_attributes.properties.Color != null && !string.IsNullOrEmpty(color))
+                {
+                    sku_attributes_obj.Color = new custom_color();
+                    sku_attributes_obj.Color.value = defaultColor;
+                    sku_attributes_obj.Color.alias = color;
+                }
+                if (sku_attributes_obj.Size == null && sku_attributes_obj.Color == null)
+                {
+                    sku_attributes_obj = null;
+                }
             }
             return sku_attributes_obj;
         }
@@ -1181,17 +1261,33 @@ namespace DropshipPlatform.BLL.Services
             return result;
         }
 
-        public string getResultByJobId(long jobid)
+        public string getResultByJobId(long jobid, int id)
         {
             string result = null;
             try
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
-                    aliexpressjoblog obj = datacontext.aliexpressjoblogs.Where(x => x.JobId == jobid).FirstOrDefault();
+                    aliexpressjoblog obj = new aliexpressjoblog();
+                    if (jobid > 0)
+                    {
+                        obj = datacontext.aliexpressjoblogs.Where(x => x.JobId == jobid).FirstOrDefault();
+                    }
+                    else
+                    {
+                        obj = datacontext.aliexpressjoblogs.Where(x => x.Id == id).FirstOrDefault();
+                    }
                     if (obj != null)
                     {
-                        result = obj.Result;
+                        if (obj.ErrorType == "system")
+                        {
+
+                            result = obj.Id.ToString();
+                        }
+                        else
+                        {
+                            result = obj.Result;
+                        }
                     }
                 }
             }
@@ -1202,7 +1298,6 @@ namespace DropshipPlatform.BLL.Services
             }
             return result;
         }
-
 
         public bool updateProductStatuts(string id, bool status)
         {
@@ -1247,6 +1342,85 @@ namespace DropshipPlatform.BLL.Services
                             result = true;
                         }
                     }
+                }
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                logger.Info(ex.ToString());
+            }
+
+            return result;
+        }
+
+        public bool deleteSellerPickedProducts()
+        {
+            bool result = false;
+            try
+            {
+                List<aliexpressjoblog> jobLogList = new List<aliexpressjoblog>();
+                using (DropshipDataEntities datacontext = new DropshipDataEntities())
+                {
+                    jobLogList = datacontext.aliexpressjoblogs.Where(x => x.ErrorType == "system").ToList();
+                    foreach (aliexpressjoblog item in jobLogList)
+                    {
+                        int ProductID = int.Parse(item.ProductID);
+                        sellerspickedproduct obj = datacontext.sellerspickedproducts.Where(x => x.UserID == item.UserID && x.ParentProductID == ProductID).FirstOrDefault();
+                        if (obj != null)
+                        {
+                            List<sellerpickedproductsku> skulist = datacontext.sellerpickedproductskus.Where(x => x.SellerPickedId == obj.SellersPickedID).ToList();
+                            foreach (var sku in skulist)
+                            {
+                                datacontext.sellerpickedproductskus.Remove(sku);
+                            }
+                            datacontext.sellerspickedproducts.Remove(obj);
+                        }
+                    }
+                    datacontext.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                logger.Info(ex.ToString());
+            }
+            return result;
+        }
+
+        public List<aliexpressjoblog> getSystemJobLogData(int userid, int productid)
+        {
+            List<aliexpressjoblog> list = new List<aliexpressjoblog>();
+
+            try
+            {
+                using (DropshipDataEntities datacontext = new DropshipDataEntities())
+                {
+                    list = datacontext.aliexpressjoblogs.Where(x => x.ErrorType == "system" && (userid > 0 ? x.UserID == userid : true) && (productid > 0 ? x.ProductID == productid.ToString() : true)).ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Info(ex.ToString());
+            }
+
+            return list;
+        }
+
+        public bool updateSystemJobLogResult(aliexpressjoblog aliExpressJobLog)
+        {
+            bool result = true;
+
+            try
+            {
+                using (DropshipDataEntities datacontext = new DropshipDataEntities())
+                {
+                    aliexpressjoblog obj = datacontext.aliexpressjoblogs.Where(x => x.Id == aliExpressJobLog.Id).FirstOrDefault();
+                    if (obj != null)
+                    {
+                        obj.Result = aliExpressJobLog.Result;
+                    }
+                    datacontext.Entry(obj).State = System.Data.Entity.EntityState.Modified;
+                    datacontext.SaveChanges();
                 }
             }
             catch (Exception ex)

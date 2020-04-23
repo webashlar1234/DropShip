@@ -46,14 +46,19 @@ var jobLog = {
                     sortable: true,
                     width: "10%",
                     "render": function (data, type, row) {
-                        if (data != "null") {
-                            if (type === 'display') {
-                                data = strtrunc(data, 50);
-                            }
-                            return data;
+                        if (row.ErrorType == "system") {
+                            return "ErrorID: " + row.Id;
                         }
                         else {
-                            return data;
+                            if (data != "null") {
+                                if (type === 'display') {
+                                    data = strtrunc(data, 50);
+                                }
+                                return data;
+                            }
+                            else {
+                                return data;
+                            }
                         }
                     }
                 },
@@ -79,12 +84,17 @@ var jobLog = {
                     sortable: true,
                     width: "10%",
                     "render": function (data, type, row) {
-                        if (row.Result != "null") {
-                            return '<a class="btn btn-info btn-sm btnAction" href="#" onclick=openResultModal("' + row.JobId + '")>' + 'Show Result' + '</a>' + 
-                             ' <a class="btn btn-info btn-sm btnAction" href="#" onclick=updateResult("' + row.JobId + '")>' + 'Update Result' + '</a>';
+                        if (row.ErrorType == "system") {
+                            return '<a class="btn btn-info btn-sm btnAction" href="#" onclick=openResultModal("' + row.JobId + '","' + row.Id + '")>' + 'Show Result' + '</a>'
                         }
                         else {
-                            return '<a class="btn btn-info btn-sm" href="#" onclick=updateResult("' + row.JobId + '")>' + 'Update Result' + '</a>';
+                            if (row.Result != "null") {
+                                return '<a class="btn btn-info btn-sm btnAction" href="#" onclick=openResultModal("' + row.JobId + '","' + row.Id +  '")>' + 'Show Result' + '</a>' +
+                                    ' <a class="btn btn-info btn-sm btnAction" href="#" onclick=updateResult("' + row.JobId + '","' + row.Id + '")>' + 'Update Result' + '</a>';
+                            }
+                            else {
+                                return '<a class="btn btn-info btn-sm" href="#" onclick=updateResult("' + row.JobId + '","' + row.Id + '")>' + 'Update Result' + '</a>';
+                            }
                         }
                     }
                 },
@@ -103,18 +113,23 @@ $(document).ready(function () {
     jobLog.init();
 });
 
-function openResultModal(jobId) {
+function openResultModal(jobId,id) {
     $.ajax({
         type: 'GET',
         url: '/AliExpress/getResultByJobId',
         dataType: 'json',
-        data: { id: jobId },
+        data: { jobid: jobId,id:id },
         success: function (res) {
             if (res != null) {
                 $('#jobLogModal').modal("show");
                 $('#jobLogModal').on("shown.bs.modal", function () {
-                    var jsonobj = JSON.parse(res);
-                    $('.modal-body #jsonResult').html(JSON.stringify(jsonobj, undefined, 2));
+                    if (isJson()) {
+                        var jsonobj = JSON.parse(res);
+                        $('.modal-body #jsonResult').html(JSON.stringify(jsonobj, undefined, 2));
+                    }
+                    else {
+                        $('.modal-body #jsonResult').html("ErrorID: " + res);
+                    }
                 });
             }
         },
@@ -123,13 +138,13 @@ function openResultModal(jobId) {
     });
 }
 
-function updateResult(jobId) {
+function updateResult(jobId,id) {
     $('.spinner').show();
     $.ajax({
         type: 'GET',
         url: '/AliExpress/checkResultByJobId',
         dataType: 'json',
-        data: { id: jobId },
+        data: { jobid: jobId ,id:id },
         success: function (res) {
             $('.spinner').hide();
             if (res != 'null') {
@@ -137,7 +152,7 @@ function updateResult(jobId) {
                 jobLogDT.clear().draw(false);
             }
             else {
-                ErrorMessage("Result still not fetched, pelase try after some time");
+                ErrorMessage("Result still not fetched, please try after some time");
             }
         },
         error: function (err) {
@@ -151,3 +166,13 @@ function strtrunc(str, max, add) {
     add = add || '...';
     return (typeof str === 'string' && str.length > max ? str.substring(0, max) + add : str);
 };
+
+//check string is json
+function isJson(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}

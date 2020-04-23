@@ -13,6 +13,7 @@ namespace DropshipPlatform.BLL.Models
         public string SuccessItemCount { get; set; }
         public string ContentId { get; set; }
         public string Result { get; set; }
+        public string ErrorType { get; set; }
         public Nullable<System.DateTime> CreatedOn { get; set; }
         public Nullable<int> CreatedBy { get; set; }
     }
