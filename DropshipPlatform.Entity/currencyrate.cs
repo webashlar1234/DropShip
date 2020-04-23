@@ -16,6 +16,6 @@ namespace DropshipPlatform.Entity
     {
         public int CurrencyratesID { get; set; }
         public string CurrencyCode { get; set; }
-        public Nullable<float> CurrencyRate1 { get; set; }
+        public Nullable<float> Rate { get; set; }
     }
 }

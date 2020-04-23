@@ -141,7 +141,7 @@
           </Key>
           <Property Name="CurrencyratesID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="CurrencyCode" Type="varchar" MaxLength="45" />
-          <Property Name="CurrencyRate" Type="float" />
+          <Property Name="Rate" Type="float" />
         </EntityType>
         <EntityType Name="defaultaddress">
           <Key>
@@ -995,7 +995,7 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           </Key>
           <Property Name="CurrencyratesID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="CurrencyCode" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
-          <Property Name="CurrencyRate1" Type="Single" />
+          <Property Name="Rate" Type="Single" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -1419,7 +1419,7 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <EntitySetMapping Name="currencyrates">
             <EntityTypeMapping TypeName="dropshipdataModel.currencyrate">
               <MappingFragment StoreEntitySet="currencyrates">
-                <ScalarProperty Name="CurrencyRate1" ColumnName="CurrencyRate" />
+                <ScalarProperty Name="Rate" ColumnName="Rate" />
                 <ScalarProperty Name="CurrencyCode" ColumnName="CurrencyCode" />
                 <ScalarProperty Name="CurrencyratesID" ColumnName="CurrencyratesID" />
               </MappingFragment>
