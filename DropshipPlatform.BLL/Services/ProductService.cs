@@ -127,10 +127,10 @@ namespace DropshipPlatform.BLL.Services
                             foreach (ProductViewModel productViewModel in products)
                             {
                                 ProductGroupModel productGroup = new ProductGroupModel();
-                                productGroup.ChildProductList = childList.Where(x => x.ParentProductID == productViewModel.ProductID).ToList().Select(x => new ProductViewModel() {
-                                    Cost = !string.IsNullOrEmpty(x.Cost) && double.TryParse(x.Cost, out num) ? Math.Round(double.Parse(x.Cost) * Convert.ToDouble(productViewModel.Rate), 2).ToString() : x.Cost,
-                                }).ToList();
-                                productViewModel.Cost = Math.Round(double.Parse(productViewModel.Cost) * Convert.ToDouble(productViewModel.Rate),2).ToString(); 
+                                // update child product cost as per usd rate
+                                productGroup.ChildProductList = childList.Where(x => x.ParentProductID == productViewModel.ProductID).ToList().Select(x => { x.Cost = StaticValues.GetUSDprice(x.Cost, productViewModel.Rate); return x; }).ToList();
+
+                                productViewModel.Cost = StaticValues.GetUSDprice(productViewModel.Cost, productViewModel.Rate); 
                                 productGroup.ParentProduct = productViewModel;
 
                                 productGroupList.Add(productGroup);
@@ -198,8 +198,7 @@ namespace DropshipPlatform.BLL.Services
                                     int Alicategory = (int)category.AliExpressCategoryID;
                                     //UpdateProductModel updateProductModel = new UpdateProductModel();
                                     LoggedUserModel user = SessionManager.GetUserSession();
-                                    string productSKU = SyncWithAliExpress(product, Alicategory, user);
-                                    if (string.IsNullOrEmpty(productSKU))
+                                    if (SyncWithAliExpress(product, Alicategory, user))
                                     {
                                         result = true;
                                     }
@@ -487,9 +486,10 @@ namespace DropshipPlatform.BLL.Services
             return result;
         }
 
-        public string SyncWithAliExpress(scproductModel scProduct, int AliCategoryID, LoggedUserModel user)
+        public bool SyncWithAliExpress(scproductModel scProduct, int AliCategoryID, LoggedUserModel user)
         {
             string result = String.Empty;
+            bool issuccess = true;
             try
             {
                 //String Schema = GetSchemaByCategory(AliCategoryID);
@@ -558,6 +558,7 @@ namespace DropshipPlatform.BLL.Services
             catch (Exception ex)
             {
                 result = String.Empty;
+                issuccess = false;
                 List<aliexpressjoblog> list = getSystemJobLogData(user.UserID, scProduct.productId);
                 if (list.Count() > 0)
                 {
@@ -581,7 +582,7 @@ namespace DropshipPlatform.BLL.Services
                 deleteSellerPickedProducts();
                 logger.Info(ex.ToString());
             }
-            return result;
+            return issuccess;
         }
 
 

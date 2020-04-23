@@ -49,5 +49,26 @@ namespace DropshipPlatform.BLL.Models
             }
             return Token;
         }
+        public static string GetUSDprice(string cost, float? rate)
+        {
+            string UsdCost = string.Empty;
+            try
+            {
+                double num;
+                if (!string.IsNullOrEmpty(cost) && double.TryParse(cost, out num) && rate > 0)
+                {
+                    UsdCost = Math.Round(double.Parse(cost) * Convert.ToDouble(rate), 2).ToString();
+                }
+                else
+                {
+                    UsdCost = cost;
+                }
+            }
+            catch(Exception ex)
+            {
+                UsdCost = cost;
+            }  
+            return UsdCost;
+        }
     }
 }
