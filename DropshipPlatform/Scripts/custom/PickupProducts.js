@@ -61,11 +61,11 @@ var product = {
                             pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: childrens[i].SkuID, inventory: childrens[i].Inventory, price: childrens[i].UpdatedPrice, discount_price: 1, childproductId: childrens[i].ProductID });
                         }
                         else {
-                            if (childrens[i].Cost > 0) {
-                                pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: childrens[i].SkuID, inventory: childrens[i].Inventory, price: childrens[i].Cost, discount_price: 1, childproductId: childrens[i].ProductID });
+                            if (childrens[i].SellerCost > 0) {
+                                pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: childrens[i].SkuID, inventory: childrens[i].Inventory, price: childrens[i].SellerCost, discount_price: 1, childproductId: childrens[i].ProductID });
                             }
                             else {
-                                pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: childrens[i].SkuID, inventory: childrens[i].Inventory, price: parentItem.cost, discount_price: 1, childproductId: childrens[i].ProductID });
+                                pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: childrens[i].SkuID, inventory: childrens[i].Inventory, price: parentItem.SellerCost, discount_price: 1, childproductId: childrens[i].ProductID });
                             }
                         }
                     }
@@ -294,6 +294,7 @@ function FormatData(json) {
             "Title": json[i].ParentProduct.Title,
             "category": json[i].ParentProduct.CategoryName,
             "cost": json[i].ParentProduct.Cost,
+            "SellerCost": json[i].ParentProduct.SellerCost,
             "inventory": json[i].ParentProduct.Inventory,
             "shippingweight": json[i].ParentProduct.ShippingWeight,
             "color": json[i].ParentProduct.Color,
@@ -322,6 +323,7 @@ function format(d) {
     console.log(d.ChildProductList);
     var trs = '';
     var parentProductCost = d.cost;
+    var parentProductSellerCost = d.SellerCost;
     var parentProductTitle = d.Title;
     var parentProductBrand = d.Brand || "null";
     $.each($(d.ChildProductList), function (key, value) {
@@ -331,7 +333,8 @@ function format(d) {
         }
         console.log(value);
         var childProductCost = value.Cost || parentProductCost;
-        var childUpdatedPrice = value.UpdatedPrice || childProductCost;
+        var childProductSellerCost = value.SellerCost || parentProductSellerCost;
+        var childUpdatedPrice = value.UpdatedPrice || childProductSellerCost;
         var childProductTitle = value.Title || parentProductTitle;
         var childProductBrand = value.Brand || parentProductBrand;
         trs +=
@@ -432,8 +435,8 @@ function BindData() {
         {
             "data": "UpdatedPrice", "render": function (data, type, full) {
                 if (!(full.ChildProductList.length > 0)) {
-                    full.cost > 0 ? full.cost : 0;
-                    return "<input name='updatedPrice' disabled dataSKU='" + full.ProductID + "' type='number' value=" + full.cost + " class='updatedParentPrice txtParent_" + full.ProductID + "'>";
+                    full.SellerCost > 0 ? full.SellerCost : 0;
+                    return "<input name='updatedPrice' disabled dataSKU='" + full.ProductID + "' type='number' value=" + full.SellerCost + " class='updatedParentPrice txtParent_" + full.ProductID + "'>";
                 }
                 else {
                     return "";
