@@ -625,7 +625,7 @@ table.dataTable.no-footer {
 }
 
 .dataTables_filter {
-    display: none !important;
+    display: block !important;
 }
 
 .payment-paid {

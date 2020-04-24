@@ -32,7 +32,6 @@ var product = {
         });
     },
     AddPickedProducts: function () {
-
         var selectedItems = global.getSelectedCheckboxList('.chkProducts', 'productid');
         var pickedProducts = [];
         var update_price = true;
@@ -62,11 +61,11 @@ var product = {
                             pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: childrens[i].SkuID, inventory: childrens[i].Inventory, price: childrens[i].UpdatedPrice, discount_price: 1, childproductId: childrens[i].ProductID });
                         }
                         else {
-                            if (childrens[i].SellerCost > 0) {
-                                pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: childrens[i].SkuID, inventory: childrens[i].Inventory, price: childrens[i].SellerCost, discount_price: 1, childproductId: childrens[i].ProductID });
+                            if (childrens[i].Cost > 0) {
+                                pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: childrens[i].SkuID, inventory: childrens[i].Inventory, price: childrens[i].Cost, discount_price: 1, childproductId: childrens[i].ProductID });
                             }
                             else {
-                                pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: childrens[i].SkuID, inventory: childrens[i].Inventory, price: parentItem.SellerCost, discount_price: 1, childproductId: childrens[i].ProductID });
+                                pickedProducts[pickedProducts.length - 1].SKUModels.push({ skuCode: childrens[i].SkuID, inventory: childrens[i].Inventory, price: parentItem.cost, discount_price: 1, childproductId: childrens[i].ProductID });
                             }
                         }
                     }
@@ -162,28 +161,7 @@ $(document).ready(function () {
 
 
     $('#ProductsDt tbody').on('click', 'td.details-control', function () {
-        var tr = $(this).closest('tr');
-        var row = ProductsDt.row(tr);
-
-        if (row.child.isShown()) {
-            // This row is already open - close it
-            row.child.hide();
-            tr.removeClass('shown');
-            //$('input[name=updatedPrice]').prop("disabled", true);
-            $('input[name=updatedPrice]', row.child().eq(0)).prop("disabled", true);
-        } else {
-            // Open this row
-            row.child(format(row.data())).show();
-            tr.addClass('shown');
-
-            if ($('.parentChk', tr).is(":checked")) {
-                $('input[name=updatedPrice]', row.child().eq(0)).prop("disabled", false);
-                SetPickedDisable();
-            }
-            else {
-                $('input[name=updatedPrice]', row.child().eq(0)).prop("disabled", true);
-            }
-        }
+        toggleChildRow(this);
     });
 
     $('#chkAllProduct').change(function (e) {
@@ -241,6 +219,7 @@ $(document).ready(function () {
             ErrorMessage("Product you select doesn't have mapped category, please contact admin to map it.");
             return false;
         }
+        toggleChildRow(this);
     });
 
     $("#ProductsDt tbody").on("change", ".pickedInvetory", function () {
@@ -252,6 +231,40 @@ $(document).ready(function () {
         $(".txtEdit_" + parentID).val(parentPrice);
         //$("#frmPickedProduct").valid();
     });
+
+    function toggleChildRow(selectedRow) {
+        var tr = $(selectedRow).closest('tr');
+        var row = ProductsDt.row(tr);
+
+        if (row.child.isShown()) {
+            // This row is already open - close it
+            row.child.hide();
+            tr.removeClass('shown');
+            //$('input[name=updatedPrice]').prop("disabled", true);
+            $('input[name=updatedPrice]', row.child().eq(0)).prop("disabled", true);
+        } else {
+            // Open this row
+            if (row.child() && row.child().length) {
+                row.child.show();
+            }
+            else {
+                if (row.data().ChildProductList.length > 0) {
+                    row.child(format(row.data())).show();
+                }
+            }
+            if (row.data().ChildProductList.length > 0) {
+                tr.addClass('shown');
+
+                if ($('.parentChk').is(":checked")) {
+                    $('input[name=updatedPrice]', row.child().eq(0)).prop("disabled", false);
+                    SetPickedDisable();
+                }
+                else {
+                    $('input[name=updatedPrice]', row.child().eq(0)).prop("disabled", true);
+                }
+            }
+        }
+    }
 });
 
 function GetData() {
@@ -281,7 +294,6 @@ function FormatData(json) {
             "Title": json[i].ParentProduct.Title,
             "category": json[i].ParentProduct.CategoryName,
             "cost": json[i].ParentProduct.Cost,
-            "SellerCost":json[i].ParentProduct.SellerCost,
             "inventory": json[i].ParentProduct.Inventory,
             "shippingweight": json[i].ParentProduct.ShippingWeight,
             "color": json[i].ParentProduct.Color,
@@ -310,7 +322,6 @@ function format(d) {
     console.log(d.ChildProductList);
     var trs = '';
     var parentProductCost = d.cost;
-    var parentProductSellerCost = d.SellerCost;
     var parentProductTitle = d.Title;
     var parentProductBrand = d.Brand || "null";
     $.each($(d.ChildProductList), function (key, value) {
@@ -320,8 +331,7 @@ function format(d) {
         }
         console.log(value);
         var childProductCost = value.Cost || parentProductCost;
-        var childProductSellerCost = value.SellerCost || parentProductSellerCost;
-        var childUpdatedPrice = value.UpdatedPrice || childProductSellerCost;
+        var childUpdatedPrice = value.UpdatedPrice || childProductCost;
         var childProductTitle = value.Title || parentProductTitle;
         var childProductBrand = value.Brand || parentProductBrand;
         trs +=
@@ -331,8 +341,8 @@ function format(d) {
             '</td><td>' + value.Color +
             '</td><td>' + value.Size +
             '</td><td>' + value.Inventory +
-            '</td><td>' + "$" + childProductCost+
-        '</td><td>' + "<input name='updatedPrice'  disabled dataParentID=" + value.ParentProductID + "  dataSKU='" + value.SkuID + "' type='number' value=" + childUpdatedPrice + " class='updatedPrice txtEdit_" + value.ParentProductID + "'>" +
+            '</td><td>' + "$" + childProductCost +
+            '</td><td>' + "<input name='updatedPrice'  disabled dataParentID=" + value.ParentProductID + "  dataSKU='" + value.SkuID + "' type='number' value=" + childUpdatedPrice + " class='updatedPrice txtEdit_" + value.ParentProductID + "'>" +
             //'</td><td>' + value.Description +
             '</td></tr>';
     })
@@ -387,6 +397,28 @@ function BindData() {
         "processing": true,
         "serverSide": true,
         "bSort": true,
+        "language": {
+            "sSearch": "",
+            "searchPlaceholder": "Search Product",
+            "loadingRecords": '&nbsp;',
+            "processing": '<div class="spinner"></div>'
+        },
+        "initComplete": function (setting, json) {
+            var input = $('.dataTables_filter input').unbind(),
+                self = this.api(),
+                $searchButton = $('<button class="btn btn-sm btn-black mr-2 ml-2">')
+                    .text('Search')
+                    .click(function () {
+                        self.search(input.val()).draw();
+                    }),
+                $clearButton = $('<button class="btn btn-sm  btn-white">')
+                    .text('Clear')
+                    .click(function () {
+                        input.val('');
+                        $searchButton.click();
+                    })
+            $('.dataTables_filter').append($searchButton, $clearButton);
+        },
         "columns": [{
             "orderable": false,
             "data": null,
@@ -400,8 +432,8 @@ function BindData() {
         {
             "data": "UpdatedPrice", "render": function (data, type, full) {
                 if (!(full.ChildProductList.length > 0)) {
-                    full.SellerCost > 0 ? full.SellerCost : 0;
-                    return "<input name='updatedPrice' disabled dataSKU='" + full.ProductID + "' type='number' value=" + full.SellerCost + " class='updatedParentPrice txtParent_" + full.ProductID + "'>";
+                    full.cost > 0 ? full.cost : 0;
+                    return "<input name='updatedPrice' disabled dataSKU='" + full.ProductID + "' type='number' value=" + full.cost + " class='updatedParentPrice txtParent_" + full.ProductID + "'>";
                 }
                 else {
                     return "";

@@ -138,7 +138,7 @@ var order = {
             filter: true,
             language: {
                 sSearch: "",
-                searchPlaceholder: "Search Order",
+                searchPlaceholder: "Search Order ID",
                 loadingRecords: '&nbsp;',
                 processing: '<div class="spinner"></div>'
             },
@@ -290,7 +290,7 @@ var order = {
             filter: true,
             language: {
                 sSearch: "",
-                searchPlaceholder: "Search Order",
+                searchPlaceholder: "Search Order ID",
                 loadingRecords: '&nbsp;',
                 processing: '<div class="spinner"></div>'
             },

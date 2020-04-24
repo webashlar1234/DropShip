@@ -62,7 +62,7 @@
                                 }
                                 @if (user.LoggedUserRoleName == StaticValues.admin)
                                 {
-                                    <li class="nav-item"><a href="@Url.Action("UserManagement", "Home")" class="nav-link">User Management</a></li>
+                                    <li class="nav-item"><a href="@Url.Action("UserManagement", "Home")" class="nav-link">Operators</a></li>
                                 }
                                 @if (user.LoggedUserRoleName == StaticValues.admin || user.LoggedUserRoleName == StaticValues.operationalManager)
                                 {
@@ -86,7 +86,7 @@
                                 <li class="nav-item"><a href="/Order/getOrders" class="nav-link">Orders</a></li>
                                 @if (user.LoggedUserRoleName == StaticValues.admin || user.LoggedUserRoleName == StaticValues.operationalManager)
                                 {
-                                    <li class="nav-item"><a href="/User" class="nav-link">User</a></li>
+                                    <li class="nav-item"><a href="/User" class="nav-link">Sellers</a></li>
                                 }
                                 
                             </ul>
