@@ -88,6 +88,12 @@ namespace DropshipPlatform.BLL.Services
                     {
                         mainproducts = mainproducts.OrderBy(DTReqModel.SortBy).ToList();
                     }
+                    //SEARCH
+                    if (!string.IsNullOrEmpty(DTReqModel.Search))
+                    {
+                        mainproducts = mainproducts.Where(x => x.Title != null && x.Title.ToLower().Contains(DTReqModel.Search.ToLower()) 
+                        ).ToList();
+                    }
                     //use do while when products list based on pagesize descresses after null cost
                     do
                     {
