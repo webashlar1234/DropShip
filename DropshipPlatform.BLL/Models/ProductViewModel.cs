@@ -14,6 +14,7 @@ namespace DropshipPlatform.BLL.Models
         public string CategoryName { get; set; }
 
         public string Cost { get; set; }
+        public string SellerCost { get; set; }
         public Nullable<double> SellerPrice { get; set; }
         public string SellingPriceCurrency { get; set; }
         public string OriginalProductID { get; set; }

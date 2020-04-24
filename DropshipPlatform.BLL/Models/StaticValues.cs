@@ -36,13 +36,14 @@ namespace DropshipPlatform.BLL.Models
         public static string Shipped = "Shipped";
         public static string Waiting_for_Shipment = "Waiting for Shipment";
 
-        public static string getAccessTokenObjFromStr(string TokenStr) {
+        public static string getAccessTokenObjFromStr(string TokenStr)
+        {
 
             string Token = string.Empty;
             if (!string.IsNullOrEmpty(TokenStr))
             {
                 AliExpressAccessToken tokenObj = Newtonsoft.Json.JsonConvert.DeserializeObject<AliExpressAccessToken>(TokenStr);
-                if(tokenObj != null)
+                if (tokenObj != null)
                 {
                     Token = tokenObj.access_token;
                 }
@@ -64,10 +65,32 @@ namespace DropshipPlatform.BLL.Models
                     UsdCost = cost;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 UsdCost = cost;
-            }  
+            }
+            return UsdCost;
+        }
+
+        public static string CalcSellerCost(string cost)
+        {
+            string UsdCost = string.Empty;
+            try
+            {
+                double num;
+                if (!string.IsNullOrEmpty(cost) && double.TryParse(cost, out num))
+                {
+                    UsdCost = Math.Round((double.Parse(cost) * 2) + 10, 2).ToString();
+                }
+                else
+                {
+                    UsdCost = cost;
+                }
+            }
+            catch (Exception ex)
+            {
+                UsdCost = cost;
+            }
             return UsdCost;
         }
     }

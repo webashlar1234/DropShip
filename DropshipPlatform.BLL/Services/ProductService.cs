@@ -68,6 +68,7 @@ namespace DropshipPlatform.BLL.Services
                                         CategoryID = p.CategoryID,
                                         CategoryName = c.Name,
                                         Cost = p.Cost,
+                                        SellerCost = p.Cost,
                                         Inventory = p.Inventory > 0 ? p.Inventory : 10,
                                         ShippingWeight = p.ShippingWeight,
                                         SellerPickedCount = datacontext.sellerspickedproducts.Where(x => x.ParentProductID == p.ProductID && x.UserID != UserID).Count(),
@@ -114,6 +115,7 @@ namespace DropshipPlatform.BLL.Services
                                                                 Color = p.Color,
                                                                 Size = p.Size,
                                                                 Cost = p.Cost,
+                                                                SellerCost = p.Cost,
                                                                 Inventory = p.Inventory > 0 ? p.Inventory : 10,
                                                                 ShippingWeight = p.ShippingWeight,
                                                                 IsActive = p.IsActive,
@@ -128,9 +130,10 @@ namespace DropshipPlatform.BLL.Services
                             {
                                 ProductGroupModel productGroup = new ProductGroupModel();
                                 // update child product cost as per usd rate
-                                productGroup.ChildProductList = childList.Where(x => x.ParentProductID == productViewModel.ProductID).ToList().Select(x => { x.Cost = StaticValues.GetUSDprice(x.Cost, productViewModel.Rate); return x; }).ToList();
+                                productGroup.ChildProductList = childList.Where(x => x.ParentProductID == productViewModel.ProductID).ToList().Select(x => { x.Cost = StaticValues.GetUSDprice(x.Cost, productViewModel.Rate); x.SellerCost = StaticValues.CalcSellerCost(StaticValues.GetUSDprice(x.Cost, productViewModel.Rate));  return x; }).ToList();
 
-                                productViewModel.Cost = StaticValues.GetUSDprice(productViewModel.Cost, productViewModel.Rate); 
+                                productViewModel.Cost = StaticValues.GetUSDprice(productViewModel.Cost, productViewModel.Rate);
+                                productViewModel.SellerCost =StaticValues.CalcSellerCost(productViewModel.Cost);
                                 productGroup.ParentProduct = productViewModel;
 
                                 productGroupList.Add(productGroup);
