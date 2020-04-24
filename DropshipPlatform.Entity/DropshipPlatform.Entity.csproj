@@ -123,6 +123,9 @@
     <Compile Include="order.cs">
       <DependentUpon>DropshipData.tt</DependentUpon>
     </Compile>
+    <Compile Include="orderapiresult.cs">
+      <DependentUpon>DropshipData.tt</DependentUpon>
+    </Compile>
     <Compile Include="paymentprofile.cs">
       <DependentUpon>DropshipData.tt</DependentUpon>
     </Compile>

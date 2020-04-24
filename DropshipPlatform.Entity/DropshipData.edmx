@@ -198,6 +198,27 @@
           <Property Name="ItemModifyWhen" Type="datetime" Precision="3" />
           <Property Name="OrderLimit" Type="int" />
         </EntityType>
+        <EntityType Name="orderapiresults">
+          <Key>
+            <PropertyRef Name="OrderApiResultsID" />
+          </Key>
+          <Property Name="OrderApiResultsID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SC_OrderID" Type="int" Nullable="false" />
+          <Property Name="AliExpressOrderID" Type="varchar" MaxLength="150" />
+          <Property Name="LogisticsServiceId" Type="varchar" MaxLength="250" />
+          <Property Name="LogisticsNumber" Type="varchar" MaxLength="45" />
+          <Property Name="CainiaoLabel" Type="longblob" />
+          <Property Name="WarehouseOrderId" Type="bigint" />
+          <Property Name="Error" Type="text" />
+          <Property Name="IsSuccess" Type="bit" />
+          <Property Name="getonlinelogisticsserviceResponse" Type="text" />
+          <Property Name="createwarehouseorderResponse" Type="text" />
+          <Property Name="getLogisticNumberResponse" Type="text" />
+          <Property Name="getprintinfoResponse" Type="longtext" />
+          <Property Name="OrderFulfillResponse" Type="text" />
+          <Property Name="CreatedOn" Type="datetime" Precision="0" />
+          <Property Name="ModifyOn" Type="datetime" Precision="0" />
+        </EntityType>
         <EntityType Name="orders">
           <Key>
             <PropertyRef Name="OrderID" />
@@ -217,10 +238,6 @@
           <Property Name="ItemCreatedWhen" Type="datetime" Precision="3" />
           <Property Name="ItemModifyBy" Type="int" />
           <Property Name="ItemModifyWhen" Type="datetime" Precision="3" />
-          <Property Name="CainiaoLable" Type="blob" />
-          <Property Name="OrderApiError" Type="text" />
-          <Property Name="OrderApiResult" Type="text" />
-          <Property Name="orderscol" Type="varchar" MaxLength="45" />
         </EntityType>
         <EntityType Name="paymentprofile">
           <Key>
@@ -471,6 +488,7 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <EntitySet Name="frequencyupdate" EntityType="Self.frequencyupdate" Schema="dropshipdata" store:Type="Tables" />
           <EntitySet Name="layout" EntityType="Self.layout" Schema="dropshipdata" store:Type="Tables" />
           <EntitySet Name="membershiptypes" EntityType="Self.membershiptypes" Schema="dropshipdata" store:Type="Tables" />
+          <EntitySet Name="orderapiresults" EntityType="Self.orderapiresults" Schema="dropshipdata" store:Type="Tables" />
           <EntitySet Name="orders" EntityType="Self.orders" Schema="dropshipdata" store:Type="Tables" />
           <EntitySet Name="paymentprofile" EntityType="Self.paymentprofile" Schema="dropshipdata" store:Type="Tables" />
           <EntitySet Name="productmedia" EntityType="Self.productmedia" Schema="dropshipdata" store:Type="Tables" />
@@ -742,8 +760,9 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <EntitySet Name="products" EntityType="dropshipdataModel.product" />
           <EntitySet Name="defaultaddresses" EntityType="dropshipdataModel.defaultaddress" />
           <EntitySet Name="paymentprofiles" EntityType="dropshipdataModel.paymentprofile" />
-          <EntitySet Name="orders" EntityType="dropshipdataModel.order" />
           <EntitySet Name="currencyrates" EntityType="dropshipdataModel.currencyrate" />
+          <EntitySet Name="orders" EntityType="dropshipdataModel.order" />
+          <EntitySet Name="orderapiresults" EntityType="dropshipdataModel.orderapiresult" />
         </EntityContainer>
         <EntityType Name="sellerspickedproduct">
           <Key>
@@ -967,6 +986,16 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <Property Name="AuthorizeNetProfileId" Type="Int64" />
           <Property Name="StripePaymentMethodId" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
         </EntityType>
+        <EntityType Name="currencyrate">
+          <Key>
+            <PropertyRef Name="CurrencyratesID" />
+          </Key>
+          <Property Name="CurrencyratesID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CurrencyCode" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+          <Property Name="Rate" Type="Single" />
+          <Property Name="CreatedOn" Type="DateTime" />
+          <Property Name="ModifiedOn" Type="DateTime" />
+        </EntityType>
         <EntityType Name="order">
           <Key>
             <PropertyRef Name="OrderID" />
@@ -986,20 +1015,27 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <Property Name="ItemCreatedWhen" Type="DateTime" />
           <Property Name="ItemModifyBy" Type="Int32" />
           <Property Name="ItemModifyWhen" Type="DateTime" />
-          <Property Name="CainiaoLable" Type="Binary" MaxLength="Max" FixedLength="false" />
-          <Property Name="OrderApiError" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
-          <Property Name="OrderApiResult" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
-          <Property Name="orderscol" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
         </EntityType>
-        <EntityType Name="currencyrate">
+        <EntityType Name="orderapiresult">
           <Key>
-            <PropertyRef Name="CurrencyratesID" />
+            <PropertyRef Name="OrderApiResultsID" />
           </Key>
-          <Property Name="CurrencyratesID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="CurrencyCode" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
-          <Property Name="Rate" Type="Single" />
+          <Property Name="OrderApiResultsID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SC_OrderID" Type="Int32" Nullable="false" />
+          <Property Name="AliExpressOrderID" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="LogisticsServiceId" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="LogisticsNumber" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+          <Property Name="CainiaoLabel" Type="Binary" MaxLength="Max" FixedLength="false" />
+          <Property Name="WarehouseOrderId" Type="Int64" />
+          <Property Name="Error" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+          <Property Name="IsSuccess" Type="Boolean" />
+          <Property Name="getonlinelogisticsserviceResponse" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+          <Property Name="createwarehouseorderResponse" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+          <Property Name="getLogisticNumberResponse" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+          <Property Name="getprintinfoResponse" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+          <Property Name="OrderFulfillResponse" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
           <Property Name="CreatedOn" Type="DateTime" />
-          <Property Name="ModifiedOn" Type="DateTime" />
+          <Property Name="ModifyOn" Type="DateTime" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -1395,13 +1431,20 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="currencyrates">
+            <EntityTypeMapping TypeName="dropshipdataModel.currencyrate">
+              <MappingFragment StoreEntitySet="currencyrates">
+                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="Rate" ColumnName="Rate" />
+                <ScalarProperty Name="CurrencyCode" ColumnName="CurrencyCode" />
+                <ScalarProperty Name="CurrencyratesID" ColumnName="CurrencyratesID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="orders">
             <EntityTypeMapping TypeName="dropshipdataModel.order">
               <MappingFragment StoreEntitySet="orders">
-                <ScalarProperty Name="orderscol" ColumnName="orderscol" />
-                <ScalarProperty Name="OrderApiResult" ColumnName="OrderApiResult" />
-                <ScalarProperty Name="OrderApiError" ColumnName="OrderApiError" />
-                <ScalarProperty Name="CainiaoLable" ColumnName="CainiaoLable" />
                 <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
                 <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
                 <ScalarProperty Name="ItemCreatedWhen" ColumnName="ItemCreatedWhen" />
@@ -1420,14 +1463,25 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="currencyrates">
-            <EntityTypeMapping TypeName="dropshipdataModel.currencyrate">
-              <MappingFragment StoreEntitySet="currencyrates">
-                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
+          <EntitySetMapping Name="orderapiresults">
+            <EntityTypeMapping TypeName="dropshipdataModel.orderapiresult">
+              <MappingFragment StoreEntitySet="orderapiresults">
+                <ScalarProperty Name="ModifyOn" ColumnName="ModifyOn" />
                 <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
-                <ScalarProperty Name="Rate" ColumnName="Rate" />
-                <ScalarProperty Name="CurrencyCode" ColumnName="CurrencyCode" />
-                <ScalarProperty Name="CurrencyratesID" ColumnName="CurrencyratesID" />
+                <ScalarProperty Name="OrderFulfillResponse" ColumnName="OrderFulfillResponse" />
+                <ScalarProperty Name="getprintinfoResponse" ColumnName="getprintinfoResponse" />
+                <ScalarProperty Name="getLogisticNumberResponse" ColumnName="getLogisticNumberResponse" />
+                <ScalarProperty Name="createwarehouseorderResponse" ColumnName="createwarehouseorderResponse" />
+                <ScalarProperty Name="getonlinelogisticsserviceResponse" ColumnName="getonlinelogisticsserviceResponse" />
+                <ScalarProperty Name="IsSuccess" ColumnName="IsSuccess" />
+                <ScalarProperty Name="Error" ColumnName="Error" />
+                <ScalarProperty Name="WarehouseOrderId" ColumnName="WarehouseOrderId" />
+                <ScalarProperty Name="CainiaoLabel" ColumnName="CainiaoLabel" />
+                <ScalarProperty Name="LogisticsNumber" ColumnName="LogisticsNumber" />
+                <ScalarProperty Name="LogisticsServiceId" ColumnName="LogisticsServiceId" />
+                <ScalarProperty Name="AliExpressOrderID" ColumnName="AliExpressOrderID" />
+                <ScalarProperty Name="SC_OrderID" ColumnName="SC_OrderID" />
+                <ScalarProperty Name="OrderApiResultsID" ColumnName="OrderApiResultsID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

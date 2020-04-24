@@ -15,8 +15,9 @@ namespace DropshipPlatform.Controllers
         public JsonResult Index()
         {
             new BackendHelper().RefreshAliExpressJobLog();
-            //new BackendHelper().RefreshAliExpressInventory();
-            //new BackendHelper().RefreshAliExpressOrders();
+            new BackendHelper().RefreshAliExpressInventory();
+            new BackendHelper().RefreshAliExpressOrders();
+            new OrderService().checkWarehouceOrderStatus();
 
             return new JsonResult { Data = "Success" };
         }

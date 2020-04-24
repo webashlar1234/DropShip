@@ -52,6 +52,7 @@ var order = {
                 success: function (data) {
                     if (data) {
                         SuccessMessage("Your payment is done successfully");
+                        orderDTSeller.clear().draw();
                     }
                     else {
                         ErrorMessage("Your payment is faild for order " + OrderId + ", please try again later");
@@ -417,6 +418,7 @@ var order = {
             data: { orderData: obj, isFullShip: isFullShip },
             success: function (data) {
                 if (data) {
+                    orderDT.clear().draw();
                     SuccessMessage("Product Status Updated successfully");
                 }
                 else {

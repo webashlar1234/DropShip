@@ -181,16 +181,5 @@ namespace DropshipPlatform.BLL.Models
         [JsonProperty("Content-Type")]
         public string Content_Type { get; set; }
     }
-
-    public class OrderAPIResultModal
-    {
-        public long AliExpressOrderID { get; set; }
-        public string LogisticsServiceId { get; set; }
-        //tracking Number
-        public string LogisticsNumber { get; set; }
-        public byte[] CainiaoLabel { get; set; }
-        public long WarehouseOrderId { get; set; }
-        public string Error { get; set; }
-        public bool IsSuccess { get; set; }
-    }
+    
 }

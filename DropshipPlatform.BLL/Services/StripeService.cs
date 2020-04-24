@@ -145,6 +145,7 @@ namespace DropshipPlatform.BLL.Services
             StripeResultModel StripeResultModel = new StripeResultModel();
             try
             {
+                amount = amount * 100; //convert to cent https://stripe.com/docs/currencies#zero-decimal
                 var options = new PaymentMethodListOptions
                 {
                     Customer = StripeCustomerID,

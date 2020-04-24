@@ -15,7 +15,7 @@ namespace DropshipPlatform.BLL.Services
     {
         readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         
-        public bool SendEmail(byte[] pdfbytes, long orderid)
+        public bool SendEmail(byte[] pdfbytes, string orderid)
         {
             bool result = false;
             string toEmail = string.Empty;
@@ -62,7 +62,7 @@ namespace DropshipPlatform.BLL.Services
             return result;
         }
 
-        public bool SendFailureEmail(long orderid)
+        public bool SendFailureEmail(string orderid)
         {
             bool result = false;
             string toEmail = string.Empty;
