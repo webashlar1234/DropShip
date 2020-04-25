@@ -297,34 +297,7 @@ namespace DropshipPlatform.BLL.Services
                                         sellerChargeAmount = sellerChargeAmount + double.Parse(DbProduct.Cost);
                                         AliExpressOrderItemData.ProductID = Convert.ToInt64(DbProduct.ProductID);
                                     }
-                                    AliExpressOrderItemData.ProductName = product.ProductName;
-                                    AliExpressOrderItemData.Price = product.TotalProductAmount.Amount;
-                                    AliExpressOrderItemData.CurrencyCode = product.TotalProductAmount.CurrencyCode;
-                                    AliExpressOrderItemData.ItemCreatedWhen = DateTime.UtcNow;
-                                    AliExpressOrderItemData.ItemModifyWhen = DateTime.UtcNow;
-                                    AliExpressOrderItemData.AliExpressOrderId = item.OrderId;
-                                    AliExpressOrderItemData.AliExpressProductOrderId = null;
-                                    AliExpressOrderItemData.SCOrderId = null;
-                                    AliExpressOrderItemData.SkuCode = product.SkuCode;
-                                    var myJonString = OrderDetails.Data.ChildOrderExtInfoList[0].Sku;
-                                    var jo = JObject.Parse(myJonString);
-                                    if (jo["sku"].HasValues)
-                                    {
-                                        foreach (var item1 in jo["sku"])
-                                        {
-                                            if (item1["pName"].ToString().Trim() == "Color")
-                                            {
-                                                var colour = item1["pValue"].ToString();
-                                                AliExpressOrderItemData.Color = colour;
-                                            }
-                                            else if (item1["pName"].ToString().Trim() == "Size")
-                                            {
-                                                var size = item1["pValue"].ToString();
-                                                AliExpressOrderItemData.Size = size;
-                                            }
-                                        }
-                                    }
-                                    datacontext.aliexpressorderitems.Add(AliExpressOrderItemData);
+                                    insertOrderItemData(OrderDetails,item, product, access_token);
                                 }
 
 
@@ -413,51 +386,8 @@ namespace DropshipPlatform.BLL.Services
                                     }
                                     else
                                     {
-                                        AliexpressSolutionOrderInfoGetRequest req1 = new AliexpressSolutionOrderInfoGetRequest();
-                                        AliexpressSolutionOrderInfoGetRequest.OrderDetailQueryDomain obj = new AliexpressSolutionOrderInfoGetRequest.OrderDetailQueryDomain();
-                                        obj.ExtInfoBitFlag = 11111L;
-                                        obj.OrderId = item.OrderId;
-                                        req1.Param1_ = obj;
-                                        AliexpressSolutionOrderInfoGetResponse rsp1 = client.Execute(req1, access_token);
-                                        var resultdata1 = JsonConvert.SerializeObject(rsp1.Result);
-                                        AliexpressSolutionOrderInfoGetResponse.BaseResultDomain OrderDetails = rsp1.Result;
-                                        AliExpressOrderItemData.AliExpressProductID = product.ProductId.ToString();
-                                        product DbProduct = GetProductByAliId(AliExpressOrderItemData.AliExpressProductID, product.SkuCode);
-
-                                        if (DbProduct != null)
-                                        {
-                                            AliExpressOrderItemData.ProductID = Convert.ToInt64(DbProduct.ProductID);
-                                        }
-                                        AliExpressOrderItemData.ProductName = product.ProductName;
-                                        AliExpressOrderItemData.Price = product.TotalProductAmount.Amount;
-                                        AliExpressOrderItemData.CurrencyCode = product.TotalProductAmount.CurrencyCode;
-                                        AliExpressOrderItemData.ItemCreatedWhen = DateTime.UtcNow;
-                                        AliExpressOrderItemData.ItemModifyWhen = DateTime.UtcNow;
-                                        AliExpressOrderItemData.AliExpressOrderId = item.OrderId;
-                                        AliExpressOrderItemData.AliExpressProductOrderId = null;
-                                        AliExpressOrderItemData.SCOrderId = null;
-                                        AliExpressOrderItemData.SkuCode = product.SkuCode;
-                                        orderItemSkuCode.Add(AliExpressOrderItemData.SkuCode);
-
-                                        var myJonString = OrderDetails.Data.ChildOrderExtInfoList[0].Sku;
-                                        var jo = JObject.Parse(myJonString);
-                                        if (jo["sku"].HasValues)
-                                        {
-                                            foreach (var item1 in jo["sku"])
-                                            {
-                                                if (item1["pName"].ToString().Trim() == "Color")
-                                                {
-                                                    var colour = item1["pValue"].ToString();
-                                                    AliExpressOrderItemData.Color = colour;
-                                                }
-                                                else if (item1["pName"].ToString().Trim() == "Size")
-                                                {
-                                                    var size = item1["pValue"].ToString();
-                                                    AliExpressOrderItemData.Size = size;
-                                                }
-                                            }
-                                        }
-                                        datacontext.aliexpressorderitems.Add(AliExpressOrderItemData);
+                                        orderItemSkuCode.Add(product.SkuCode);
+                                        insertOrderItemData(null,item,product, access_token);
                                     }
                                 }
                                 List<string> differSkuCode = aliExpressSkuCode.Except(orderItemSkuCode).ToList();
@@ -1108,5 +1038,73 @@ namespace DropshipPlatform.BLL.Services
             return OrderStatus;
         }
 
+        public void insertOrderItemData( AliexpressSolutionOrderInfoGetResponse.BaseResultDomain itemOrderDetails,TargetList item,ProductList product,string access_token)
+        {
+            aliexpressorderitem AliExpressOrderItemData = new aliexpressorderitem();
+            ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret);
+            AliexpressSolutionOrderInfoGetResponse.BaseResultDomain OrderDetails = new AliexpressSolutionOrderInfoGetResponse.BaseResultDomain();
+            try
+            {
+                using (DropshipDataEntities datacontext = new DropshipDataEntities())
+                {
+                    if (itemOrderDetails == null)
+                    {
+                        AliexpressSolutionOrderInfoGetRequest req1 = new AliexpressSolutionOrderInfoGetRequest();
+                        AliexpressSolutionOrderInfoGetRequest.OrderDetailQueryDomain obj = new AliexpressSolutionOrderInfoGetRequest.OrderDetailQueryDomain();
+                        obj.ExtInfoBitFlag = 11111L;
+                        obj.OrderId = item.OrderId;
+                        req1.Param1_ = obj;
+                        AliexpressSolutionOrderInfoGetResponse rsp1 = client.Execute(req1, access_token);
+                        var resultdata1 = JsonConvert.SerializeObject(rsp1.Result);
+                        OrderDetails = rsp1.Result;
+                    }
+                    else
+                    {
+                        OrderDetails = itemOrderDetails;
+                    }
+                    AliExpressOrderItemData.AliExpressProductID = product.ProductId.ToString();
+                    product DbProduct = GetProductByAliId(AliExpressOrderItemData.AliExpressProductID, product.SkuCode);
+
+                    if (DbProduct != null)
+                    {
+                        AliExpressOrderItemData.ProductID = Convert.ToInt64(DbProduct.ProductID);
+                    }
+                    AliExpressOrderItemData.ProductName = product.ProductName;
+                    AliExpressOrderItemData.Price = product.TotalProductAmount.Amount;
+                    AliExpressOrderItemData.CurrencyCode = product.TotalProductAmount.CurrencyCode;
+                    AliExpressOrderItemData.ItemCreatedWhen = DateTime.UtcNow;
+                    AliExpressOrderItemData.ItemModifyWhen = DateTime.UtcNow;
+                    AliExpressOrderItemData.AliExpressOrderId = item.OrderId;
+                    AliExpressOrderItemData.AliExpressProductOrderId = null;
+                    AliExpressOrderItemData.SCOrderId = null;
+                    AliExpressOrderItemData.SkuCode = product.SkuCode;
+
+
+                    var myJonString = OrderDetails.Data.ChildOrderExtInfoList[0].Sku;
+                    var jo = JObject.Parse(myJonString);
+                    if (jo["sku"].HasValues)
+                    {
+                        foreach (var item1 in jo["sku"])
+                        {
+                            if (item1["pName"].ToString().Trim() == "Color")
+                            {
+                                var colour = item1["pValue"].ToString();
+                                AliExpressOrderItemData.Color = colour;
+                            }
+                            else if (item1["pName"].ToString().Trim() == "Size")
+                            {
+                                var size = item1["pValue"].ToString();
+                                AliExpressOrderItemData.Size = size;
+                            }
+                        }
+                    }
+                    datacontext.aliexpressorderitems.Add(AliExpressOrderItemData);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString());
+            }
+        }
     }
 }
