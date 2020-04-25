@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic;
 using System.Web;
 using System.Web.Mvc;
 using Top.Api;
@@ -90,6 +91,10 @@ namespace DropshipPlatform.Controllers
             var length = Request.Form.GetValues("length") != null ? Request.Form.GetValues("length").FirstOrDefault() : null;
             int pageSize = length != null ? Convert.ToInt32(length) : 0;
             int skip = start != null ? Convert.ToInt32(start) : 0;
+            //Find Order Column
+            var sortColumn = Request.Form.GetValues("order[0][column]") != null ? Request.Form.GetValues("columns[" + Request.Form.GetValues("order[0][column]").FirstOrDefault() + "][data]").FirstOrDefault() : null;
+            var sortColumnDir = Request.Form.GetValues("order[0][dir]") != null ? Request.Form.GetValues("order[0][dir]").FirstOrDefault() : null;
+            string sortOrder = "";
 
             int userid = 0;
             LoggedUserModel user = SessionManager.GetUserSession();
@@ -107,6 +112,15 @@ namespace DropshipPlatform.Controllers
                 CreatedOn = x.CreatedOn,
                 CreatedBy = x.CreatedBy
             }).ToList();
+            if ((!string.IsNullOrEmpty(sortColumn)) && (!string.IsNullOrEmpty(sortColumnDir)))
+            {
+                sortOrder = sortColumn + " " + sortColumnDir + "," + Request.Form.GetValues("order[0][column]").FirstOrDefault();
+            }
+            if (!string.IsNullOrEmpty(sortOrder))
+            {
+                string orderBy = sortOrder.Split(',')[0];
+                retvalue = retvalue.OrderBy(orderBy).ToList();
+            }
             var data = new List<JobLog>();
             if (pageSize != -1)
             {

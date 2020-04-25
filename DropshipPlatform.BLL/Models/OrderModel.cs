@@ -43,6 +43,7 @@ namespace DropshipPlatform.BLL.Models
         public Nullable<bool> IsReadyToShipAny { get; set; }
         public Nullable<bool> IsReadyToRefund { get; set; }
         public List<OrderViewModel> ChildOrderItemList { get; set; }
+        public Nullable<System.DateTime> AliExpressOrderCreatedTime { get; set; }
     }
 
     public class OrderViewModel

@@ -235,6 +235,23 @@ var order = {
                 {
                     targets: 9,
                     sortable: true,
+                    width: "8%",
+                    "render": function (data, type, full) {
+                        if (data == null) {
+                            return "";
+                        }
+                        else {
+                            var pattern = /Date\(([^)]+)\)/;
+                            var results = pattern.exec(data);
+                            var dt = new Date(parseFloat(results[1]));
+                            var day = dt.getDate() > 9 ? dt.getDate() : "0" + dt.getDate();
+                            return dt.getFullYear() + "/" + (dt.getMonth() + 1) + "/" + day + " " + dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
+                        }
+                    }
+                },
+                {
+                    targets: 10,
+                    sortable: true,
                     width: "20%",
                     "render": function (data, type, full) {
                         var RawHTML = "";
@@ -262,6 +279,7 @@ var order = {
                 { "sTitle": 'Payment Status', "mData": 'SellerPaymentStatus', sDefaultContent: "", className: "PaymentStatus" },
                 { "sTitle": 'Seller ID', "mData": 'SellerID', sDefaultContent: "", className: "SellerID" },
                 { "sTitle": 'Seller Email', "mData": 'SellerEmail', sDefaultContent: "", className: "SellerEmail" },
+                { "sTitle": 'Order Date', "mData": 'AliExpressOrderCreatedTime', sDefaultContent: "", className: "OrderDate" },
                 { "sTitle": 'Actions', "mData": 'IsReadyToBuyAny', sDefaultContent: "", className: "Actions" }
             ],
             "createdRow": function (row, data, dataIndex) {
@@ -378,6 +396,23 @@ var order = {
                 {
                     targets: 8,
                     sortable: true,
+                    width: "8%",
+                    "render": function (data, type, full) {
+                        if (data == null) {
+                            return "";
+                        }
+                        else {
+                            var pattern = /Date\(([^)]+)\)/;
+                            var results = pattern.exec(data);
+                            var dt = new Date(parseFloat(results[1]));
+                            var day = dt.getDate() > 9 ? dt.getDate() : "0" + dt.getDate();
+                            return dt.getFullYear() + "/" + (dt.getMonth() + 1) + "/" + day + " " + dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
+                        }
+                    }
+                },
+                {
+                    targets: 9,
+                    sortable: true,
                     width: "6%",
                     "render": function (data, type, full) {
                         return full.SellerPaymentStatus == true ? '' : '<a class="btn btn-info btn-sm PayOrder" data-orderid="' + full.AliExpressOrderNumber + '">Pay Now</a>';
@@ -393,6 +428,7 @@ var order = {
                 { "sTitle": 'Status', "mData": 'OrderStatus', sDefaultContent: "", className: "OrderStatus" },
                 { "sTitle": 'Tracking No', "mData": 'TrackingNo', sDefaultContent: "", className: "TrackingNo" },
                 { "sTitle": 'Payment Status', "mData": 'SellerPaymentStatus', sDefaultContent: "", className: "PaymentStatus" },
+                { "sTitle": 'Order Date', "mData": 'AliExpressOrderCreatedTime', sDefaultContent: "", className: "OrderDate" },
                 { "sTitle": 'Action', "mData": '', sDefaultContent: "", className: "ActionSeller" },
             ],
             "createdRow": function (row, data, dataIndex) {
