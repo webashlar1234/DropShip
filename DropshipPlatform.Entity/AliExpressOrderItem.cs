@@ -29,5 +29,6 @@ namespace DropshipPlatform.Entity
         public Nullable<int> SCOrderId { get; set; }
         public string Size { get; set; }
         public string Color { get; set; }
+        public string SkuCode { get; set; }
     }
 }

@@ -63,6 +63,7 @@
           <Property Name="AliExpressOrderId" Type="bigint" />
           <Property Name="AliExpressProductOrderId" Type="bool" />
           <Property Name="SCOrderId" Type="int" />
+          <Property Name="SkuCode" Type="varchar" MaxLength="250" />
         </EntityType>
         <EntityType Name="aliexpressorders">
           <Key>
@@ -563,6 +564,7 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <Property Name="SCOrderId" Type="Int32" />
           <Property Name="Size" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="Color" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+          <Property Name="SkuCode" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="applicationlog">
           <Key>
@@ -1071,6 +1073,7 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <EntitySetMapping Name="aliexpressorderitems">
             <EntityTypeMapping TypeName="dropshipdataModel.aliexpressorderitem">
               <MappingFragment StoreEntitySet="aliexpressorderitems">
+                <ScalarProperty Name="SkuCode" ColumnName="SkuCode" />
                 <ScalarProperty Name="Color" ColumnName="Color" />
                 <ScalarProperty Name="Size" ColumnName="Size" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
