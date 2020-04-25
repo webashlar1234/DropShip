@@ -436,6 +436,7 @@ namespace DropshipPlatform.BLL.Services
                     Orders = (from o in datacontext.orders
                               join u in datacontext.users on o.AliExpressLoginID equals u.AliExpressLoginID
                               from or in datacontext.orderapiresults.Where(x => x.SC_OrderID == o.OrderID).DefaultIfEmpty()
+                              from ao in datacontext.aliexpressorders.Where(x => x.AliExpressOrderID.ToString() == o.AliExpressOrderID).DefaultIfEmpty()
                               where u.IsActive == true && UserID > 0 ? u.UserID == UserID : true
                               select new OrderData
                               {
@@ -451,7 +452,8 @@ namespace DropshipPlatform.BLL.Services
                                   SellerEmail = u.EmailID,
                                   TrackingNumber = or.LogisticsNumber,
                                   IsReadyToShipAny = o.OrderStatus == StaticValues.Waiting_for_Shipment ? true : false,
-                                  IsReadyToRefund = (o.SellerPaymentStatus == 1 && o.OrderStatus == StaticValues.Waiting_for_Shipment) ? true : false
+                                  IsReadyToRefund = (o.SellerPaymentStatus == 1 && o.OrderStatus == StaticValues.Waiting_for_Shipment) ? true : false,
+                                  AliExpressOrderCreatedTime = ao.AliExpressOrderCreatedTime
                               }).ToList();
 
                     List<OrderViewModel> childList = (from o in datacontext.orders

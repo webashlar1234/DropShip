@@ -19,7 +19,7 @@ var jobLog = {
             serverSide: true,
             sort: true,
             filter: false,
-            "aaSorting": [],
+            "order": [[3, "desc"]],
             language: {
                 loadingRecords: '&nbsp;',
                 processing: '<div class="spinner"></div>'
@@ -27,7 +27,7 @@ var jobLog = {
             columnDefs: [
                 {
                     targets: 0,
-                    sortable: true,
+                    sortable: false,
                     width: "5%",
                     "render": function (data, type, full) {
                         return data;
@@ -35,7 +35,7 @@ var jobLog = {
                 },
                 {
                     targets: 1,
-                    sortable: true,
+                    sortable: false,
                     width: "10%",
                     "render": function (data, type, full) {
                         return data;
@@ -43,7 +43,7 @@ var jobLog = {
                 },
                 {
                     targets: 2,
-                    sortable: true,
+                    sortable: false,
                     width: "10%",
                     "render": function (data, type, row) {
                         if (row.ErrorType == "system") {
@@ -75,13 +75,13 @@ var jobLog = {
                             var results = pattern.exec(data);
                             var dt = new Date(parseFloat(results[1]));
                             var day = dt.getDate() > 9 ? dt.getDate() : "0" + dt.getDate();
-                            return day + "/" + (dt.getMonth() + 1) + "/" + dt.getFullYear();
+                            return dt.getFullYear() + "/" + (dt.getMonth() + 1) + "/" + day + " " + dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
                         }
                     }
                 },
                 {
                     targets: 4,
-                    sortable: true,
+                    sortable: false,
                     width: "10%",
                     "render": function (data, type, row) {
                         if (row.ErrorType == "system") {
