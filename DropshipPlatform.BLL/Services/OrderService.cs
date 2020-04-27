@@ -286,6 +286,7 @@ namespace DropshipPlatform.BLL.Services
                                 AliExpressOrderData.AliExpressOrderCreatedTime = item.GmtCreate;
                                 AliExpressOrderData.AliExpressOrderUpdatedTime = item.GmtUpdate;
                                 datacontext.aliexpressorders.Add(AliExpressOrderData);
+                                datacontext.SaveChanges();
 
                                 foreach (var product in item.ProductList)
                                 {
@@ -297,7 +298,7 @@ namespace DropshipPlatform.BLL.Services
                                         sellerChargeAmount = sellerChargeAmount + double.Parse(DbProduct.Cost);
                                         AliExpressOrderItemData.ProductID = Convert.ToInt64(DbProduct.ProductID);
                                     }
-                                    insertOrderItemData(OrderDetails,item, product, access_token);
+                                    insertOrderItemData(OrderDetails, item, product, access_token);
                                 }
 
 
@@ -366,6 +367,7 @@ namespace DropshipPlatform.BLL.Services
                                 AliExpressOrderData.ItemModifyWhen = DateTime.UtcNow;
                                 AliExpressOrderData.AliExpressOrderUpdatedTime = item.GmtUpdate;
                                 datacontext.Entry(AliExpressOrderData).State = System.Data.Entity.EntityState.Modified;
+                                datacontext.SaveChanges();
 
                                 foreach (var product in item.ProductList)
                                 {
@@ -383,11 +385,12 @@ namespace DropshipPlatform.BLL.Services
                                         AliExpressOrderItemData.SkuCode = product.SkuCode;
                                         orderItemSkuCode.Add(AliExpressOrderItemData.SkuCode);
                                         datacontext.Entry(AliExpressOrderItemData).State = System.Data.Entity.EntityState.Modified;
+                                        datacontext.SaveChanges();
                                     }
                                     else
                                     {
                                         orderItemSkuCode.Add(product.SkuCode);
-                                        insertOrderItemData(null,item,product, access_token);
+                                        insertOrderItemData(null, item, product, access_token);
                                     }
                                 }
                                 List<string> differSkuCode = aliExpressSkuCode.Except(orderItemSkuCode).ToList();
@@ -396,10 +399,11 @@ namespace DropshipPlatform.BLL.Services
                                     foreach (var skuCode in differSkuCode)
                                     {
                                         AliExpressOrderItemData = datacontext.aliexpressorderitems.Where(x => x.AliExpressOrderId == item.OrderId && x.SkuCode == skuCode).FirstOrDefault();
-                                         if (AliExpressOrderItemData != null)
-                                         {
-                                             datacontext.aliexpressorderitems.Remove(AliExpressOrderItemData);
-                                         }
+                                        if (AliExpressOrderItemData != null)
+                                        {
+                                            datacontext.aliexpressorderitems.Remove(AliExpressOrderItemData);
+                                            datacontext.SaveChanges();
+                                        }
                                     }
                                 }
                             }
@@ -449,19 +453,20 @@ namespace DropshipPlatform.BLL.Services
                     List<OrderViewModel> childList = (from o in datacontext.orders
                                                       join oi in datacontext.aliexpressorderitems on o.AliExpressOrderID equals oi.AliExpressOrderId.ToString()
                                                       from sp in datacontext.sellerspickedproducts.Where(x => x.AliExpressProductID == oi.AliExpressProductID).DefaultIfEmpty()
-                                                      from p in datacontext.products.Where(x => x.ProductID == sp.ParentProductID).DefaultIfEmpty()
-                                                      //join p in datacontext.products on sp.ParentProductID equals p.ProductID
+                                                      from p in datacontext.products.Where(x => x.ProductID == oi.ProductID).DefaultIfEmpty()
+                                                      from pp in datacontext.products.Where(x => x.ProductID == p.ParentProductID).DefaultIfEmpty()
+                                                          //join p in datacontext.products on sp.ParentProductID equals p.ProductID
                                                       where o.AliExpressOrderID != null
                                                       select new OrderViewModel
                                                       {
                                                           AliExpressOrderId = oi.AliExpressOrderId.ToString(),
                                                           AliExpressProductId = oi.AliExpressProductID,
-                                                          OrignalProductId = p.OriginalProductID,
-                                                          OrignalProductLink = p.SourceWebsite,
+                                                          OrignalProductId = !string.IsNullOrEmpty(p.OriginalProductID)  ? p.OriginalProductID : pp.OriginalProductID,
+                                                          OrignalProductLink = !string.IsNullOrEmpty(p.SourceWebsite) ? p.SourceWebsite : pp.SourceWebsite,
                                                           ProductName = oi.ProductName,
                                                           Price = oi.Price,
-                                                          Colour = oi.Color,
-                                                          Size = oi.Size,
+                                                          Colour = p.Color,
+                                                          Size = p.Size,
                                                           IsReadyToBuy = !string.IsNullOrEmpty(sp.AliExpressProductID) && o.SellerPaymentStatus == 1 && o.OrderStatus == StaticValues.Unpurchased ? true : false
                                                       }).ToList();
 
@@ -1038,7 +1043,7 @@ namespace DropshipPlatform.BLL.Services
             return OrderStatus;
         }
 
-        public void insertOrderItemData( AliexpressSolutionOrderInfoGetResponse.BaseResultDomain itemOrderDetails,TargetList item,ProductList product,string access_token)
+        public void insertOrderItemData(AliexpressSolutionOrderInfoGetResponse.BaseResultDomain itemOrderDetails, TargetList item, ProductList product, string access_token)
         {
             aliexpressorderitem AliExpressOrderItemData = new aliexpressorderitem();
             ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret);
