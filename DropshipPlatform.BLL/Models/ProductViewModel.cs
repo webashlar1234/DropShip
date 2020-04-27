@@ -12,8 +12,11 @@ namespace DropshipPlatform.BLL.Models
         public string Title { get; set; }
         public Nullable<int> CategoryID { get; set; }
         public string CategoryName { get; set; }
-
+        //cost in dollar
         public string Cost { get; set; }
+        // original cost in different currency[right now TL]
+        public string OriginalCost { get; set; }
+        //cost in dollar with seller margin
         public string SellerCost { get; set; }
         public Nullable<double> SellerPrice { get; set; }
         public string SellingPriceCurrency { get; set; }
@@ -47,7 +50,6 @@ namespace DropshipPlatform.BLL.Models
         public string AliExpressProductID { get; set; }
         public string SkuID { get; set; }
         public float? Rate { get; set; }
-        public string OriginalCost { get; set; }
     }
 
     public class ProductGroupModel

@@ -370,7 +370,7 @@ namespace DropshipPlatform.BLL.Services
                                 foreach (var product in item.ProductList)
                                 {
                                     aliExpressSkuCode.Add(product.SkuCode);
-                                    AliExpressOrderItemData = datacontext.aliexpressorderitems.Where(x => x.AliExpressProductID == product.ProductId.ToString() && x.AliExpressOrderId == item.OrderId).FirstOrDefault();
+                                    AliExpressOrderItemData = datacontext.aliexpressorderitems.Where(x => x.AliExpressProductID == product.ProductId.ToString() && x.AliExpressOrderId == item.OrderId && x.SkuCode == product.SkuCode).FirstOrDefault();
                                     if (AliExpressOrderItemData != null)
                                     {
                                         AliExpressOrderItemData.ProductName = product.ProductName;
@@ -1099,6 +1099,7 @@ namespace DropshipPlatform.BLL.Services
                         }
                     }
                     datacontext.aliexpressorderitems.Add(AliExpressOrderItemData);
+                    datacontext.SaveChanges();
                 }
             }
             catch (Exception ex)
