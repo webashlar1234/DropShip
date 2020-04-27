@@ -332,12 +332,14 @@ namespace DropshipPlatform.BLL.Services
                                 foreach (product dbParentProduct in dbParentProducts)
                                 {
                                     ProductGroupModel productGroup = new ProductGroupModel();
-
+                                    var currencyRate = datacontext.currencyrates.Where(x => x.CurrencyCode == dbParentProduct.SellingPriceCurrency).FirstOrDefault();
+                                    productGroup.ParentProduct = GenerateProductViewModel(dbParentProduct);
+                                    productGroup.ParentProduct.Rate = currencyRate.Rate != null && currencyRate.Rate > 0 ? currencyRate.Rate : 1;
                                     List<product> childProducts = datacontext.products.Where(x => x.ParentProductID == dbParentProduct.ProductID).ToList();
 
-                                    productGroup.ParentProduct = GenerateProductViewModel(dbParentProduct);
                                     productGroup.ParentProduct.IsOnline = item.IsOnline;
                                     productGroup.ParentProduct.SellerPrice = item.SellerPrice;
+                                    productGroup.ParentProduct.Cost = StaticValues.GetUSDprice(dbParentProduct.Cost, productGroup.ParentProduct.Rate);
                                     if (productGroup.ParentProduct != null)
                                     {
                                         productGroup.ParentProduct.AliExpressProductID = item.AliExpressProductID; //datacontext.SellersPickedProducts.Where(x => x.ParentProductID == dbParentProduct.ProductID).Select(x => x.AliExpressProductID).FirstOrDefault();
@@ -352,6 +354,7 @@ namespace DropshipPlatform.BLL.Services
                                         {
                                             ProductViewModel childProductModel = GenerateProductViewModel(dbChildProduct);
                                             //childProductModel.schemaProprtiesModel = schemaProprtiesModel;
+                                            childProductModel.Cost = StaticValues.GetUSDprice(childProductModel.Cost,productGroup.ParentProduct.Rate);
                                             childProductModel = AddUpdatedValues(childProductModel);
                                             productGroup.ChildProductList.Add(childProductModel);
                                         }
