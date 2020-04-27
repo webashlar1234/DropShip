@@ -248,11 +248,13 @@ function SavePickedProducts() {
     var update_price = true;
     $.each(selectedItems, function (index, item) {
         updatedProducts.push({ aliExpressProductId: item, price: $('.parentChk[aliexpressproductid=' + item + ']').parents('tr').find('.updatedParentPrice').val(), SKUModels: [] });
-        var innerTableLength = $(".innertable").find("tr.skuRow[data-for='" + item + "']").length;
-        if (innerTableLength > 0) {
+        var tr = $('.parentChk[aliexpressproductid=' + item + ']').parents('tr');
+        var row = table.row(tr);
+        if (row.child() && row.child().length > 0) {
+            var innerTableData = row.child().find("tr.skuRow[data-for='" + item + "']");
 
-            if ($(".innertable").find("tr.skuRow[data-for='" + item + "']")) {
-                $.each($(".innertable").find("tr.skuRow[data-for='" + item + "']"), function (i, data) {
+            if (innerTableData) {
+                $.each(innerTableData, function (i, data) {
                     if ($(data).find(".updatedPrice").data("isupdated")) {
                         updatedProducts[updatedProducts.length - 1].SKUModels.push({ childproductId: $(data).find(".updatedPrice").data("productid"), skuCode: $(data).find(".updatedPrice").data("sku"), price: $(data).find(".updatedPrice").val(), discount_price: 1 });
                     }
