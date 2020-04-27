@@ -122,7 +122,10 @@ namespace DropshipPlatform.BLL.Services
                         if (Product.Cost == null)
                         {
                             product ParentProduct = datacontext.products.Where(x => x.ProductID == Product.ParentProductID).FirstOrDefault();
-                            Product.Cost = ParentProduct.Cost;
+                            if (ParentProduct != null)
+                            {
+                                Product.Cost = ParentProduct.Cost;
+                            }
                         }
                         currencyrate currency = datacontext.currencyrates.Where(x => x.CurrencyCode == Product.SellingPriceCurrency).FirstOrDefault();
                         if (currency != null && !string.IsNullOrEmpty(Product.Cost))
@@ -919,6 +922,7 @@ namespace DropshipPlatform.BLL.Services
                                                                      from oi in datacontext.aliexpressorderitems.Where(x => x.AliExpressOrderId.ToString() == o.AliExpressOrderID)
                                                                      where o.AliExpressOrderID == OrderID
                                                                      select oi).ToList();
+                    logger.Info("aliexpressorderitem");
 
                     var UserData = (from o in datacontext.orders
                                     from u in datacontext.users.Where(x => x.AliExpressLoginID == o.AliExpressLoginID && x.UserID == UserID)
@@ -929,11 +933,19 @@ namespace DropshipPlatform.BLL.Services
                                         u.AliExpressLoginID
                                     }).FirstOrDefault();
 
+                    logger.Info("UserData");
+
                     double totalCharge = 0;
                     foreach (aliexpressorderitem item in aliexpressorderitem)
                     {
+                        logger.Info("product");
                         product Product = GetProductCostById(item.ProductID);
-                        totalCharge = totalCharge + double.Parse(Product.Cost);
+                        logger.Info("product1");
+                        if (Product != null)
+                        {
+                            totalCharge = totalCharge + double.Parse(Product.Cost);
+                        }
+                        logger.Info("totalCharge");
                     }
 
 
