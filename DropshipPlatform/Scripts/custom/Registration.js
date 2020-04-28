@@ -1,5 +1,8 @@
 ﻿$(document).ready(function () {
     RegistrationValidation();
+    $(document).on('change', '#LstCountry', function () {
+        $('#TxtPhone').val($('#LstCountry option:selected').data('code'));
+    })
 });
 
 function RegisterUser() {

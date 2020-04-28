@@ -941,7 +941,7 @@ namespace DropshipPlatform.BLL.Services
                         logger.Info("product");
                         product Product = GetProductCostById(item.ProductID);
                         logger.Info("product1");
-                        if (Product != null)
+                        if (Product != null && Product.Cost != null)
                         {
                             totalCharge = totalCharge + double.Parse(Product.Cost);
                         }
@@ -957,10 +957,15 @@ namespace DropshipPlatform.BLL.Services
                             if (resultStripePayment != null)
                             {
                                 order order = datacontext.orders.Where(x => x.AliExpressOrderID == OrderID && x.AliExpressLoginID == UserData.AliExpressLoginID).FirstOrDefault();
-                                order.SellerPaymentStatus = resultStripePayment.IsSuccess == true ? 1 : 0;
-                                order.SellerPaymentDetails = resultStripePayment.Result;
-                                datacontext.Entry(order).State = EntityState.Modified;
-                                datacontext.SaveChanges();
+                                if(order != null)
+                                {
+                                    logger.Info("order count");
+                                    order.SellerPaymentStatus = resultStripePayment.IsSuccess == true ? 1 : 0;
+                                    order.SellerPaymentDetails = resultStripePayment.Result;
+                                    datacontext.Entry(order).State = EntityState.Modified;
+                                    datacontext.SaveChanges();
+                                }
+                                
                             }
                         }
                     }

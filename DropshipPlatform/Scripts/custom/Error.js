@@ -13,7 +13,7 @@ function showToast(Message, Type) {
         "onclick": null,
         "showDuration": "400",
         "hideDuration": "2000",
-        "timeOut": "4000",
+        "timeOut": "10000",
         "extendedTimeOut": "1000",
         "showEasing": "swing",
         "hideEasing": "linear",

@@ -135,6 +135,7 @@ var order = {
             processing: true,
             serverSide: true,
             sort: true,
+            "order": [[9, "desc"]],
             filter: true,
             language: {
                 sSearch: "",
@@ -143,6 +144,7 @@ var order = {
                 processing: '<div class="spinner"></div>'
             },
             initComplete: function (setting, json) {
+                $('td.details-control').click();
                 var input = $('.dataTables_filter input').unbind(),
                     self = this.api(),
                     $searchButton = $('<button class="btn btn-sm btn-black mr-2 ml-2">')
@@ -251,7 +253,7 @@ var order = {
                 },
                 {
                     targets: 10,
-                    sortable: true,
+                    sortable: false,
                     width: "20%",
                     "render": function (data, type, full) {
                         var RawHTML = "";
@@ -306,6 +308,7 @@ var order = {
             serverSide: true,
             sort: true,
             filter: true,
+            "order": [[8, "desc"]],
             language: {
                 sSearch: "",
                 searchPlaceholder: "Search Order ID",
@@ -313,6 +316,7 @@ var order = {
                 processing: '<div class="spinner"></div>'
             },
             initComplete: function (setting, json) {
+                $('td.details-control').click();
                 var input = $('.dataTables_filter input').unbind(),
                     self = this.api(),
                     $searchButton = $('<button class="btn btn-sm btn-black mr-2 ml-2">')
@@ -412,7 +416,7 @@ var order = {
                 },
                 {
                     targets: 9,
-                    sortable: true,
+                    sortable: false,
                     width: "6%",
                     "render": function (data, type, full) {
                         return full.SellerPaymentStatus == true ? '' : '<a class="btn btn-info btn-sm PayOrder" data-orderid="' + full.AliExpressOrderNumber + '">Pay Now</a>';

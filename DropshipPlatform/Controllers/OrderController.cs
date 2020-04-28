@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Linq.Dynamic;
 
 namespace DropshipPlatform.Controllers
 {
@@ -33,6 +34,10 @@ namespace DropshipPlatform.Controllers
             var draw = Request.Form.GetValues("draw") != null ? Request.Form.GetValues("draw").FirstOrDefault() : null;
             var start = Request.Form.GetValues("start") != null ? Request.Form.GetValues("start").FirstOrDefault() : null;
             var length = Request.Form.GetValues("length") != null ? Request.Form.GetValues("length").FirstOrDefault() : null;
+            //Find Order Column
+            var sortColumn = Request.Form.GetValues("columns[" + Request.Form.GetValues("order[0][column]").FirstOrDefault() + "][data]").FirstOrDefault();
+            var sortColumnDir = Request.Form.GetValues("order[0][dir]").FirstOrDefault();
+
             string search = Request.Form.GetValues("search[value]").FirstOrDefault();
             int pageSize = length != null ? Convert.ToInt32(length) : 0;
             int skip = start != null ? Convert.ToInt32(start) : 0;
@@ -59,7 +64,7 @@ namespace DropshipPlatform.Controllers
             }
             else if (sellerPaymentStatus == 2)
             {
-                retvalue = retvalue.Where(x => x.SellerPaymentStatus == 0).ToList();
+                retvalue = retvalue.Where(x => x.SellerPaymentStatus == 0 || x.SellerPaymentStatus == null).ToList();
             }
             if (!string.IsNullOrEmpty(search))
             {
@@ -68,6 +73,13 @@ namespace DropshipPlatform.Controllers
                 x.SellerEmail != null && x.SellerEmail.ToString().ToLower().Contains(search.ToLower())
                 ).ToList();
             }
+            string sortby = (!string.IsNullOrEmpty(sortColumn) && !string.IsNullOrEmpty(sortColumnDir)) ? sortColumn + " " + sortColumnDir : "";
+            //SORT
+            if (!string.IsNullOrEmpty(sortby))
+            {
+                retvalue = retvalue.OrderBy(sortColumn + " " + sortColumnDir).ToList();
+            }
+
             var data = new List<OrderData>();
             if (pageSize != -1)
             {

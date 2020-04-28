@@ -13,6 +13,7 @@ namespace DropshipPlatform.Infrastructure
     public class CustomAuthorizeAttribute : ActionFilterAttribute
     {
         private readonly string[] allowedroles;
+        private readonly string[] AccessTokenPages= { "Products", "Order" };
         public CustomAuthorizeAttribute(params string[] roles)
         {
             this.allowedroles = roles;
@@ -39,7 +40,15 @@ namespace DropshipPlatform.Infrastructure
                         }
                         if (UserIsValid)
                         {
-
+                            if(user.LoggedUserRoleID == 3 && string.IsNullOrEmpty(user.AliExpressAccessToken))
+                            {
+                                string actionName = filterContext.ActionDescriptor.ActionName;
+                                string controllerName = filterContext.ActionDescriptor.ControllerDescriptor.ControllerName;
+                                if (AccessTokenPages.Contains(controllerName))
+                                {
+                                    new RedirectHelper().RedirectToLogin(filterContext, "AliExpress", "Index");
+                                }
+                            }
                         }
                         else
                         {
@@ -72,7 +81,7 @@ namespace DropshipPlatform.Infrastructure
     }
     public class RedirectHelper
     {
-        public void RedirectToLogin(ActionExecutingContext filterContext)
+        public void RedirectToLogin(ActionExecutingContext filterContext, string controller = "Login", string action= "Index")
         {
             if (filterContext.RequestContext.HttpContext.Request.IsAjaxRequest())
             {
@@ -81,8 +90,8 @@ namespace DropshipPlatform.Infrastructure
                 filterContext.Result = new RedirectToRouteResult(
                 new RouteValueDictionary
                 {
-                     { "controller", "Login" },
-                     { "action", "Index" }
+                     { "controller", controller },
+                     { "action", action }
                 });
             }
             else
@@ -90,8 +99,8 @@ namespace DropshipPlatform.Infrastructure
                 filterContext.Result = new RedirectToRouteResult(
                 new RouteValueDictionary
                 {
-                     { "controller", "Login" },
-                     { "action", "Index" }
+                     { "controller", controller },
+                     { "action", action }
                 });
             }
         }

@@ -26,7 +26,7 @@ namespace DropshipPlatform.Controllers
         AliExpressAuthService _aliExpressAuthService = new AliExpressAuthService();
 
         [AjaxFilter]
-        [CustomAuthorize("Seller")]
+        //[CustomAuthorize("Seller")]
         public ActionResult Index()
         {
             ViewBag.authorizeUrl = _aliExpressAuthService.getAuthorizeUrl();

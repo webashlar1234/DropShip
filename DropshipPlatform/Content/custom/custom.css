@@ -11,9 +11,9 @@ table.dataTable tbody td, table.dataTable tbody td input, table.dataTable tbody 
     width: 100%;
 }
 
-.dataTables_filter label {
-    /*width: 100%;*/
-}
+    .dataTables_filter label {
+        /*width: 100%;*/
+    }
 
 .dataTables_wrapper .dataTables_filter input {
     margin-left: 0px;
@@ -37,8 +37,9 @@ table.dataTable tbody td, table.dataTable tbody td input, table.dataTable tbody 
     background-color: transparent;
     border-color: lightgrey;
     font-size: 13px;
-    height:100%;
+    height: 100%;
 }
+
 @keyframes spinner {
     to {
         transform: rotate(360deg);
@@ -61,15 +62,27 @@ table.dataTable tbody td, table.dataTable tbody td input, table.dataTable tbody 
     animation: spinner .6s linear infinite;
 }
 
-.btnAction{
-    min-width:120px;
-    max-width:150px;
-    margin-top:5px;
+.btnAction {
+    min-width: 120px;
+    max-width: 150px;
+    margin-top: 5px;
 }
-.mt-checkbox.disabled span{
+
+.mt-checkbox.disabled span {
     background-color: #f0ebeb;
-    cursor:not-allowed;
+    cursor: not-allowed;
 }
-a.btn-info{
-    color:white !important;
+
+a.btn-info {
+    color: white !important;
+}
+
+#frmRegistration #country_prefix {
+    position: absolute;
+    top: 39px;
+    left: 10px;
+}
+
+#frmRegistration #TxtPhone {
+    /*text-indent: 32px;*/
 }
