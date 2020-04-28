@@ -39,36 +39,41 @@ namespace DropshipPlatform.BLL.Services
                     string access_token = StaticValues.getAccessTokenObjFromStr(user.AliExpressAccessToken);
                     if (!string.IsNullOrEmpty(access_token))
                     {
-                        AliexpressSolutionOrderGetRequest req = new AliexpressSolutionOrderGetRequest();
-
-                        AliexpressSolutionOrderGetRequest.OrderQueryDomain obj1 = new AliexpressSolutionOrderGetRequest.OrderQueryDomain();
-
-                        //var todayDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                        //obj1.CreateDateEnd = DateTime.Now.AddMinutes(-5).ToString("yyyy-MM-dd HH:mm:ss");
-                        //obj1.CreateDateStart = todayDate;
-                        //obj1.ModifiedDateStart = todayDate;
-
-                        var todayDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                        obj1.CreateDateEnd = todayDate;
-                        obj1.CreateDateStart = "2020-03-01 00:00:00";
-                        //obj1.ModifiedDateStart = "2020-03-01 00:00:00";//don't add this, latest orders aren't fetching using this
-
-                        obj1.OrderStatusList = new List<string> { "SELLER_PART_SEND_GOODS", "PLACE_ORDER_SUCCESS", "IN_CANCEL", "WAIT_SELLER_SEND_GOODS", "WAIT_BUYER_ACCEPT_GOODS", "FUND_PROCESSING", "IN_ISSUE", "IN_FROZEN", "WAIT_SELLER_EXAMINE_MONEY", "RISK_CONTROL", "FINISH" };
-                        //obj1.BuyerLoginId = "edacan0107@aol.com";
-                        obj1.PageSize = 20L;
-                        //obj1.ModifiedDateEnd = DateTime.Now.AddMinutes(-5).ToString("yyyy-MM-dd HH:mm:ss");
-                        obj1.ModifiedDateEnd = todayDate;
-                        obj1.CurrentPage = 1L;
-                        //obj1.OrderStatus = "SELLER_PART_SEND_GOODS";
-                        req.Param0_ = obj1;
-                        Top.Api.Response.AliexpressSolutionOrderGetResponse rsp = client.Execute(req, access_token);
-                        result = JsonConvert.SerializeObject(rsp.Result);
-                        orders = JsonConvert.DeserializeObject<ResultData>(result);
-                        if (orders != null)
+                        var totalCount = 2;
+                        for (var i = 1; i <= totalCount; i = i + 1)
                         {
-                            if (orders.TargetList.Count > 0)
+                            AliexpressSolutionOrderGetRequest req = new AliexpressSolutionOrderGetRequest();
+
+                            AliexpressSolutionOrderGetRequest.OrderQueryDomain obj1 = new AliexpressSolutionOrderGetRequest.OrderQueryDomain();
+
+                            //var todayDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                            //obj1.CreateDateEnd = DateTime.Now.AddMinutes(-5).ToString("yyyy-MM-dd HH:mm:ss");
+                            //obj1.CreateDateStart = todayDate;
+                            //obj1.ModifiedDateStart = todayDate;
+
+                            var todayDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                            obj1.CreateDateEnd = todayDate;
+                            obj1.CreateDateStart = "2020-03-01 00:00:00";
+                            //obj1.ModifiedDateStart = "2020-03-01 00:00:00";//don't add this, latest orders aren't fetching using this
+
+                            obj1.OrderStatusList = new List<string> { "SELLER_PART_SEND_GOODS", "PLACE_ORDER_SUCCESS", "IN_CANCEL", "WAIT_SELLER_SEND_GOODS", "WAIT_BUYER_ACCEPT_GOODS", "FUND_PROCESSING", "IN_ISSUE", "IN_FROZEN", "WAIT_SELLER_EXAMINE_MONEY", "RISK_CONTROL", "FINISH" };
+                            //obj1.BuyerLoginId = "edacan0107@aol.com";
+                            obj1.PageSize = 20L;
+                            //obj1.ModifiedDateEnd = DateTime.Now.AddMinutes(-5).ToString("yyyy-MM-dd HH:mm:ss");
+                            obj1.ModifiedDateEnd = todayDate;
+                            obj1.CurrentPage = i;
+                            //obj1.OrderStatus = "SELLER_PART_SEND_GOODS";
+                            req.Param0_ = obj1;
+                            Top.Api.Response.AliexpressSolutionOrderGetResponse rsp = client.Execute(req, access_token);
+                            result = JsonConvert.SerializeObject(rsp.Result);
+                            orders = JsonConvert.DeserializeObject<ResultData>(result);
+                            if (orders != null)
                             {
-                                InsertOrUpdateOrderData(orders, access_token);
+                                totalCount = orders.TotalPage;
+                                if (orders.TargetList.Count > 0)
+                                {
+                                     InsertOrUpdateOrderData(orders, access_token);
+                                }
                             }
                         }
                     }
@@ -464,7 +469,7 @@ namespace DropshipPlatform.BLL.Services
                                                       {
                                                           AliExpressOrderId = oi.AliExpressOrderId.ToString(),
                                                           AliExpressProductId = oi.AliExpressProductID,
-                                                          OrignalProductId = !string.IsNullOrEmpty(p.OriginalProductID)  ? p.OriginalProductID : pp.OriginalProductID,
+                                                          OrignalProductId = !string.IsNullOrEmpty(p.OriginalProductID) ? p.OriginalProductID : pp.OriginalProductID,
                                                           OrignalProductLink = !string.IsNullOrEmpty(p.SourceWebsite) ? p.SourceWebsite : pp.SourceWebsite,
                                                           ProductName = oi.ProductName,
                                                           Price = oi.Price,
@@ -862,8 +867,25 @@ namespace DropshipPlatform.BLL.Services
                         DbOrderresult = datacontext.orderapiresults.Where(x => x.AliExpressOrderID == model.AliExpressOrderID).FirstOrDefault();
                         if (DbOrderresult != null)
                         {
-                            datacontext.Entry(DbOrderresult).State = EntityState.Detached;
-                            datacontext.Entry(model).State = EntityState.Modified;
+                            DbOrderresult.LogisticsServiceId = model.LogisticsServiceId;
+                            DbOrderresult.LogisticsNumber = model.LogisticsNumber;
+                            DbOrderresult.CainiaoLabel = model.CainiaoLabel;
+                            DbOrderresult.WarehouseOrderId = model.WarehouseOrderId;
+
+                            DbOrderresult.getonlinelogisticsserviceResponse = model.getonlinelogisticsserviceResponse;
+                            DbOrderresult.createwarehouseorderResponse = model.createwarehouseorderResponse;
+                            DbOrderresult.getLogisticNumberResponse = model.getLogisticNumberResponse;
+                            DbOrderresult.getprintinfoResponse = model.getprintinfoResponse;
+                            DbOrderresult.OrderFulfillResponse = model.OrderFulfillResponse;
+
+                            DbOrderresult.IsSuccess = model.IsSuccess;
+                            DbOrderresult.Error = model.Error;
+
+                            DbOrderresult.SC_OrderID = model.SC_OrderID;
+                            DbOrderresult.ModifyOn = model.ModifyOn;
+                            DbOrderresult.CreatedOn = model.CreatedOn;
+
+                            datacontext.Entry(DbOrderresult).State = EntityState.Modified;
                         }
                         else
                         {
@@ -907,7 +929,7 @@ namespace DropshipPlatform.BLL.Services
 
             return result;
         }
-        public bool PayForOrderBySeller(string OrderID, int UserID)
+        public StripeResultModel PayForOrderBySeller(string OrderID, int UserID)
         {
             StripeResultModel resultStripePayment = new StripeResultModel();
             try
@@ -957,17 +979,32 @@ namespace DropshipPlatform.BLL.Services
                             if (resultStripePayment != null)
                             {
                                 order order = datacontext.orders.Where(x => x.AliExpressOrderID == OrderID && x.AliExpressLoginID == UserData.AliExpressLoginID).FirstOrDefault();
-                                if(order != null)
+                                if (order != null)
                                 {
                                     logger.Info("order count");
                                     order.SellerPaymentStatus = resultStripePayment.IsSuccess == true ? 1 : 0;
                                     order.SellerPaymentDetails = resultStripePayment.Result;
+                                    if (resultStripePayment.Result != null)
+                                    {
+                                        var JSONError = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(resultStripePayment.Result);
+                                        resultStripePayment.Result = JSONError.message;
+                                    }
                                     datacontext.Entry(order).State = EntityState.Modified;
                                     datacontext.SaveChanges();
                                 }
-                                
+                                else
+                                {
+                                    resultStripePayment.IsSuccess = false;
+                                    resultStripePayment.Result = "No order found for the user";
+                                }
+
                             }
                         }
+                    }
+                    else
+                    {
+                        resultStripePayment.IsSuccess = false;
+                        resultStripePayment.Result = "Please add customer";
                     }
                 }
             }
@@ -977,7 +1014,7 @@ namespace DropshipPlatform.BLL.Services
                 logger.Info(ex.ToString());
             }
 
-            return resultStripePayment.IsSuccess;
+            return resultStripePayment;
         }
 
 

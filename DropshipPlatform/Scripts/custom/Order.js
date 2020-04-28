@@ -50,12 +50,13 @@ var order = {
                 async: false,
                 data: { OrderID: OrderId },
                 success: function (data) {
-                    if (data) {
+                    if (data.IsSuccess) {
                         SuccessMessage("Your payment is done successfully");
                         orderDTSeller.clear().draw();
                     }
                     else {
-                        ErrorMessage("Your payment is faild for order " + OrderId + ", please try again later");
+                       // ErrorMessage("Your payment is faild for order " + OrderId + ", please try again later");
+                        ErrorMessage(data.Result);
                     }
                     HideLoader();
                 },

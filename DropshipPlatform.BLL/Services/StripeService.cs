@@ -169,6 +169,11 @@ namespace DropshipPlatform.BLL.Services
                     PIservice.Create(options_create);
                     StripeResultModel.IsSuccess = true;
                 }
+                else
+                {
+                    StripeResultModel.IsSuccess = false;
+                    StripeResultModel.Result = "Please add credit card from account";
+                }
             }
             catch (StripeException e)
             {
