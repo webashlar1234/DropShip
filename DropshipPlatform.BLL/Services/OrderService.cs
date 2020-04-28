@@ -1000,6 +1000,11 @@ namespace DropshipPlatform.BLL.Services
 
                             }
                         }
+                        else
+                        {
+                            resultStripePayment.IsSuccess = false;
+                            resultStripePayment.Result = "No amount to charge";
+                        }
                     }
                     else
                     {
