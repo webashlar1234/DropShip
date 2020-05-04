@@ -148,6 +148,9 @@
     <Compile Include="subscription.cs">
       <DependentUpon>DropshipData.tt</DependentUpon>
     </Compile>
+    <Compile Include="trackbackendserice.cs">
+      <DependentUpon>DropshipData.tt</DependentUpon>
+    </Compile>
     <Compile Include="user.cs">
       <DependentUpon>DropshipData.tt</DependentUpon>
     </Compile>

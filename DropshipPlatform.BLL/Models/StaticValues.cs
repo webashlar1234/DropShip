@@ -93,5 +93,19 @@ namespace DropshipPlatform.BLL.Models
             }
             return UsdCost;
         }
+
+        public static DateTime getUSPecificTime(DateTime date)
+        {
+            DateTime usPeciDate = new DateTime();
+            try
+            {
+                var zone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
+                usPeciDate  = TimeZoneInfo.ConvertTimeFromUtc(date, zone);
+            }
+            catch (Exception ex)
+            {
+            }
+            return usPeciDate;
+        }
     }
 }

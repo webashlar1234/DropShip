@@ -42,6 +42,12 @@ namespace DropshipPlatform.Controllers
             int pageSize = length != null ? Convert.ToInt32(length) : 0;
             int skip = start != null ? Convert.ToInt32(start) : 0;
 
+            DTRequestModel DTRequestModel = new DTRequestModel();
+            DTRequestModel.PageSize = length != null ? Convert.ToInt32(length) : 0;
+            DTRequestModel.Skip = start != null ? Convert.ToInt32(start) : 0;
+            DTRequestModel.SortBy = (!string.IsNullOrEmpty(sortColumn) && !string.IsNullOrEmpty(sortColumnDir)) ? sortColumn + " " + sortColumnDir : "";
+            DTRequestModel.Search = search;
+
             LoggedUserModel user = SessionManager.GetUserSession();
             int UserID = 0;
             if (user.LoggedUserRoleName != null)
@@ -52,46 +58,46 @@ namespace DropshipPlatform.Controllers
                 }
             }
 
-            List<OrderData> retvalue = _orderService.getAllOrdersFromDatabase(UserID);
+            List<OrderData> retvalue = _orderService.getAllOrdersFromDatabase(DTRequestModel, orderStatus, sellerPaymentStatus,out recordsTotal, UserID);
 
-            if (orderStatus != "All" && !string.IsNullOrEmpty(orderStatus))
-            {
-                retvalue = retvalue.Where(x => x.OrderStatus == orderStatus).ToList();
-            }
-            if (sellerPaymentStatus == 1)
-            {
-                retvalue = retvalue.Where(x => x.SellerPaymentStatus == 1).ToList();
-            }
-            else if (sellerPaymentStatus == 2)
-            {
-                retvalue = retvalue.Where(x => x.SellerPaymentStatus == 0 || x.SellerPaymentStatus == null).ToList();
-            }
-            if (!string.IsNullOrEmpty(search))
-            {
-                retvalue = retvalue.Where(x => x.AliExpressOrderID != null && x.AliExpressOrderID.ToLower().Contains(search.ToLower()) ||
-                x.SellerID != null && x.SellerID.ToString().ToLower().Contains(search.ToLower()) ||
-                x.SellerEmail != null && x.SellerEmail.ToString().ToLower().Contains(search.ToLower())
-                ).ToList();
-            }
-            string sortby = (!string.IsNullOrEmpty(sortColumn) && !string.IsNullOrEmpty(sortColumnDir)) ? sortColumn + " " + sortColumnDir : "";
-            //SORT
-            if (!string.IsNullOrEmpty(sortby))
-            {
-                retvalue = retvalue.OrderBy(sortColumn + " " + sortColumnDir).ToList();
-            }
+            //if (orderStatus != "All" && !string.IsNullOrEmpty(orderStatus))
+            //{
+            //    retvalue = retvalue.Where(x => x.OrderStatus == orderStatus).ToList();
+            //}
+            //if (sellerPaymentStatus == 1)
+            //{
+            //    retvalue = retvalue.Where(x => x.SellerPaymentStatus == 1).ToList();
+            //}
+            //else if (sellerPaymentStatus == 2)
+            //{
+            //    retvalue = retvalue.Where(x => x.SellerPaymentStatus == 0 || x.SellerPaymentStatus == null).ToList();
+            //}
+            //if (!string.IsNullOrEmpty(search))
+            //{
+            //    retvalue = retvalue.Where(x => x.AliExpressOrderID != null && x.AliExpressOrderID.ToLower().Contains(search.ToLower()) ||
+            //    x.SellerID != null && x.SellerID.ToString().ToLower().Contains(search.ToLower()) ||
+            //    x.SellerEmail != null && x.SellerEmail.ToString().ToLower().Contains(search.ToLower())
+            //    ).ToList();
+            //}
+            //string sortby = (!string.IsNullOrEmpty(sortColumn) && !string.IsNullOrEmpty(sortColumnDir)) ? sortColumn + " " + sortColumnDir : "";
+            ////SORT
+            //if (!string.IsNullOrEmpty(sortby))
+            //{
+            //    retvalue = retvalue.OrderBy(sortColumn + " " + sortColumnDir).ToList();
+            //}
 
-            var data = new List<OrderData>();
-            if (pageSize != -1)
-            {
-                data = retvalue.Skip(skip).Take(pageSize).ToList();
-            }
-            else
-            {
-                data = retvalue.ToList();
-            }
-            recordsTotal = retvalue.Count();
+            //var data = new List<OrderData>();
+            //if (pageSize != -1)
+            //{
+            //    data = retvalue.Skip(skip).Take(pageSize).ToList();
+            //}
+            //else
+            //{
+            //    data = retvalue.ToList();
+            //}
+            //recordsTotal = retvalue.Count();
 
-            var jsonResult = Json(new { draw = draw, recordsFiltered = recordsTotal, recordsTotal = recordsTotal, data = data }, JsonRequestBehavior.AllowGet);
+            var jsonResult = Json(new { draw = draw, recordsFiltered = recordsTotal, recordsTotal = recordsTotal, data = retvalue }, JsonRequestBehavior.AllowGet);
             jsonResult.MaxJsonLength = int.MaxValue;
             return jsonResult;
         }

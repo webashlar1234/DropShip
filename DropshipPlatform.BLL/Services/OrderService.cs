@@ -14,6 +14,7 @@ using ICSharpCode.SharpZipLib.Zip;
 using System.IO;
 using Newtonsoft.Json.Linq;
 using System.Data.Entity;
+using System.Linq.Dynamic;
 
 namespace DropshipPlatform.BLL.Services
 {
@@ -25,6 +26,8 @@ namespace DropshipPlatform.BLL.Services
         {
             ResultData orders = new ResultData();
             string result = String.Empty;
+            long trackServiceID = 0;
+            int ErrorCount = 0;
             try
             {
                 ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret);
@@ -33,7 +36,28 @@ namespace DropshipPlatform.BLL.Services
                 {
                     users = datacontext.users.Where(x => x.IsActive == true && x.AliExpressSellerID != null).ToList();
                 }
+                AliexpressSolutionOrderGetRequest req = new AliexpressSolutionOrderGetRequest();
 
+                AliexpressSolutionOrderGetRequest.OrderQueryDomain obj1 = new AliexpressSolutionOrderGetRequest.OrderQueryDomain();
+
+                DateTime lastCalld = FetchLastCallRecord("OrderGetRequest");
+                var todayDate = StaticValues.getUSPecificTime(DateTime.UtcNow);
+                
+                obj1.CreateDateEnd = todayDate.ToString("yyyy-MM-dd HH:mm:ss");
+                obj1.CreateDateStart = lastCalld.ToString("yyyy-MM-dd HH:mm:ss");
+                //obj1.ModifiedDateStart = lastCalld.ToString("yyyy-MM-dd HH:mm:ss");
+                obj1.ModifiedDateEnd = todayDate.ToString("yyyy-MM-dd HH:mm:ss");
+
+                //var todayDate = DateTime.UtcNow;
+                //obj1.CreateDateEnd = todayDate.ToString("yyyy-MM-dd HH:mm:ss");
+                //obj1.CreateDateStart = "2020-03-01 00:00:00";
+                ////obj1.ModifiedDateStart = "2020-03-01 00:00:00";//don't add this, latest orders aren't fetching using this
+                //obj1.ModifiedDateEnd = todayDate.ToString("yyyy-MM-dd HH:mm:ss");
+
+                obj1.OrderStatusList = new List<string> { "SELLER_PART_SEND_GOODS", "PLACE_ORDER_SUCCESS", "IN_CANCEL", "WAIT_SELLER_SEND_GOODS", "WAIT_BUYER_ACCEPT_GOODS", "FUND_PROCESSING", "IN_ISSUE", "IN_FROZEN", "WAIT_SELLER_EXAMINE_MONEY", "RISK_CONTROL", "FINISH" };
+                obj1.PageSize = 40L;
+                trackServiceID = AddTrackRecord("OrderGetRequest", todayDate);
+                logger.Info("Order get timings " + JsonConvert.SerializeObject(obj1));
                 foreach (user user in users)
                 {
                     string access_token = StaticValues.getAccessTokenObjFromStr(user.AliExpressAccessToken);
@@ -42,37 +66,23 @@ namespace DropshipPlatform.BLL.Services
                         var totalCount = 2;
                         for (var i = 1; i <= totalCount; i = i + 1)
                         {
-                            AliexpressSolutionOrderGetRequest req = new AliexpressSolutionOrderGetRequest();
-
-                            AliexpressSolutionOrderGetRequest.OrderQueryDomain obj1 = new AliexpressSolutionOrderGetRequest.OrderQueryDomain();
-
-                            //var todayDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                            //obj1.CreateDateEnd = DateTime.Now.AddMinutes(-5).ToString("yyyy-MM-dd HH:mm:ss");
-                            //obj1.CreateDateStart = todayDate;
-                            //obj1.ModifiedDateStart = todayDate;
-
-                            var todayDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                            obj1.CreateDateEnd = todayDate;
-                            obj1.CreateDateStart = "2020-03-01 00:00:00";
-                            //obj1.ModifiedDateStart = "2020-03-01 00:00:00";//don't add this, latest orders aren't fetching using this
-
-                            obj1.OrderStatusList = new List<string> { "SELLER_PART_SEND_GOODS", "PLACE_ORDER_SUCCESS", "IN_CANCEL", "WAIT_SELLER_SEND_GOODS", "WAIT_BUYER_ACCEPT_GOODS", "FUND_PROCESSING", "IN_ISSUE", "IN_FROZEN", "WAIT_SELLER_EXAMINE_MONEY", "RISK_CONTROL", "FINISH" };
-                            //obj1.BuyerLoginId = "edacan0107@aol.com";
-                            obj1.PageSize = 20L;
-                            //obj1.ModifiedDateEnd = DateTime.Now.AddMinutes(-5).ToString("yyyy-MM-dd HH:mm:ss");
-                            obj1.ModifiedDateEnd = todayDate;
                             obj1.CurrentPage = i;
                             //obj1.OrderStatus = "SELLER_PART_SEND_GOODS";
                             req.Param0_ = obj1;
                             Top.Api.Response.AliexpressSolutionOrderGetResponse rsp = client.Execute(req, access_token);
+                            if (rsp.IsError)
+                            {
+                                ErrorCount = ErrorCount+1;
+                            }
                             result = JsonConvert.SerializeObject(rsp.Result);
                             orders = JsonConvert.DeserializeObject<ResultData>(result);
                             if (orders != null)
                             {
                                 totalCount = orders.TotalPage;
+                                logger.Info("total order : " + orders.TotalCount);
                                 if (orders.TargetList.Count > 0)
                                 {
-                                     InsertOrUpdateOrderData(orders, access_token);
+                                    InsertOrUpdateOrderData(orders, access_token, trackServiceID);
                                 }
                             }
                         }
@@ -82,13 +92,79 @@ namespace DropshipPlatform.BLL.Services
                         logger.Error("Access Token is null for user " + user.UserID);
                     }
                 }
+                if (ErrorCount > 0)
+                {
+                    UpdateTrackRecordStatus(trackServiceID, false);
+                }
+            }
+            catch (Exception ex)
+            {
+                UpdateTrackRecordStatus(trackServiceID, false);
+                logger.Error(ex.ToString());
+            }
+            return orders;
+
+        }
+
+        public long AddTrackRecord(string SerivceName, DateTime todayDate)
+        {
+            long result;
+            try
+            {
+                trackbackendserice model = new trackbackendserice();
+                model.ServiceName = SerivceName;
+                model.ServiceLastCall = todayDate;
+                model.IsSuccess = true;
+                model.CreatedOn = DateTime.UtcNow;
+                using (DropshipDataEntities datacontext = new DropshipDataEntities())
+                {
+                    datacontext.trackbackendserices.Add(model);
+                    datacontext.SaveChanges();
+                    result = model.ID;
+                }
+            }
+            catch (Exception ex)
+            {
+                result = 0;
+                logger.Error(ex.ToString());
+            }
+            return result;
+        }
+        public bool UpdateTrackRecordStatus(long SerivceID, bool issuccess)
+        {
+            bool result = true;
+            try
+            {
+                using (DropshipDataEntities datacontext = new DropshipDataEntities())
+                {
+                    trackbackendserice model = datacontext.trackbackendserices.Where(x => x.ID == SerivceID).FirstOrDefault();
+                    model.IsSuccess = issuccess;
+                    datacontext.Entry(model).State = EntityState.Modified;
+                    datacontext.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                logger.Error(ex.ToString());
+            }
+            return result;
+        }
+        public DateTime FetchLastCallRecord(string serivce)
+        {
+            DateTime? lastFetchDate = null;
+            try
+            {
+                using (DropshipDataEntities datacontext = new DropshipDataEntities())
+                {
+                    lastFetchDate = datacontext.trackbackendserices.Where(x => x.ServiceName == serivce && x.IsSuccess == true).OrderByDescending(x => x.ServiceLastCall).Select(x => x.ServiceLastCall).FirstOrDefault();
+                }
             }
             catch (Exception ex)
             {
                 logger.Error(ex.ToString());
             }
-            return orders;
-
+            return lastFetchDate ?? StaticValues.getUSPecificTime(DateTime.UtcNow).AddDays(-2);
         }
 
         public product GetProductByAliId(string Id, string sku)
@@ -245,7 +321,7 @@ namespace DropshipPlatform.BLL.Services
             return result;
         }
 
-        public void InsertOrUpdateOrderData(ResultData orders, string access_token)
+        public void InsertOrUpdateOrderData(ResultData orders, string access_token, long trackServiceID)
         {
             try
             {
@@ -321,6 +397,7 @@ namespace DropshipPlatform.BLL.Services
                                         {
                                             resultStripePayment = _stripeservice.ChargeSavedCard(stripeCustomerId, (long)sellerChargeAmount);
                                         }
+                                        logger.Info("paymentinfo " + JsonConvert.SerializeObject(resultStripePayment) + ',' + stripeCustomerId + ',' + item.OrderId + ',' + sellerChargeAmount);
 
                                         //get logistic tracking number and cainiao label
                                         orderResult = getLogisticsServicByOrderId(item.OrderId, access_token);
@@ -422,15 +499,17 @@ namespace DropshipPlatform.BLL.Services
             }
             catch (Exception ex)
             {
+                UpdateTrackRecordStatus(trackServiceID, false);
                 logger.Error(ex.ToString());
             }
         }
 
-        public List<OrderData> getAllOrdersFromDatabase(int? UserID = null)
+        public List<OrderData> getAllOrdersFromDatabase(DTRequestModel DTReqModel,string orderStatus, int? sellerPaymentStatus, out int recordsTotal, int? UserID = null)
         {
             //List<OrderData> OrdersList = new List<OrderData>();
             List<OrderData> Orders = new List<OrderData>();
             List<OrderViewModel> ChildOrders = new List<OrderViewModel>();
+            recordsTotal = 0;
             try
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
@@ -458,6 +537,35 @@ namespace DropshipPlatform.BLL.Services
                                   AliExpressOrderCreatedTime = ao.AliExpressOrderCreatedTime
                               }).ToList();
 
+
+                    if (orderStatus != "All" && !string.IsNullOrEmpty(orderStatus))
+                    {
+                        Orders = Orders.Where(x => x.OrderStatus == orderStatus).ToList();
+                    }
+                    if (sellerPaymentStatus == 1)
+                    {
+                        Orders = Orders.Where(x => x.SellerPaymentStatus == 1).ToList();
+                    }
+                    else if (sellerPaymentStatus == 2)
+                    {
+                        Orders = Orders.Where(x => x.SellerPaymentStatus == 0 || x.SellerPaymentStatus == null).ToList();
+                    }
+                    if (!string.IsNullOrEmpty(DTReqModel.Search))
+                    {
+                        Orders = Orders.Where(x => x.AliExpressOrderID != null && x.AliExpressOrderID.ToLower().Contains(DTReqModel.Search.ToLower()) ||
+                        x.SellerID != null && x.SellerID.ToString().ToLower().Contains(DTReqModel.Search.ToLower()) ||
+                        x.SellerEmail != null && x.SellerEmail.ToString().ToLower().Contains(DTReqModel.Search.ToLower())
+                        ).ToList();
+                    }
+                    //SORT
+                    if (!string.IsNullOrEmpty(DTReqModel.SortBy))
+                    {
+                        Orders = Orders.OrderBy(DTReqModel.SortBy).ToList();
+                    }
+
+                    recordsTotal = Orders.Count();
+                    Orders = Orders.Skip(DTReqModel.Skip).Take(DTReqModel.PageSize).ToList();
+
                     List<OrderViewModel> childList = (from o in datacontext.orders
                                                       join oi in datacontext.aliexpressorderitems on o.AliExpressOrderID equals oi.AliExpressOrderId.ToString()
                                                       from sp in datacontext.sellerspickedproducts.Where(x => x.AliExpressProductID == oi.AliExpressProductID).DefaultIfEmpty()
@@ -473,8 +581,8 @@ namespace DropshipPlatform.BLL.Services
                                                           OrignalProductLink = !string.IsNullOrEmpty(p.SourceWebsite) ? p.SourceWebsite : pp.SourceWebsite,
                                                           ProductName = oi.ProductName,
                                                           Price = oi.Price,
-                                                          Colour = p.Color,
-                                                          Size = p.Size,
+                                                          Colour = !string.IsNullOrEmpty(p.Color) ? p.Color : pp.Color,
+                                                          Size = !string.IsNullOrEmpty(p.Size) ? p.Size : pp.Size,
                                                           IsReadyToBuy = !string.IsNullOrEmpty(sp.AliExpressProductID) && o.SellerPaymentStatus == 1 && o.OrderStatus == StaticValues.Unpurchased ? true : false
                                                       }).ToList();
 
@@ -733,20 +841,47 @@ namespace DropshipPlatform.BLL.Services
 
         public bool checkWarehouceOrderStatus()
         {
+            
             bool result = true;
             try
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
+                    //check if even warehouce order no created or orderapiresults is not created
+                    //var orders = (from o in datacontext.orders
+                    //              from ao in datacontext.aliexpressorders.Where(x => x.AliExpressOrderID.ToString() == o.AliExpressOrderID)
+                    //              from oar in datacontext.orderapiresults.Where(x => x.SC_OrderID == o.OrderID).DefaultIfEmpty()
+                    //              join u in datacontext.users on o.AliExpressLoginID equals u.AliExpressLoginID
+                    //              where oar == null  && (ao.OrderStatus == "WAIT_SELLER_SEND_GOODS" || ao.OrderStatus == "SELLER_PART_SEND_GOODS")
+                    //              //where (oar == null || (oar != null ? oar.WarehouseOrderId == null && string.IsNullOrEmpty(oar.createwarehouseorderResponse): false)) && (ao.OrderStatus == "WAIT_SELLER_SEND_GOODS" || ao.OrderStatus == "SELLER_PART_SEND_GOODS")
+                    //              select new
+                    //              {
+                    //                  OrderId = o.AliExpressOrderID,
+                    //                  SC_OrderID = o.OrderID,
+                    //                  access_token = u.AliExpressAccessToken
+                    //              }).ToList();
+
+                    //logger.Info("create warehouse count " + orders.Count());
+
+                    //foreach (var item in orders)
+                    //{
+                    //    orderapiresult orderResult = getLogisticsServicByOrderId(Convert.ToInt64(item.OrderId), StaticValues.getAccessTokenObjFromStr(item.access_token));
+                    //    orderResult.SC_OrderID = item.SC_OrderID;
+                    //    AddOrderResult(orderResult);
+                    //}
+
+                    // check for warehouse 
                     var orderapiresult = (from oar in datacontext.orderapiresults
                                           join o in datacontext.orders on new { Key1 = oar.SC_OrderID, Key2 = oar.AliExpressOrderID } equals new { Key1 = o.OrderID, Key2 = o.AliExpressOrderID }
                                           join u in datacontext.users on o.AliExpressLoginID equals u.AliExpressLoginID
-                                          where string.IsNullOrEmpty(oar.LogisticsNumber)
+                                          where string.IsNullOrEmpty(oar.LogisticsNumber) && oar.WarehouseOrderId > 0
                                           select new
                                           {
                                               orderapiresults = oar,
                                               access_token = u.AliExpressAccessToken
                                           }).ToList();
+
+                    logger.Info("update warehouse count "+orderapiresult.Count());
 
                     foreach (var item in orderapiresult)
                     {
@@ -882,13 +1017,14 @@ namespace DropshipPlatform.BLL.Services
                             DbOrderresult.Error = model.Error;
 
                             DbOrderresult.SC_OrderID = model.SC_OrderID;
-                            DbOrderresult.ModifyOn = model.ModifyOn;
-                            DbOrderresult.CreatedOn = model.CreatedOn;
+                            DbOrderresult.ModifyOn = DateTime.UtcNow;
 
                             datacontext.Entry(DbOrderresult).State = EntityState.Modified;
                         }
                         else
                         {
+                            model.ModifyOn = null;
+                            model.CreatedOn = DateTime.UtcNow;
                             datacontext.orderapiresults.Add(model);
                         }
 

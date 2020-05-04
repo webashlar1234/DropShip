@@ -50,5 +50,6 @@ namespace DropshipPlatform.Entity
         public virtual DbSet<currencyrate> currencyrates { get; set; }
         public virtual DbSet<order> orders { get; set; }
         public virtual DbSet<orderapiresult> orderapiresults { get; set; }
+        public virtual DbSet<trackbackendserice> trackbackendserices { get; set; }
     }
 }

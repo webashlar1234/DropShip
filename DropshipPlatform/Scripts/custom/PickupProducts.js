@@ -297,6 +297,7 @@ function FormatData(json) {
             "category": json[i].ParentProduct.CategoryName,
             "cost": json[i].ParentProduct.Cost,
             "SellerCost": json[i].ParentProduct.SellerCost,
+            "Brand": json[i].ParentProduct.Brand,
             "inventory": json[i].ParentProduct.Inventory,
             "shippingweight": json[i].ParentProduct.ShippingWeight,
             "color": json[i].ParentProduct.Color,
@@ -361,7 +362,7 @@ function format(d) {
         '<th>Size</th>' +
         '<th>Inventory</th>' +
         '<th>Price</th>' +
-        '<th>Updated Price</th>' +
+        '<th>Product Selling Price(USD)</th>' +
         //'<th style="width:30%">Description</th>' +
         //'<th>Rating</th>' +
         '</thead><tbody>' +

@@ -170,7 +170,7 @@ function format(d) {
         '<th>Inventory</th>' +
         '<th>Price</th>' +
         //'<th>Picked Inventory</th>' +
-        '<th>Updated Price</th>' +
+        '<th>Product Selling Price(USD)</th>' +
         //'<th style="width:30%">Description</th>' +
         //'<th>Rating</th>' +
         '</thead><tbody>' +

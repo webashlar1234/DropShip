@@ -384,6 +384,16 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <Property Name="MembershipModifyBy" Type="int" />
           <Property Name="MembershipModifyOn" Type="datetime" Precision="3" />
         </EntityType>
+        <EntityType Name="trackbackendserice">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ServiceName" Type="varchar" MaxLength="250" />
+          <Property Name="ServiceLastCall" Type="datetime" Precision="0" />
+          <Property Name="IsSuccess" Type="bit" />
+          <Property Name="CreatedOn" Type="datetime" Precision="0" />
+        </EntityType>
         <EntityType Name="user_roles">
           <Key>
             <PropertyRef Name="UserRoleID" />
@@ -498,6 +508,7 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <EntitySet Name="sellerpickedproductsku" EntityType="Self.sellerpickedproductsku" Schema="dropshipdata" store:Type="Tables" />
           <EntitySet Name="sellerspickedproducts" EntityType="Self.sellerspickedproducts" Schema="dropshipdata" store:Type="Tables" />
           <EntitySet Name="subscriptions" EntityType="Self.subscriptions" Schema="dropshipdata" store:Type="Tables" />
+          <EntitySet Name="trackbackendserice" EntityType="Self.trackbackendserice" Schema="dropshipdata" store:Type="Tables" />
           <EntitySet Name="user_roles" EntityType="Self.user_roles" Schema="dropshipdata" store:Type="Tables" />
           <EntitySet Name="users" EntityType="Self.users" Schema="dropshipdata" store:Type="Tables" />
           <EntitySet Name="website" EntityType="Self.website" Schema="dropshipdata" store:Type="Tables" />
@@ -765,6 +776,7 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <EntitySet Name="currencyrates" EntityType="dropshipdataModel.currencyrate" />
           <EntitySet Name="orders" EntityType="dropshipdataModel.order" />
           <EntitySet Name="orderapiresults" EntityType="dropshipdataModel.orderapiresult" />
+          <EntitySet Name="trackbackendserices" EntityType="dropshipdataModel.trackbackendserice" />
         </EntityContainer>
         <EntityType Name="sellerspickedproduct">
           <Key>
@@ -1038,6 +1050,16 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <Property Name="OrderFulfillResponse" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
           <Property Name="CreatedOn" Type="DateTime" />
           <Property Name="ModifyOn" Type="DateTime" />
+        </EntityType>
+        <EntityType Name="trackbackendserice">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ServiceName" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="ServiceLastCall" Type="DateTime" />
+          <Property Name="IsSuccess" Type="Boolean" />
+          <Property Name="CreatedOn" Type="DateTime" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -1485,6 +1507,17 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
                 <ScalarProperty Name="AliExpressOrderID" ColumnName="AliExpressOrderID" />
                 <ScalarProperty Name="SC_OrderID" ColumnName="SC_OrderID" />
                 <ScalarProperty Name="OrderApiResultsID" ColumnName="OrderApiResultsID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="trackbackendserices">
+            <EntityTypeMapping TypeName="dropshipdataModel.trackbackendserice">
+              <MappingFragment StoreEntitySet="trackbackendserice">
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="IsSuccess" ColumnName="IsSuccess" />
+                <ScalarProperty Name="ServiceLastCall" ColumnName="ServiceLastCall" />
+                <ScalarProperty Name="ServiceName" ColumnName="ServiceName" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
