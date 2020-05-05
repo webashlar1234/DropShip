@@ -42,10 +42,10 @@ namespace DropshipPlatform.BLL.Services
 
                 DateTime lastCalld = FetchLastCallRecord("OrderGetRequest");
                 var todayDate = StaticValues.getUSPecificTime(DateTime.UtcNow);
-                
-                obj1.CreateDateEnd = todayDate.ToString("yyyy-MM-dd HH:mm:ss");
-                obj1.CreateDateStart = lastCalld.ToString("yyyy-MM-dd HH:mm:ss");
-                //obj1.ModifiedDateStart = lastCalld.ToString("yyyy-MM-dd HH:mm:ss");
+
+                //obj1.CreateDateEnd = todayDate.ToString("yyyy-MM-dd HH:mm:ss");
+                //obj1.CreateDateStart = lastCalld.ToString("yyyy-MM-dd HH:mm:ss");
+                obj1.ModifiedDateStart = lastCalld.ToString("yyyy-MM-dd HH:mm:ss");
                 obj1.ModifiedDateEnd = todayDate.ToString("yyyy-MM-dd HH:mm:ss");
 
                 //var todayDate = DateTime.UtcNow;
@@ -54,7 +54,7 @@ namespace DropshipPlatform.BLL.Services
                 ////obj1.ModifiedDateStart = "2020-03-01 00:00:00";//don't add this, latest orders aren't fetching using this
                 //obj1.ModifiedDateEnd = todayDate.ToString("yyyy-MM-dd HH:mm:ss");
 
-                obj1.OrderStatusList = new List<string> { "SELLER_PART_SEND_GOODS", "PLACE_ORDER_SUCCESS", "IN_CANCEL", "WAIT_SELLER_SEND_GOODS", "WAIT_BUYER_ACCEPT_GOODS", "FUND_PROCESSING", "IN_ISSUE", "IN_FROZEN", "WAIT_SELLER_EXAMINE_MONEY", "RISK_CONTROL", "FINISH" };
+                obj1.OrderStatusList = new List<string> { "SELLER_PART_SEND_GOODS", "IN_CANCEL", "WAIT_SELLER_SEND_GOODS", "WAIT_BUYER_ACCEPT_GOODS", "FUND_PROCESSING", "IN_FROZEN", "FINISH" };
                 obj1.PageSize = 40L;
                 trackServiceID = AddTrackRecord("OrderGetRequest", todayDate);
                 logger.Info("Order get timings " + JsonConvert.SerializeObject(obj1));
@@ -841,7 +841,7 @@ namespace DropshipPlatform.BLL.Services
 
         public bool checkWarehouceOrderStatus()
         {
-            
+
             bool result = true;
             try
             {
@@ -881,23 +881,23 @@ namespace DropshipPlatform.BLL.Services
                                               access_token = u.AliExpressAccessToken
                                           }).ToList();
 
-                    logger.Info("update warehouse count "+orderapiresult.Count());
+                    logger.Info("update warehouse count " + orderapiresult.Count());
 
                     foreach (var item in orderapiresult)
                     {
                         if (item.orderapiresults != null && !string.IsNullOrEmpty(item.access_token))
-                        {
-                            orderapiresult OrderResult = item.orderapiresults;
-                            OrderResult = getInternationalLogisticNoByOrderId(StaticValues.getAccessTokenObjFromStr(item.access_token), OrderResult);
-                            AddOrderResult(OrderResult);
-                            if (OrderResult.CainiaoLabel != null && OrderResult.CainiaoLabel.Length > 0)
-                            {
-                                new EmailSender().SendEmail(OrderResult.CainiaoLabel, OrderResult.AliExpressOrderID);
-                            }
-                            else
-                            {
-                                new EmailSender().SendFailureEmail(OrderResult.AliExpressOrderID);
-                            }
+                        {                         
+                                orderapiresult OrderResult = item.orderapiresults;
+                                OrderResult = getInternationalLogisticNoByOrderId(StaticValues.getAccessTokenObjFromStr(item.access_token), OrderResult);
+                                AddOrderResult(OrderResult);
+                                if (OrderResult.CainiaoLabel != null && OrderResult.CainiaoLabel.Length > 0)
+                                {
+                                    new EmailSender().SendEmail(OrderResult.CainiaoLabel, OrderResult.AliExpressOrderID);
+                                }
+                                else
+                                {
+                                    new EmailSender().SendFailureEmail(OrderResult.AliExpressOrderID);
+                                }
                         }
                     }
                 }

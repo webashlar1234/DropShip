@@ -33,6 +33,7 @@ namespace DropshipPlatform.BLL.Models
         public static string operationalManager = "Operational Manager";
 
         public static string Unpurchased = "Unpurchased";
+        public static string NotConfirmed = "NotConfirmed";
         public static string Shipped = "Shipped";
         public static string Waiting_for_Shipment = "Waiting for Shipment";
 
