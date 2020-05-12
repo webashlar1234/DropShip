@@ -166,7 +166,9 @@ namespace DropshipPlatform.BLL.Services
                         Confirm = true,
                         OffSession = true,
                     };
-                    PIservice.Create(options_create);
+                   var resu =  PIservice.Create(options_create);
+
+                    StripeResultModel.PaymentIntentID = resu.Id;
                     StripeResultModel.IsSuccess = true;
                 }
                 else
@@ -436,7 +438,7 @@ namespace DropshipPlatform.BLL.Services
             return result;
         }
 
-        public StripeResultModel RefundStripeUser(int UserID, long amount)
+        public StripeResultModel RefundStripeUser(int UserID, long amount, string OrderID)
         {
             StripeResultModel StripeResultModel = new StripeResultModel();
             string PaymentMethodId = string.Empty; 
@@ -445,14 +447,15 @@ namespace DropshipPlatform.BLL.Services
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
                     PaymentMethodId = (from u in datacontext.users
-                                       from p in datacontext.paymentprofiles.Where(x => x.UserID == u.UserID)
-                                       where u.UserID == UserID && !string.IsNullOrEmpty(u.StripeCustomerID)
-                                       orderby p.IsDefault descending
-                                       select p.StripePaymentMethodId
+                                       from o in datacontext.orders.Where(x => x.AliExpressLoginID == u.AliExpressLoginID)
+                                       where u.UserID == UserID && !string.IsNullOrEmpty(u.StripeCustomerID) && o.AliExpressOrderID == OrderID
+                                       select o.PaymentIntentID 
                                        ).FirstOrDefault();
                 }
 
-                if (string.IsNullOrEmpty(PaymentMethodId))
+                logger.Info("PaymentMethodId" + PaymentMethodId);
+
+                if (!string.IsNullOrEmpty(PaymentMethodId))
                 {
                     var refundService = new RefundService();
                     var refundOptions = new RefundCreateOptions
@@ -461,7 +464,10 @@ namespace DropshipPlatform.BLL.Services
                         Amount = amount
                     };
                     var refund = refundService.Create(refundOptions);
+                    StripeResultModel.PaymentIntentID = refund.Id;
                     StripeResultModel.IsSuccess = true;
+
+                    logger.Info("PaymentMethod_ref" + Newtonsoft.Json.JsonConvert.SerializeObject(refund)); ;
                 }
                 else
                 {

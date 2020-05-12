@@ -425,6 +425,7 @@ namespace DropshipPlatform.BLL.Services
                                 {
                                     OrderData.SellerPaymentStatus = resultStripePayment.IsSuccess == true ? 1 : 0;
                                     OrderData.SellerPaymentDetails = resultStripePayment.Result;
+                                    OrderData.PaymentIntentID = resultStripePayment.PaymentIntentID;
                                 }
                                 datacontext.orders.Add(OrderData);
                                 datacontext.SaveChanges();
@@ -527,6 +528,7 @@ namespace DropshipPlatform.BLL.Services
                                   DeleveryCountry = o.DeliveryCountry,
                                   ShippingWeight = o.ShippingWeight,
                                   OrderStatus = o.OrderStatus,
+                                  AliExpressOrderStatus = ao.OrderStatus,
                                   PaymentStatus = o.PaymentStatus,
                                   SellerPaymentStatus = o.SellerPaymentStatus,
                                   SellerID = u.AliExpressSellerID,
@@ -890,14 +892,6 @@ namespace DropshipPlatform.BLL.Services
                                 orderapiresult OrderResult = item.orderapiresults;
                                 OrderResult = getInternationalLogisticNoByOrderId(StaticValues.getAccessTokenObjFromStr(item.access_token), OrderResult);
                                 AddOrderResult(OrderResult);
-                                if (OrderResult.CainiaoLabel != null && OrderResult.CainiaoLabel.Length > 0)
-                                {
-                                    new EmailSender().SendEmail(OrderResult.CainiaoLabel, OrderResult.AliExpressOrderID);
-                                }
-                                else
-                                {
-                                    new EmailSender().SendFailureEmail(OrderResult.AliExpressOrderID);
-                                }
                         }
                     }
                 }
@@ -967,6 +961,19 @@ namespace DropshipPlatform.BLL.Services
 
                     var path = StaticValues.CainiaoFiles_path + OrderResult.LogisticsNumber + ".pdf";
 
+                    if (OrderResult.CainiaoLabel != null && OrderResult.CainiaoLabel.Length > 0)
+                    {
+                        new EmailSender().SendEmail(OrderResult.CainiaoLabel, OrderResult.AliExpressOrderID);
+                    }
+                    else
+                    {
+                        new EmailSender().SendFailureEmail(OrderResult.AliExpressOrderID);
+                    }
+
+                    if (File.Exists(path)){
+                        File.Delete(path);
+                    }
+                    
                     System.IO.FileStream stream =
                     new FileStream(path, FileMode.CreateNew);
                     System.IO.BinaryWriter writer =
@@ -1120,6 +1127,7 @@ namespace DropshipPlatform.BLL.Services
                                     logger.Info("order count");
                                     order.SellerPaymentStatus = resultStripePayment.IsSuccess == true ? 1 : 0;
                                     order.SellerPaymentDetails = resultStripePayment.Result;
+                                    order.PaymentIntentID = resultStripePayment.PaymentIntentID;
                                     if (resultStripePayment.Result != null)
                                     {
                                         var JSONError = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(resultStripePayment.Result);
@@ -1193,12 +1201,13 @@ namespace DropshipPlatform.BLL.Services
                     {
                         if (totalCharge > 0 && UserData.UserID > 0)
                         {
-                            resultStripeRefund = _stripeservice.RefundStripeUser(UserData.UserID, (long)totalCharge);
+                            resultStripeRefund = _stripeservice.RefundStripeUser(UserData.UserID, (long)totalCharge, OrderID);
                             if (resultStripeRefund != null)
                             {
                                 order order = datacontext.orders.Where(x => x.AliExpressOrderID == OrderID && x.AliExpressLoginID == UserData.AliExpressLoginID).FirstOrDefault();
-                                order.SellerPaymentStatus = resultStripeRefund.IsSuccess == true ? 2 : 0;
+                                order.SellerPaymentStatus = resultStripeRefund.IsSuccess == true ? 2 : order.SellerPaymentStatus;
                                 order.SellerPaymentDetails = resultStripeRefund.Result;
+                                order.PaymentIntentID = resultStripeRefund.PaymentIntentID;
                                 datacontext.Entry(order).State = EntityState.Modified;
                                 datacontext.SaveChanges();
                             }
@@ -1231,7 +1240,7 @@ namespace DropshipPlatform.BLL.Services
                     OrderStatus = StaticValues.Shipped;
                     break;
                 default:
-                    OrderStatus = StaticValues.Shipped;
+                    OrderStatus = StaticValues.Unpurchased;
                     break;
             }
 

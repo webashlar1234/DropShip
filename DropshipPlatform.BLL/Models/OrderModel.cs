@@ -30,6 +30,7 @@ namespace DropshipPlatform.BLL.Models
         public string DeleveryCountry { get; set; }
         public string ShippingWeight { get; set; }
         public string OrderStatus { get; set; }
+        public string AliExpressOrderStatus { get; set; }
         public string AliExpressOrderID { get; set; }
         public string PaymentStatus { get; set; }
         public Nullable<int> SellerPaymentStatus { get; set; }

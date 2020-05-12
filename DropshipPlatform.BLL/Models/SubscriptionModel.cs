@@ -98,5 +98,6 @@ namespace DropshipPlatform.BLL.Models
     {
         public bool IsSuccess { get; set; }
         public string Result { get; set; }
+        public string PaymentIntentID { get; set; }
     }
 }

@@ -78,6 +78,7 @@ var order = {
                 data: { OrderID: OrderId },
                 success: function (data) {
                     if (data) {
+                        orderDT.clear().draw();
                         SuccessMessage("Refund is done successfully");
                     }
                     else {
@@ -144,8 +145,10 @@ var order = {
                 loadingRecords: '&nbsp;',
                 processing: '<div class="spinner"></div>'
             },
-            initComplete: function (setting, json) {
+            fnDrawCallback: function (oSettings) {
                 $('td.details-control').click();
+            },
+            initComplete: function (setting, json) {
                 var input = $('.dataTables_filter input').unbind(),
                     self = this.api(),
                     $searchButton = $('<button class="btn btn-sm btn-black mr-2 ml-2">')
@@ -207,7 +210,7 @@ var order = {
                     sortable: true,
                     width: "12%",
                     "render": function (data, type, full) {
-                        return data;
+                        return data + '<br />' + full.AliExpressOrderStatus;
                     }
                 },
                 {
@@ -216,7 +219,7 @@ var order = {
                     width: "8%",
                     "render": function (data, type, full) {
                         //return '<input data-role="switch" type="checkbox" data-toggle="toggle" data-on="Paid " data-off="Unpaid " />';
-                        return data == true ? 'Paid' : 'Unpaid';
+                        return data == 1 ? 'Paid' : (data == 2 ? 'refunded' : 'Unpaid');
                     }
                 },
                 {
@@ -316,8 +319,11 @@ var order = {
                 loadingRecords: '&nbsp;',
                 processing: '<div class="spinner"></div>'
             },
-            initComplete: function (setting, json) {
+            fnDrawCallback: function (oSettings) {
                 $('td.details-control').click();
+            },
+            initComplete: function (setting, json) {
+                
                 var input = $('.dataTables_filter input').unbind(),
                     self = this.api(),
                     $searchButton = $('<button class="btn btn-sm btn-black mr-2 ml-2">')
@@ -420,7 +426,8 @@ var order = {
                     sortable: false,
                     width: "6%",
                     "render": function (data, type, full) {
-                        return full.SellerPaymentStatus == true ? '' : '<a class="btn btn-info btn-sm PayOrder" data-orderid="' + full.AliExpressOrderNumber + '">Pay Now</a>';
+                        var htmlLink = '<a class="btn btn-info btn-sm PayOrder" data-orderid="' + full.AliExpressOrderNumber + '">Pay Now</a>';
+                        return full.SellerPaymentStatus == 1 ? 'Paid' : (full.SellerPaymentStatus == 2 ? 'Refunded' : htmlLink);
                     }
                 }
             ],
@@ -484,8 +491,8 @@ function BuyProduct(productLink, data, OrderId, TrackingNumber) {
     //data.outerHTML += '<input class="form-control tracking" name="txtTracking" type="text" style="margin-top:5px" value="' + TrackingNumber + '">'
     window.open("http://" + productLink);
 
-    $('<a class="btn btn-info btn-sm shipOrder" data-orderid="' + OrderId + '" data-isfullship="false">Ship Now</a><input class="form-control tracking" name="txtTracking" type="text" value="' + (TrackingNumber ? TrackingNumber : '') + '">').insertAfter(data)
-    $(data).remove();
+    //$('<a class="btn btn-info btn-sm shipOrder" data-orderid="' + OrderId + '" data-isfullship="false">Ship Now</a><input class="form-control tracking" name="txtTracking" type="text" value="' + (TrackingNumber ? TrackingNumber : '') + '">').insertAfter(data)
+    //$(data).remove();
     UpdateOrderStatus(OrderId);
 }
 
@@ -495,8 +502,8 @@ function BuyAllProduct(thisitem) {
         window.open("http://" + item.OrignalProductLink);
     });
 
-    $('<a class="btn btn-info btn-sm shipOrder" data-orderid="' + Order.AliExpressOrderID + '" data-isfullship="true">Ship Now</a><input class="form-control tracking" name="txtTracking" type="text" value="' + (Order.TrackingNumber ? Order.TrackingNumber : '') + '">').insertAfter(thisitem);
-    $(thisitem).remove();
+    //$('<a class="btn btn-info btn-sm shipOrder" data-orderid="' + Order.AliExpressOrderID + '" data-isfullship="true">Ship Now</a><input class="form-control tracking" name="txtTracking" type="text" value="' + (Order.TrackingNumber ? Order.TrackingNumber : '') + '">').insertAfter(thisitem);
+    //$(thisitem).remove();
     UpdateOrderStatus(Order.AliExpressOrderID);
 }
 
@@ -508,6 +515,7 @@ function UpdateOrderStatus(OrderId) {
         async: false,
         data: { OrderID: OrderId },
         success: function (data) {
+            orderDT.clear().draw();
             if (data) {
                 //SuccessMessage("Product Status Updated successfully");
             }

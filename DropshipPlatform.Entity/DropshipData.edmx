@@ -235,6 +235,7 @@
           <Property Name="TrackingNo" Type="varchar" MaxLength="50" />
           <Property Name="SellerPaymentStatus" Type="int" />
           <Property Name="SellerPaymentDetails" Type="text" />
+          <Property Name="PaymentIntentID" Type="varchar" MaxLength="45" />
           <Property Name="ItemCreatedBy" Type="int" />
           <Property Name="ItemCreatedWhen" Type="datetime" Precision="3" />
           <Property Name="ItemModifyBy" Type="int" />
@@ -1029,6 +1030,7 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <Property Name="ItemCreatedWhen" Type="DateTime" />
           <Property Name="ItemModifyBy" Type="Int32" />
           <Property Name="ItemModifyWhen" Type="DateTime" />
+          <Property Name="PaymentIntentID" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="orderapiresult">
           <Key>
@@ -1470,6 +1472,7 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <EntitySetMapping Name="orders">
             <EntityTypeMapping TypeName="dropshipdataModel.order">
               <MappingFragment StoreEntitySet="orders">
+                <ScalarProperty Name="PaymentIntentID" ColumnName="PaymentIntentID" />
                 <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
                 <ScalarProperty Name="ItemModifyBy" ColumnName="ItemModifyBy" />
                 <ScalarProperty Name="ItemCreatedWhen" ColumnName="ItemCreatedWhen" />
