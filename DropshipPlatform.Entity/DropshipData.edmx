@@ -421,6 +421,7 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <Property Name="AliExpressSellerID" Type="varchar" MaxLength="150" />
           <Property Name="AliExpressLoginID" Type="varchar" MaxLength="150" />
           <Property Name="AliExpressAccessToken" Type="text" />
+          <Property Name="AliExpressTokenLastModified" Type="datetime" Precision="0" />
           <Property Name="StripeCustomerID" Type="varchar" MaxLength="150" />
           <Property Name="IsActive" Type="bit" />
           <Property Name="ItemCreatedBy" Type="int" />
@@ -889,6 +890,7 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <Property Name="ItemModifyWhen" Type="DateTime" />
           <Property Name="IsPolicyAccepted" Type="Boolean" />
           <Property Name="AliExpressLoginID" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="AliExpressTokenLastModified" Type="DateTime" />
         </EntityType>
         <EntityType Name="aliexpressorder">
           <Key>
@@ -1323,6 +1325,7 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <EntitySetMapping Name="users">
             <EntityTypeMapping TypeName="dropshipdataModel.user">
               <MappingFragment StoreEntitySet="users">
+                <ScalarProperty Name="AliExpressTokenLastModified" ColumnName="AliExpressTokenLastModified" />
                 <ScalarProperty Name="AliExpressLoginID" ColumnName="AliExpressLoginID" />
                 <ScalarProperty Name="IsPolicyAccepted" ColumnName="IsPolicyAccepted" />
                 <ScalarProperty Name="ItemModifyWhen" ColumnName="ItemModifyWhen" />
