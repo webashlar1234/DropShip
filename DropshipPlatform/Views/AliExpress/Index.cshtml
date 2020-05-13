@@ -19,12 +19,32 @@
                     <h2 class="plan-title mt-2">Connected</h2>
                     <p class="plan-description">You are conneced to aliexpress as <b> @ViewBag.AliExpressUserName </b></p>
                 </div>
+
+                <div class="col-lg-12 mt-2">
+                    <div class="subscription-box">
+                        <h3 class="plan-description">
+                            Refresh your token in @ViewBag.ExpiresDay days
+                        </h3>
+                        <p class="plan-description">
+                            "Welcome to connect to AliExpress, please noticed that the authentication will be expired in 30 days and need you to re-authorized manually since AliExpress didn't provide auto-authentication functions. Failed to authorize your account may cause error of getting AliExpress orders and other data."
+                        </p>
+                        <p class="plan-description">
+                            "AliExpress'e hoş geldiniz, lütfen kimlik doğrulamasının 30 gün içinde sona ereceğini ve AliExpress otomatik kimlik doğrulama işlevleri sağlamadığından manuel olarak yeniden yetkilendirmeniz gerektiğini fark ettiniz. Hesabınız yetkilendirilemediğinde, AliExpress siparişlerini ve diğer verileri alma hatasına neden olabilir."
+                        </p>
+                        <a href="@ViewBag.authorizeUrl" class="btn btn-dark btn-upgrade">Refresh</a>
+                    </div>
+                </div>
             }
             else
             {
                 <div class="col-lg-12 mt-2">
                     <div class="subscription-box">
-                        <p class="plan-description">Login to alieExpress Account</p>
+                        <p class="plan-description">
+                            "Welcome to connect to AliExpress, please noticed that the authentication will be expired in 30 days and need you to re-authorized manually since AliExpress didn't provide auto-authentication functions. Failed to authorize your account may cause error of getting AliExpress orders and other data."
+                        </p>
+                        <p class="plan-description">
+                            "AliExpress'e hoş geldiniz, lütfen kimlik doğrulamasının 30 gün içinde sona ereceğini ve AliExpress otomatik kimlik doğrulama işlevleri sağlamadığından manuel olarak yeniden yetkilendirmeniz gerektiğini fark ettiniz. Hesabınız yetkilendirilemediğinde, AliExpress siparişlerini ve diğer verileri alma hatasına neden olabilir."
+                        </p>
                         <a href="@ViewBag.authorizeUrl" class="btn btn-dark btn-upgrade">Connect to AliExpress</a>
                     </div>
                 </div>

@@ -121,7 +121,7 @@ var seller = {
                 { "title": 'Seller Name', "mData": 'Name', sDefaultContent: "", className: "Name" },
                 { "sTitle": 'Seller Email ID', "mData": 'EmailID', sDefaultContent: "", className: "EmailID" },
                 { "sTitle": 'Phone', "mData": 'Phone', sDefaultContent: "", className: "Phone" },
-                { "sTitle": 'AliExpress Seller ID', "mData": 'AliExpressSellerID', sDefaultContent: "", className: "AliExpressSellerID" },
+                { "sTitle": 'AliExpress Seller ID', "mData": 'AliExpressLoginID', sDefaultContent: "", className: "AliExpressLoginID" },
                 { "sTitle": 'Stripe Customer ID', "mData": 'StripeCustomerID', sDefaultContent: "", className: "StripeCustomerID" },
                 { "sTitle": 'IsActive', "mData": 'IsActive', sDefaultContent: "", className: "IsActive" },
                 { "sTitle": 'IsPolicyAccepted', "mData": 'IsPolicyAccepted', sDefaultContent: "", className: "IsPolicyAccepted" },

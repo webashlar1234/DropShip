@@ -91,7 +91,24 @@ function OperationalRegistrationValidation() {
             },
             Email: {
                 required: true,
-                email: true
+                email: true,
+                remote: {
+                    param: {
+                        type: "POST",
+                        url: "/Registration/CheckEmailExist",
+                        dataType: "json",
+                        async: false,
+                        data: {
+                            emailId: function () {
+                                return $("#TxtEmail").val();
+                            },
+                        },
+                        complete: function (res) {
+                        },
+                        error: function (err) {
+                        }
+                    }
+                }
             },
             ConfirmPassword: {
                 equalTo: "#TxtPassword",
@@ -107,7 +124,8 @@ function OperationalRegistrationValidation() {
         {
             ConfirmPassword: { equalTo: "Password and Confirm password should match" },
             Password: { minlength: "minimum 6 chararctes Required" },
-            UserName: { minlength: "minimum 4 chararctes Required" }
+            UserName: { minlength: "minimum 4 chararctes Required" },
+            Email: { remote: "Email Id exits." }
         }
     });
 }

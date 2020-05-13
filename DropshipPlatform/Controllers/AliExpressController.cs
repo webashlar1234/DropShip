@@ -32,10 +32,24 @@ namespace DropshipPlatform.Controllers
             ViewBag.authorizeUrl = _aliExpressAuthService.getAuthorizeUrl();
             ViewBag.isAuthorised = false;
             AliExpressAccessToken aliExpressAccessToken = SessionManager.GetAccessToken();
+            UserService user = new UserService();
+            LoggedUserModel userData = SessionManager.GetUserSession();
+            if (userData.AliExpressTokenLastModified == null)
+            {
+                userData = user.GetUser(userData.UserID);
+            }
             if (!string.IsNullOrEmpty(aliExpressAccessToken.access_token))
             {
                 ViewBag.isAuthorised = true;
                 ViewBag.AliExpressUserName = aliExpressAccessToken.user_nick;
+                if (userData.AliExpressTokenLastModified != null)
+                {
+                    ViewBag.ExpiresDay = 30 - ((DateTime.Now.Date - userData.AliExpressTokenLastModified.Value.Date).TotalDays);
+                }
+                else
+                {
+                    ViewBag.ExpiresDay = 0;
+                }
             }
             return View();
         }

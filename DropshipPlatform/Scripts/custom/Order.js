@@ -438,7 +438,7 @@ var order = {
                 { "sTitle": 'Delevery Country', "mData": 'DeleveryCountry', sDefaultContent: "", className: "DeleveryCountry" },
                 { "sTitle": 'Shipping Weight(KG)', "mData": 'ShippingWeight', sDefaultContent: "", className: "ShippingWeight" },
                 { "sTitle": 'Status', "mData": 'OrderStatus', sDefaultContent: "", className: "OrderStatus" },
-                { "sTitle": 'Tracking No', "mData": 'TrackingNo', sDefaultContent: "", className: "TrackingNo" },
+                { "sTitle": 'Tracking No', "mData": 'TrackingNumber', sDefaultContent: "", className: "TrackingNumber" },
                 { "sTitle": 'Payment Status', "mData": 'SellerPaymentStatus', sDefaultContent: "", className: "PaymentStatus" },
                 { "sTitle": 'Order Date', "mData": 'AliExpressOrderCreatedTime', sDefaultContent: "", className: "OrderDate" },
                 { "sTitle": 'Action', "mData": '', sDefaultContent: "", className: "ActionSeller" },

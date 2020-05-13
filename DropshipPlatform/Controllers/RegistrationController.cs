@@ -13,7 +13,7 @@ namespace DropshipPlatform.Controllers
     public class RegistrationController : Controller
     {
         readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        
+
         // GET: Registration
         public ActionResult Index()
         {
@@ -63,7 +63,7 @@ namespace DropshipPlatform.Controllers
             int pageSize = length != null ? Convert.ToInt32(length) : 0;
             int skip = start != null ? Convert.ToInt32(start) : 0;
             List<RegisterUserModel> retvalue = userService.getOperationalUsers();
-            
+
             var data = new List<RegisterUserModel>();
             if (pageSize != -1)
             {
@@ -86,6 +86,13 @@ namespace DropshipPlatform.Controllers
         {
             UserService userService = new UserService();
             return Json(userService.deleteOperationalManager(UserID), JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public JsonResult CheckEmailExist(string emailId)
+        {
+            UserService userService = new UserService();
+            return Json(userService.CheckEmailExist(emailId), JsonRequestBehavior.AllowGet);
         }
 
     }

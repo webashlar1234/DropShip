@@ -47,6 +47,7 @@ namespace DropshipPlatform.Controllers
                 EmailID = x.EmailID,
                 Phone = x.Phone,
                 AliExpressSellerID = x.AliExpressSellerID,
+                AliExpressLoginID = x.AliExpressLoginID,
                 StripeCustomerID = x.StripeCustomerID,
                 IsActive = x.IsActive,
                 IsPolicyAccepted = x.IsPolicyAccepted,

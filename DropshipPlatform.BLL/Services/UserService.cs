@@ -107,6 +107,7 @@ namespace DropshipPlatform.BLL.Services
                                         AliExpressSellerID = u.AliExpressSellerID,
                                         AliExpressLoginID = u.AliExpressLoginID,
                                         AliExpressAccessToken = u.AliExpressAccessToken,
+                                        AliExpressTokenLastModified = u.AliExpressTokenLastModified,
                                         StripeCustomerID = u.StripeCustomerID,
                                         IsActive = u.IsActive,
                                         IsPolicyAccepted = u.IsPolicyAccepted,
@@ -136,6 +137,7 @@ namespace DropshipPlatform.BLL.Services
                         Obj.AliExpressSellerID = AccessToken.user_id;
                         Obj.AliExpressLoginID = AccessToken.user_nick;
                         Obj.AliExpressAccessToken = Newtonsoft.Json.JsonConvert.SerializeObject(AccessToken);
+                        Obj.AliExpressTokenLastModified = DateTime.Now;
                         datacontext.Entry(Obj).State = EntityState.Modified;
                         datacontext.SaveChanges();
                     }
@@ -236,6 +238,28 @@ namespace DropshipPlatform.BLL.Services
                 logger.Error(ex.ToString());
             }
             return SellerUsers;
+        }
+
+        public bool CheckEmailExist(string emailId)
+        {
+            bool result = true;
+            try
+            {
+                using (DropshipDataEntities datacontext = new DropshipDataEntities())
+                {
+                    var user = datacontext.users.Where(x => x.EmailID == emailId).Count();
+                    if (user > 0)
+                    {
+                        result = false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result = true;
+                logger.Info(ex.ToString());
+            }
+            return result;
         }
     }
 }
