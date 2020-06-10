@@ -49,11 +49,20 @@ namespace DropshipPlatform.BLL.Services
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
                     double num;
-                    mainproducts = (from p in datacontext.products
+                    List<product> productList = datacontext.products.ToList();
+                    LoggedUserModel user = SessionManager.GetUserSession();
+                    if (user.LoggedUserRoleName != null)
+                    {
+                        if (user.LoggedUserRoleName == StaticValues.seller)
+                        {
+                            productList = productList.Where(x => x.IsActive == 1).ToList();
+                        }
+                    }
+                    mainproducts = (from p in productList
                                     join c in datacontext.categories on p.CategoryID equals c.CategoryID
                                     from cur in datacontext.currencyrates.Where(x => x.CurrencyCode == p.SellingPriceCurrency).DefaultIfEmpty()
                                     from sp in datacontext.sellerspickedproducts.Where(x => x.ParentProductID == p.ProductID && (filterOptions == 2 ? x.UserID != UserID : x.UserID == UserID)).DefaultIfEmpty()
-                                    where p.ParentProductID == null && !string.IsNullOrEmpty(p.Cost) && p.IsActive == 1
+                                    where p.ParentProductID == null && !string.IsNullOrEmpty(p.Cost)
                                     && (category > 0 ? category == p.CategoryID : true)
                                     && (filterOptions == 1 ? !string.IsNullOrEmpty(sp.AliExpressProductID) : true)
                                     && (filterOptions == 2 ? (string.IsNullOrEmpty(sp.AliExpressProductID) && sp == null) : true)
@@ -107,10 +116,10 @@ namespace DropshipPlatform.BLL.Services
                             products = mainproducts.Skip(DTReqModel.Skip).Take(DTReqModel.PageSize).ToList();
                         }
 
-                        List<ProductViewModel> childList = (from p in datacontext.products
+                        List<ProductViewModel> childList = (from p in productList
                                                             join sps in datacontext.sellerpickedproductskus on p.ProductID equals sps.ProductId into sps1
                                                             from sku in sps1.Where(s => s.UserId == UserID).DefaultIfEmpty()
-                                                            where p.ParentProductID != null && p.IsActive == 1
+                                                            where p.ParentProductID != null
                                                             select new ProductViewModel
                                                             {
                                                                 ProductID = p.ProductID,

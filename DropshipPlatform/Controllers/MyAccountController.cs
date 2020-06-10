@@ -1,4 +1,5 @@
 ﻿using DropshipPlatform.BLL.Services;
+using DropshipPlatform.Entity;
 using DropshipPlatform.Infrastructure;
 using Stripe;
 using System;
@@ -12,10 +13,13 @@ namespace DropshipPlatform.Controllers
     public class MyAccountController : Controller
     {
         StripeService _stripeService = new StripeService();
+        MemberShipService _MemberShipService = new MemberShipService();
 
         [CustomAuthorize("Admin", "Operational Manager", "Seller", "Developer")]
         public ActionResult Index()
         {
+            List<membershiptype> membershiptypesList = _MemberShipService.GetMemberShipData();
+            ViewBag.PlanList = membershiptypesList;
             return View();
         }
     }
