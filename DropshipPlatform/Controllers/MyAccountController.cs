@@ -20,6 +20,7 @@ namespace DropshipPlatform.Controllers
         {
             List<membershiptype> membershiptypesList = _MemberShipService.GetMemberShipData();
             ViewBag.PlanList = membershiptypesList;
+            ViewBag.CurrentPlan = _stripeService.GetSubscriptionFromDb();
             return View();
         }
     }

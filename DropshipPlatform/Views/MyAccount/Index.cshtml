@@ -13,11 +13,22 @@
         </div>
         <div class="row">
             <div class="col-lg-4 mt-2">
-                <div class="subscription-box">
-                    <h2 class="plan-title mt-2">Silver</h2>
-                    <p class="plan-description">You are currunt subscribed to the starter plan with monthly billing.</p>
-                    <button type="button" class="btn btn-dark btn-upgrade">Upgrade</button>
-                </div>
+                @if (ViewBag.CurrentPlan.Count > 0)
+                {
+                    <div class="subscription-box">
+                        <h2 class="plan-title mt-2">@ViewBag.CurrentPlan[0].PlanName</h2>
+                        <p class="plan-description">You are current subscribed to the starter plan with @ViewBag.CurrentPlan[0].PlanType billing.</p>
+                        <button type="button" class="btn btn-dark btn-upgrade">Upgrade</button>
+                    </div>
+                }
+                else
+                {
+                    <div class="subscription-box">
+                        <h2 class="plan-title mt-2">No Plan Selected</h2>
+                        <p class="plan-description">You are currently not subscribed to any plan </p>
+                        <button type="button" class="btn btn-dark btn-upgrade">Upgrade</button>
+                    </div>
+                }
             </div>
 
             <div class="col-lg-8 mt-2">
@@ -29,16 +40,33 @@
                                 <tbody>
                                     <tr>
                                         <th scope="row">Next Bill Date</th>
-                                        <td>26/09/2020</td>
+                                        @if (ViewBag.CurrentPlan.Count > 0)
+                                        {
+                                            <td>@ViewBag.CurrentPlan[0].NextBillDate</td>
+                                        }
+                                        else
+                                        {
+                                            <td></td>
+                                        }
                                     </tr>
                                     <tr>
                                         <th scope="row">Next Bill Amount</th>
-                                        <td><b>$0.00</b> / Month</td>
+                                        @if (ViewBag.CurrentPlan.Count > 0)
+                                        {
+                                            <td><b>$@ViewBag.CurrentPlan[0].BillAmount</b> / @ViewBag.CurrentPlan[0].PlanType</td>
+                                        }
+                                        else
+                                        {
+                                            <td></td>
+                                        }
                                     </tr>
                                 </tbody>
                             </table>
-                            <button type="button" class="btn btn-dark btn-upgrade">Cancel My Subscription</button>
-                        </div>
+                            @if (ViewBag.CurrentPlan.Count > 0)
+                            {
+                                <button type="button" class="btn btn-dark btn-upgrade">Cancel My Subscription</button>
+                            }
+                            </div>
                     </div>
                 </div>
             </div>
