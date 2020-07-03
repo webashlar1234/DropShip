@@ -28,23 +28,5 @@ namespace DropshipPlatform.BLL.Services
             }
             return obj;
         }
-
-        public List<membershiptype> GetMemberShipData()
-        {
-            List<membershiptype> obj = new List<membershiptype>();
-            try
-            {
-                using (DropshipDataEntities datacontext = new DropshipDataEntities())
-                {
-                    obj = datacontext.membershiptypes.ToList();
-                }
-            }
-            catch (Exception ex)
-            {
-                obj = null;
-                logger.Error(ex.ToString());
-            }
-            return obj;
-        }
     }
 }

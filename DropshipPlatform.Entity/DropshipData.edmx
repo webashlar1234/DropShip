@@ -235,11 +235,11 @@
           <Property Name="TrackingNo" Type="varchar" MaxLength="50" />
           <Property Name="SellerPaymentStatus" Type="int" />
           <Property Name="SellerPaymentDetails" Type="text" />
+          <Property Name="PaymentIntentID" Type="varchar" MaxLength="45" />
           <Property Name="ItemCreatedBy" Type="int" />
           <Property Name="ItemCreatedWhen" Type="datetime" Precision="3" />
           <Property Name="ItemModifyBy" Type="int" />
           <Property Name="ItemModifyWhen" Type="datetime" Precision="3" />
-          <Property Name="PaymentIntentID" Type="varchar" MaxLength="45" />
         </EntityType>
         <EntityType Name="paymentprofile">
           <Key>
@@ -384,7 +384,6 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <Property Name="MembershipCreatedOn" Type="datetime" Precision="3" />
           <Property Name="MembershipModifyBy" Type="int" />
           <Property Name="MembershipModifyOn" Type="datetime" Precision="3" />
-          <Property Name="Status" Type="varchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="trackbackendserice">
           <Key>
@@ -422,6 +421,7 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <Property Name="AliExpressSellerID" Type="varchar" MaxLength="150" />
           <Property Name="AliExpressLoginID" Type="varchar" MaxLength="150" />
           <Property Name="AliExpressAccessToken" Type="text" />
+          <Property Name="AliExpressTokenLastModified" Type="datetime" Precision="0" />
           <Property Name="StripeCustomerID" Type="varchar" MaxLength="150" />
           <Property Name="IsActive" Type="bit" />
           <Property Name="ItemCreatedBy" Type="int" />
@@ -429,7 +429,6 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <Property Name="ItemModifyBy" Type="int" />
           <Property Name="ItemModifyWhen" Type="datetime" Precision="0" />
           <Property Name="IsPolicyAccepted" Type="bit" />
-          <Property Name="AliExpressTokenLastModified" Type="datetime" Precision="0" />
         </EntityType>
         <EntityType Name="website">
           <Key>
@@ -853,7 +852,6 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <Property Name="MembershipCreatedOn" Type="DateTime" />
           <Property Name="MembershipModifyBy" Type="Int32" />
           <Property Name="MembershipModifyOn" Type="DateTime" />
-          <Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="aliexpressjoblog">
           <Key>
@@ -1292,7 +1290,6 @@ warning 6005: The data type 'json' is currently not supported for the target Ent
           <EntitySetMapping Name="subscriptions">
             <EntityTypeMapping TypeName="dropshipdataModel.subscription">
               <MappingFragment StoreEntitySet="subscriptions">
-                <ScalarProperty Name="Status" ColumnName="Status" />
                 <ScalarProperty Name="MembershipModifyOn" ColumnName="MembershipModifyOn" />
                 <ScalarProperty Name="MembershipModifyBy" ColumnName="MembershipModifyBy" />
                 <ScalarProperty Name="MembershipCreatedOn" ColumnName="MembershipCreatedOn" />

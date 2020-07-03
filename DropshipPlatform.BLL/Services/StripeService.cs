@@ -60,12 +60,12 @@ namespace DropshipPlatform.BLL.Services
                     }
                 };
                 var service = new CustomerService();
-                var customer = service.Create(options);
+                var customer  = service.Create(options);
 
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
                     user Obj = datacontext.users.Where(x => x.UserID == user.UserID).FirstOrDefault();
-                    if (Obj != null)
+                    if(Obj != null)
                     {
                         Obj.StripeCustomerID = customer.Id;
                         datacontext.Entry(Obj).State = EntityState.Modified;
@@ -166,7 +166,7 @@ namespace DropshipPlatform.BLL.Services
                         Confirm = true,
                         OffSession = true,
                     };
-                    var resu = PIservice.Create(options_create);
+                   var resu =  PIservice.Create(options_create);
 
                     StripeResultModel.PaymentIntentID = resu.Id;
                     StripeResultModel.IsSuccess = true;
@@ -246,7 +246,7 @@ namespace DropshipPlatform.BLL.Services
                 {
                     List<Entity.subscription> list = datacontext.subscriptions.Where(x => x.UserID == user.UserID).ToList();
 
-                    foreach (var item in list)
+                    foreach(var item in list)
                     {
                         item.IsActive = false;
                         datacontext.Entry(item).State = System.Data.Entity.EntityState.Modified;
@@ -261,7 +261,6 @@ namespace DropshipPlatform.BLL.Services
                     obj.MembershipCreatedOn = DateTime.Now;
                     obj.MembershipCreatedBy = user.UserID;
                     obj.IsActive = true;
-                    obj.Status = subscription.Status;
 
                     datacontext.subscriptions.Add(obj);
                     datacontext.SaveChanges();
@@ -303,8 +302,6 @@ namespace DropshipPlatform.BLL.Services
                         obj.StripePlanID = plan.Id;
                         obj.Type = planModel.interval;
                         obj.Price = (int)planModel.amount;
-                        obj.PickLimit = planModel.pickLimit;
-                        obj.Description = planModel.description;
                         obj.ItemCreatedBy = user.UserID;
                         obj.ItemCreatedWhen = DateTime.Now;
 
@@ -380,8 +377,7 @@ namespace DropshipPlatform.BLL.Services
                 var service = new SubscriptionService();
                 var options = new SubscriptionCancelOptions
                 {
-                    InvoiceNow = true,
-                    Prorate = false,
+                    InvoiceNow = true
                 };
                 service.Cancel(SubscriptionID, options);
             }
@@ -445,7 +441,7 @@ namespace DropshipPlatform.BLL.Services
         public StripeResultModel RefundStripeUser(int UserID, long amount, string OrderID)
         {
             StripeResultModel StripeResultModel = new StripeResultModel();
-            string PaymentMethodId = string.Empty;
+            string PaymentMethodId = string.Empty; 
             try
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
@@ -453,7 +449,7 @@ namespace DropshipPlatform.BLL.Services
                     PaymentMethodId = (from u in datacontext.users
                                        from o in datacontext.orders.Where(x => x.AliExpressLoginID == u.AliExpressLoginID)
                                        where u.UserID == UserID && !string.IsNullOrEmpty(u.StripeCustomerID) && o.AliExpressOrderID == OrderID
-                                       select o.PaymentIntentID
+                                       select o.PaymentIntentID 
                                        ).FirstOrDefault();
                 }
 
@@ -486,37 +482,6 @@ namespace DropshipPlatform.BLL.Services
                 logger.Error(ex.ToString());
             }
             return StripeResultModel;
-        }
-
-        public List<SubcriptionPlanModel> GetSubscriptionFromDb()
-        {
-            List<SubcriptionPlanModel> obj = new List<SubcriptionPlanModel>();
-            LoggedUserModel user = SessionManager.GetUserSession();
-            try
-            {
-                using (DropshipDataEntities datacontext = new DropshipDataEntities())
-                {
-                    obj = (from s in datacontext.subscriptions.Where(x => x.UserID == user.UserID & x.IsActive == true)
-                           from p in datacontext.membershiptypes.Where(x => x.MembershipID == s.MembershipID)
-                           select new SubcriptionPlanModel
-                           {
-                               PlanName = p.Name,
-                               PlanType = p.Type,
-                               BillingNextDate = s.MembershipExpiredDate,
-                               BillAmount = p.Price,
-                               StripeCustomerID = s.StripeSubscriptionID
-                           }).ToList();
-                    obj[0].NextBillDate = obj[0].BillingNextDate.Value.AddDays(1).ToShortDateString();
-
-                }
-            }
-            catch (Exception ex)
-            {
-                obj = null;
-                logger.Error(ex.ToString());
-            }
-
-            return obj;
         }
     }
 }
