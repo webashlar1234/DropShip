@@ -77,7 +77,7 @@ async function createCustomer(paymentMethod, cardholderEmail) {
     $.ajax({
         type: "POST",
         url: "/Subscriptions/CreateCustomerAsync",
-        data: { "request": request },
+        data: { "request": request, "planID":$('.sr-payment-form #planID').val() },
         dataType: "json",
         async: false,
         success: function (subscription) {

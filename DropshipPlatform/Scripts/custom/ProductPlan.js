@@ -22,7 +22,13 @@
         async: false,
         data: { planModel: planModel },
         success: function (data) {
-            SuccessMessage("Plan created successfully");
+            if (data) {
+                SuccessMessage("Plan created successfully");
+                window.location.href = "/MyAccount";
+            }
+            else {
+                ErrorMessage("Something went wrong, please try again later");
+            }
         },
         error: function (e) {
             console.log(e.responseText);

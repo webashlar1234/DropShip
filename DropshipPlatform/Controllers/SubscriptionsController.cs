@@ -2,6 +2,7 @@
 using DropshipPlatform.BLL.Services;
 using DropshipPlatform.BLL.SubscriptionModels;
 using DropshipPlatform.Entity;
+using DropshipPlatform.Infrastructure;
 using Stripe;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ using System.Web.Mvc;
 
 namespace DropshipPlatform.Controllers
 {
+    [CustomAuthorize("Admin", "Operational Manager", "Seller", "Developer")]
     public class SubscriptionsController : Controller
     {
         StripeService _stripeService = new StripeService();
@@ -36,7 +38,7 @@ namespace DropshipPlatform.Controllers
         //}
 
         [HttpPost]
-        public async Task<JsonResult> CreateCustomerAsync(CustomerCreateRequest request)
+        public async Task<JsonResult> CreateCustomerAsync(CustomerCreateRequest request, string planID)
         {
             Stripe.Subscription result = new Stripe.Subscription();
             bool hasPaymentMethod = true;
@@ -55,7 +57,7 @@ namespace DropshipPlatform.Controllers
                 }
                 if (hasPaymentMethod)
                 {
-                    result = _stripeService.CreateSubscription(user.StripeCustomerID, "plan_GiQrXsdH6vbs2u");
+                    result = _stripeService.CreateSubscription(user.StripeCustomerID, planID);
                 }
             }
             catch (Exception ex)

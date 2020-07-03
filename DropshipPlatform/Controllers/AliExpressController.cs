@@ -67,6 +67,9 @@ namespace DropshipPlatform.Controllers
 
                 new UserService().UpdateUserForAliExpress(SessionManager.GetUserSession().UserID, accessToken);
                 SessionManager.SetAccessToken(accessToken);
+
+                LoggedUserModel loggedUserModel = new UserService().GetUser(SessionManager.GetUserSession().UserID);
+                SessionManager.SetUserSession(loggedUserModel);
             }
             return RedirectToAction("Index", "AliExpress");
         }

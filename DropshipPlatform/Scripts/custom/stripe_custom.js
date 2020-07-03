@@ -10,12 +10,18 @@ var stripeCustom = {
             //$('#stripe_card_setup_body').show();
             stripeCustom.SetUpCard();
         });
+        
         $(document).on('click', '#cancelCardSetup', function () {
             //$('#stripe_card_setup_body').hide();
             $("#exampleModalScrollable").modal('hide');
         }); 
         $(document).on('click', '.deletePaymentMethod', function () {
             stripeCustom.DeleteCard($(this).attr('payment_method_id'));
+        });
+        $(document).on('click', '.btn-upgrade', function () {
+            $('html, body').animate({
+                scrollTop: $(".scrollToTop").offset().top + 100
+            }, 800);
         });
     },
     SetUpCard: function (data) {

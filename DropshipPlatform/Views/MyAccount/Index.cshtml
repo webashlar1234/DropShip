@@ -1,6 +1,12 @@
-﻿<link href="~/Content/custom/my-account.css" rel="stylesheet" />
+﻿@using DropshipPlatform.BLL.Services;
+@using DropshipPlatform.BLL.Models;
+<link href="~/Content/custom/my-account.css" rel="stylesheet" />
 <script src="https://js.stripe.com/v3/"></script>
 <script src="~/Scripts/custom/stripe_custom.js"></script>
+
+@{ 
+    LoggedUserModel user = SessionManager.GetUserSession();
+}
 
 <section class="subsription mt-3">
     <div class="container-fluid">
@@ -13,7 +19,7 @@
         </div>
         <div class="row">
             <div class="col-lg-4 mt-2">
-                @if (ViewBag.CurrentPlan.Count > 0)
+                @if (ViewBag.CurrentPlan != null && ViewBag.CurrentPlan.Count > 0)
                 {
                     <div class="subscription-box">
                         <h2 class="plan-title mt-2">@ViewBag.CurrentPlan[0].PlanName</h2>
@@ -26,7 +32,7 @@
                     <div class="subscription-box">
                         <h2 class="plan-title mt-2">No Plan Selected</h2>
                         <p class="plan-description">You are currently not subscribed to any plan </p>
-                        <button type="button" class="btn btn-dark btn-upgrade">Upgrade</button>
+                        <button type="button" class="btn btn-dark btn-upgrade">Select</button>
                     </div>
                 }
             </div>
@@ -40,7 +46,7 @@
                                 <tbody>
                                     <tr>
                                         <th scope="row">Next Bill Date</th>
-                                        @if (ViewBag.CurrentPlan.Count > 0)
+                                        @if (ViewBag.CurrentPlan != null && ViewBag.CurrentPlan.Count > 0)
                                         {
                                             <td>@ViewBag.CurrentPlan[0].NextBillDate</td>
                                         }
@@ -51,7 +57,7 @@
                                     </tr>
                                     <tr>
                                         <th scope="row">Next Bill Amount</th>
-                                        @if (ViewBag.CurrentPlan.Count > 0)
+                                        @if (ViewBag.CurrentPlan != null && ViewBag.CurrentPlan.Count > 0)
                                         {
                                             <td><b>$@ViewBag.CurrentPlan[0].BillAmount</b> / @ViewBag.CurrentPlan[0].PlanType</td>
                                         }
@@ -62,7 +68,7 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            @if (ViewBag.CurrentPlan.Count > 0)
+                            @if (ViewBag.CurrentPlan != null && ViewBag.CurrentPlan.Count > 0)
                             {
                                 <button type="button" class="btn btn-dark btn-upgrade">Cancel My Subscription</button>
                             }
@@ -95,14 +101,14 @@
                                 <h6 class="add-card-details mb-0 " data-toggle="modal" data-target="#exampleModalScrollable"><i class="fa fa-plus" aria-hidden="true"></i> &nbsp;Click To Add</h6>
                             </div>
                         </div>
-                        <div class="card-footer text-muted">
+                        @*<div class="card-footer text-muted">
                             Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ut temporibus velit reprehenderit explicabo ratione recusandae eligendi, illo odio nemo cupiditate excepturi voluptas quisquam eos incidunt, fugit accusantium, consequuntur mollitia! Expedita.
                             <br>
                             <label class="rememberme mt-checkbox mt-checkbox-outline">
                                 <input type="checkbox" name="remember" value="1">
                                 <span></span>
                             </label> I Agree
-                        </div>
+                        </div>*@
 
                     </div>
                 </div>
@@ -157,7 +163,10 @@
                 <h5 class="box-title">
                     Choose Your Plan and Get Started Today !
                 </h5>
-                <a href="@Url.Action("Plan", "Subscriptions")" class="nav-link btn btn-submit pull-right">Create Plan</a>
+                @if (user.LoggedUserRoleName == "Admin")
+                {
+                    <a href="@Url.Action("Plan", "Subscriptions")" class="nav-link btn btn-submit pull-right">Create Plan</a>
+                }
             </div>
         </div>
 
@@ -223,19 +232,6 @@
 
                                             if (item.Type == "month")
                                             {
-                                                <th>Choose This Plan</th>
-                                            }
-                                        }
-                                    }
-                                </tr>
-                                <tr>
-                                    @if (ViewBag.PlanList.Count > 0)
-                                    {
-                                        foreach (var item in ViewBag.PlanList)
-                                        {
-
-                                            if (item.Type == "month")
-                                            {
                                                 <th><a href="@Url.Action("Index", "Subscriptions", new { PlandID = item.MembershipID})" class="nav-link btn btn-submit">Select Plan</a></th>
                                             }
                                         }
@@ -252,7 +248,7 @@
                                     {
                                         foreach (var item in ViewBag.PlanList)
                                         {
-                                            if (item.Type == "annual")
+                                            if (item.Type == "year")
                                             {
                                                 <th scope="col">@item.Name</th>
                                             }
@@ -267,7 +263,7 @@
                                         foreach (var item in ViewBag.PlanList)
                                         {
 
-                                            if (item.Type == "annual")
+                                            if (item.Type == "year")
                                             {
                                                 <th>@item.PickLimit Products</th>
                                             }
@@ -280,33 +276,22 @@
                                         foreach (var item in ViewBag.PlanList)
                                         {
 
-                                            if (item.Type == "annual")
+                                            if (item.Type == "year" && !string.IsNullOrEmpty(item.Description))
                                             {
+
                                                 <th>@item.Description</th>
                                             }
                                         }
                                     }
                                 </tr>
+
                                 <tr>
                                     @if (ViewBag.PlanList.Count > 0)
                                     {
                                         foreach (var item in ViewBag.PlanList)
                                         {
 
-                                            if (item.Type == "annual")
-                                            {
-                                                <th>Choose This Plan</th>
-                                            }
-                                        }
-                                    }
-                                </tr>
-                                <tr>
-                                    @if (ViewBag.PlanList.Count > 0)
-                                    {
-                                        foreach (var item in ViewBag.PlanList)
-                                        {
-
-                                            if (item.Type == "annual")
+                                            if (item.Type == "year")
                                             {
                                                 <th><a href="@Url.Action("Index", "Subscriptions", new { PlandID = item.MembershipID})" class="nav-link btn btn-submit">Select Plan</a></th>
                                             }
