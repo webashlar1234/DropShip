@@ -109,5 +109,18 @@ namespace DropshipPlatform.Controllers
             }
             return Json(result, JsonRequestBehavior.AllowGet);
         }
+
+
+        [HttpGet]
+        public JsonResult GetSubscriptionFromDb()
+        {
+            bool result = true;
+            LoggedUserModel user = SessionManager.GetUserSession();
+            if (user != null)
+            {
+                result = _stripeService.GetSubscriptionFromDb(user);
+            }
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
     }
 }
