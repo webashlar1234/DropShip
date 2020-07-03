@@ -261,7 +261,6 @@ namespace DropshipPlatform.BLL.Services
                     obj.MembershipCreatedOn = DateTime.Now;
                     obj.MembershipCreatedBy = user.UserID;
                     obj.IsActive = true;
-                    obj.Status = subscription.Status;
 
                     datacontext.subscriptions.Add(obj);
                     datacontext.SaveChanges();
@@ -303,8 +302,6 @@ namespace DropshipPlatform.BLL.Services
                         obj.StripePlanID = plan.Id;
                         obj.Type = planModel.interval;
                         obj.Price = (int)planModel.amount;
-                        obj.PickLimit = planModel.pickLimit;
-                        obj.Description = planModel.description;
                         obj.ItemCreatedBy = user.UserID;
                         obj.ItemCreatedWhen = DateTime.Now;
 
@@ -485,25 +482,6 @@ namespace DropshipPlatform.BLL.Services
                 logger.Error(ex.ToString());
             }
             return StripeResultModel;
-        }
-
-        public bool GetSubscriptionFromDb(user user)
-        {
-            bool result = true;
-            try
-            {
-                using (DropshipDataEntities datacontext = new DropshipDataEntities())
-                {
-                    List<Entity.subscription> list = datacontext.subscriptions.Where(x => x.UserID == user.UserID & x.IsActive == true).ToList();
-                }
-            }
-            catch (Exception ex)
-            {
-                logger.Error(ex.ToString());
-                result = false;
-            }
-
-            return result;
         }
     }
 }

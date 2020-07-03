@@ -12,7 +12,5 @@ namespace DropshipPlatform.BLL.SubscriptionModels
         public long amount { get; set; }
         public string currency { get; set; }
         public string interval { get; set; }
-        public int pickLimit { get; set; }
-        public string description { get; set; }
     }
 }

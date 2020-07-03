@@ -3,16 +3,12 @@
     var amount = $("#TxtAmount").val();
     var currency = $("#LstCurrency").val();
     var interval = $("#LstInterval").val();
-    var pickLimit = $("#TxtPickLimit").val();
-    var description = $("#TxtDescription").val();
 
     var planModel = {
         "name": productPlanName,
         "amount": amount,
         "currency": currency,
-        "interval": interval,
-        "pickLimit": pickLimit,
-        "description": description,
+        "interval": interval
     };
 
     $.ajax({

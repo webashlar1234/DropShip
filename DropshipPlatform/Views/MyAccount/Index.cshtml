@@ -148,70 +148,31 @@
                         <table class="table tbl-plan mt-2">
                             <thead class="thead-dark">
                                 <tr>
-                                    @if (ViewBag.PlanList.Count > 0)
-                                    {
-                                        foreach (var item in ViewBag.PlanList)
-                                        {
-                                            if (item.Type == "month")
-                                            {
-                                                <th scope="col">@item.Name</th>
-                                            }
-                                        }
-                                    }
+                                    <th scope="col">Silver Member</th>
+                                    <th scope="col">Gold Member</th>
+                                    <th scope="col">Platinum Member</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    @if (ViewBag.PlanList.Count > 0)
-                                    {
-                                        foreach (var item in ViewBag.PlanList)
-                                        {
-
-                                            if (item.Type == "month")
-                                            {
-                                                <th>@item.PickLimit Products</th>
-                                            }
-                                        }
-                                    }
+                                    <th>2500 Products</th>
+                                    <td>15,000 Products</td>
+                                    <td>50,000 Products</td>
                                 </tr>
                                 <tr>
-                                    @if (ViewBag.PlanList.Count > 0)
-                                    {
-                                        foreach (var item in ViewBag.PlanList)
-                                        {
-
-                                            if (item.Type == "month")
-                                            {
-                                                <th>@item.Description</th>
-                                            }
-                                        }
-                                    }
+                                    <th>Unlimited Orders</th>
+                                    <th>Unlimited Orders</th>
+                                    <th>Unlimited Orders</th>
                                 </tr>
                                 <tr>
-                                    @if (ViewBag.PlanList.Count > 0)
-                                    {
-                                        foreach (var item in ViewBag.PlanList)
-                                        {
-
-                                            if (item.Type == "month")
-                                            {
-                                                <th>Choose This Plan</th>
-                                            }
-                                        }
-                                    }
+                                    <th>Choose This Plan</th>
+                                    <th>Choose This Plan</th>
+                                    <th>Choose This Plan</th>
                                 </tr>
                                 <tr>
-                                    @if (ViewBag.PlanList.Count > 0)
-                                    {
-                                        foreach (var item in ViewBag.PlanList)
-                                        {
-
-                                            if (item.Type == "month")
-                                            {
-                                                <th><a href="@Url.Action("Index", "Subscriptions", new { PlandID = item.MembershipID})" class="nav-link btn btn-submit">Select Plan</a></th>
-                                            }
-                                        }
-                                    }
+                                    <th><a href="@Url.Action("Index", "Subscriptions", new { PlandID = 1})" class="nav-link btn btn-submit">Select Plan</a></li></th>
+                                    <th><a href="@Url.Action("Index", "Subscriptions", new { PlandID = 1})" class="nav-link btn btn-submit">Select Plan</a></li></th>
+                                    <th><a href="@Url.Action("Index", "Subscriptions", new { PlandID = 1})" class="nav-link btn btn-submit">Select Plan</a></li></th>
                                 </tr>
                             </tbody>
                         </table>
@@ -220,70 +181,26 @@
                         <table class="table tbl-plan mt-2">
                             <thead class="thead-dark">
                                 <tr>
-                                    @if (ViewBag.PlanList.Count > 0)
-                                    {
-                                        foreach (var item in ViewBag.PlanList)
-                                        {
-                                            if (item.Type == "annual")
-                                            {
-                                                <th scope="col">@item.Name</th>
-                                            }
-                                        }
-                                    }
+                                    <th scope="col">Silver Member</th>
+                                    <th scope="col">Gold Member</th>
+                                    <th scope="col">Platinum Member</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    @if (ViewBag.PlanList.Count > 0)
-                                    {
-                                        foreach (var item in ViewBag.PlanList)
-                                        {
-
-                                            if (item.Type == "annual")
-                                            {
-                                                <th>@item.PickLimit Products</th>
-                                            }
-                                        }
-                                    }
+                                    <th>2500 Products</th>
+                                    <td>15,000 Products</td>
+                                    <td>50,000 Products</td>
                                 </tr>
                                 <tr>
-                                    @if (ViewBag.PlanList.Count > 0)
-                                    {
-                                        foreach (var item in ViewBag.PlanList)
-                                        {
-
-                                            if (item.Type == "annual")
-                                            {
-                                                <th>@item.Description</th>
-                                            }
-                                        }
-                                    }
+                                    <th>Unlimited Orders</th>
+                                    <th>Unlimited Orders</th>
+                                    <th>Unlimited Orders</th>
                                 </tr>
                                 <tr>
-                                    @if (ViewBag.PlanList.Count > 0)
-                                    {
-                                        foreach (var item in ViewBag.PlanList)
-                                        {
-
-                                            if (item.Type == "annual")
-                                            {
-                                                <th>Choose This Plan</th>
-                                            }
-                                        }
-                                    }
-                                </tr>
-                                <tr>
-                                    @if (ViewBag.PlanList.Count > 0)
-                                    {
-                                        foreach (var item in ViewBag.PlanList)
-                                        {
-
-                                            if (item.Type == "annual")
-                                            {
-                                                <th><a href="@Url.Action("Index", "Subscriptions", new { PlandID = item.MembershipID})" class="nav-link btn btn-submit">Select Plan</a></th>
-                                            }
-                                        }
-                                    }
+                                    <th>Choose This Plan</th>
+                                    <th>Choose This Plan</th>
+                                    <th>Choose This Plan</th>
                                 </tr>
                             </tbody>
                         </table>
