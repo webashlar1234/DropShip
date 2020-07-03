@@ -26,5 +26,6 @@ namespace DropshipPlatform.Entity
         public Nullable<System.DateTime> MembershipCreatedOn { get; set; }
         public Nullable<int> MembershipModifyBy { get; set; }
         public Nullable<System.DateTime> MembershipModifyOn { get; set; }
+        public string Status { get; set; }
     }
 }
