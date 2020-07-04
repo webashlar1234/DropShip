@@ -1,4 +1,4 @@
-﻿var table;
+var table;
 var jsonProducts;
 $(document).ready(function () {
     GetData();
@@ -109,6 +109,8 @@ function FormatData(json) {
     for (var i = 0; i < json.length; i++) {
         var productGroup = {
             "Title": json[i].ParentProduct.Title,
+            "ProductId": json[i].ParentProduct.AliExpressProductID,
+            "SKUID": (json[i].ChildProductList.length === 0) ? json[i].ParentProduct.ProductID : "",
             "category": json[i].ParentProduct.CategoryName,
             "cost": json[i].ParentProduct.Cost,
             "inventory": json[i].ParentProduct.Inventory,
@@ -148,14 +150,15 @@ function format(d) {
 
         trs +=
             '<tr class="skuRow" data-for="' + d.AliExpressProductID + '"><td>' + childProductTitle +
-            '</td> <td>' + parentProductBrand +
-            '</td><td>' +  value.NetWeight +
-            '</td><td>' +  value.Color +
-            '</td><td>' +  value.Size +
+        '</td> <td>' + value.SkuID +
+        '</td> <td>' + parentProductBrand +
+            '</td><td>' + value.NetWeight +
+            '</td><td>' + value.Color +
+            '</td><td>' + value.Size +
             '</td><td>' + value.Inventory +
             '</td><td>' + (childProductCost ? "$" + childProductCost : null) +
             '</td>' +
-        '<td>' + "<input name='updatedPrice' data-isUpdated='false' onkeypress='return IsNumeric(event);' disabled data-sku='" + value.SkuID + "' data-productid='" + value.ProductID + "' type='text' value=" + value.UpdatedPrice + " class='updatedPrice txtEdit_" + value.ParentProductID + "'>" +
+            '<td>' + "<input name='updatedPrice' data-isUpdated='false' onkeypress='return IsNumeric(event);' disabled data-sku='" + value.SkuID + "' data-productid='" + value.ProductID + "' type='text' value=" + value.UpdatedPrice + " class='updatedPrice txtEdit_" + value.ParentProductID + "'>" +
             //'</td><td>' + value.Description +
             '</td></tr>';
     })
@@ -163,6 +166,7 @@ function format(d) {
     return '<table class="table table-border table-hover innertable">' +
         '<thead>' +
         '<th style="width:15%">Title</th>' +
+        '<th >SkuID</th>' +
         '<th>Brand</th>' +
         '<th>Weight</th>' +
         '<th>Color</th>' +
@@ -195,6 +199,7 @@ function GeneratePropertyList(propertyList, elementName, Id) {
 
 
 function BindData(jsonProducts) {
+    debugger
     if (table) {
         table.destroy();
     }
@@ -206,6 +211,8 @@ function BindData(jsonProducts) {
             "defaultContent": ''
         },
         { "data": "Title" },
+        { "data": "AliExpressProductID" },
+        { "data": "SKUID" },
         { "data": "category" },
         { "data": "cost" },
         { "data": "inventory" },
@@ -227,12 +234,24 @@ function BindData(jsonProducts) {
         { "data": "IsOnline" }
         ],
         "createdRow": function (row, data, dataIndex) {
-        if (data.ChildProductList.length > 0) {
-            $(row).find("td:eq(0)").addClass('details-control');
+            if (data.ChildProductList.length > 0) {
+                $(row).find("td:eq(0)").addClass('details-control');
+            }
         }
-    }
     });
 
+}
+
+
+//Events for Dropdown change, Based on dropdows value selection
+function onChangeProductBulkAction(val) {
+    debugger
+    if (val === "2") {
+        SavePickedProducts();
+    }
+    else if (val === "0") {
+        updateStatusInBulk();
+    }
 }
 
 function SavePickedProducts() {
@@ -265,7 +284,7 @@ function SavePickedProducts() {
             }
         }
         else {
-            var parentItem = jsonData.filter(m => m.AliExpressProductID == item);
+            var parentItem = jsonData.filter(m => m.AliExpressProductID === item);
             if (parentItem.length > 0) {
                 parentItem = parentItem[0];
                 var childrens = parentItem.ChildProductList;
@@ -456,7 +475,20 @@ $.validator.addMethod('lessThanEqual', function (value, element, param) {
 }, "value must be less than stock inventory");
 
 
+
+//Bulk Online Offline for selected products. 
+function updateStatusInBulk() {
+    debugger
+    var selectedItems = global.getSelectedCheckboxList('.parentChk', 'aliexpressproductid');
+    for (var i = 0; i < selectedItems.length; i++) {
+        var productDetail = jsonProducts.filter(m => m.AliExpressProductID === selectedItems[i]);
+    }
+}
+
+
+
 function updateStatus(AliExpressProductID, Status) {
+    debugger
     ShowLoader();
     $.ajax({
         type: "POST",

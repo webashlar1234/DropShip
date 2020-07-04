@@ -14,7 +14,7 @@
         table.innertable tbody tr {
             /*background: #f1f1f1;*/
         }
-        
+
         table.display tbody {
             max-height: 80vh;
             overflow: auto;
@@ -23,18 +23,19 @@
         select.error, textarea.error, input.error {
             color: #FF0000;
         }
+
         input.error {
             border-color: red;
             border-width: 0.5px;
         }
-        .updatedPrice, .pickedInvetory{
-            width:70px;
+
+        .updatedPrice, .pickedInvetory {
+            width: 70px;
         }
-        
     </style>
 }
 
-<section class="mt-2">
+<section class="">
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">
@@ -49,7 +50,7 @@
 <section class="mt-2">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-lg-3">
+            <div class="col-lg-4">
                 <label for="exampleFormControlSelect1">Product Category</label>
                 @if (ViewBag.AliCategory != null)
                 {
@@ -60,9 +61,36 @@
                     @Html.DropDownList("ddlProductCat", new List<SelectListItem> { new SelectListItem { Text = "", Value = "" }, }, new { @class = "selectpicker form-control" })
                 }
             </div>
-            <div class="col-lg-9 text-right">
-                <button id="btnSave" disabled type="button" class="btn btn-sm btn-primary" onclick="SavePickedProducts()">Save</button>
+            @*<div class="col-lg-4">
+                <label for="exampleFormControlSelect1">Bulk Actions</label>
+                <select class="selectpicker form-control" title="Select" id="ddlProductBulkAction">
+                    <option value="">--Select --</option>
+                    <option value="Online">Online</option>
+                    <option value="Offline">Offline</option>
+                    <option value="Save">Save/Update</option>
+                </select>
+            </div>*@
+            
+            <div class="col-lg-4">
+                <label for="exampleFormControlSelect1">Bulk Action</label>
+                @Html.DropDownList("ddlBulkActionProduct", new SelectListItem[]
+                {
+                    new SelectListItem() { Text = "Select", Value = "-1" },
+                    new SelectListItem() { Text = "Online", Value = "0" },
+                    new SelectListItem() { Text = "Offline", Value = "1" },
+                    new SelectListItem() { Text = "Save/Update", Value = "2" }
+                },
+                new
+                {
+                    @onchange = "onChangeProductBulkAction(this.value)",
+                    @class = "selectpicker form-control",
+                         @title = "Bulk Action",
+                         @data_live_search = "true"
+                })
             </div>
+            @*<div class="col-lg-9 text-right">
+            <button id="btnSave" disabled type="button" class="btn btn-sm btn-primary" onclick="SavePickedProducts()">Save</button>
+        </div>*@
         </div>
     </div>
 </section>
@@ -77,17 +105,19 @@
                             <tr>
                                 <th></th>
                                 <th scope="col">Product Title</th>
+                                <th scope="col">AliExpress Product Id </th>
+                                <th scope="col" style="width:20px;">SKU ID</th>
                                 <th scope="col">Category</th>
                                 <th scope="col">Cost (USD)</th>
                                 <th scope="col">Inventory</th>
                                 <th scope="col">Shipping Weight (KG)</th>
                                 <th scope="col">Manufature Name</th>
                                 <th scope="col">Origin</th>
-                                <th scope="col">Product Selling Price(USD)</th>
+                                <th scope="col" style="width:25px;">Product Selling Price(USD)</th>
                                 <th scope="col">
                                     <label class="rememberme mt-checkbox">
                                         <input type="checkbox" id="chkAllProduct" name="remember" value="0">
-                                        <span></span>&nbsp;Check All
+                                        <span></span>@*&nbsp;Check All*@
                                     </label>
                                 </th>
                                 <th scope="col">Status</th>
@@ -100,4 +130,4 @@
             </div>
         </div>
     </section>
-  </form>
+</form>
