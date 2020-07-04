@@ -37,11 +37,12 @@ namespace DropshipPlatform.BLL.Services
             return products;
         }
 
-        public List<ProductGroupModel> GetParentProducts(int UserID, DTRequestModel DTReqModel, int? category, int? filterOptions, out int recordsTotal)
+        public List<ProductGroupModel> GetParentProducts(int UserID, string LoggedUserRoleName, DTRequestModel DTReqModel, int? category, int? filterOptions, out int recordsTotal)
         {
             List<ProductGroupModel> productGroupList = new List<ProductGroupModel>();
             List<ProductViewModel> products = new List<ProductViewModel>();
             List<ProductViewModel> mainproducts = new List<ProductViewModel>();
+            List<ProductViewModel> childList = new List<ProductViewModel>();
             recordsTotal = 0;
             int count = 0;
             try
@@ -49,38 +50,74 @@ namespace DropshipPlatform.BLL.Services
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
                     double num;
-                    mainproducts = (from p in datacontext.products
-                                    join c in datacontext.categories on p.CategoryID equals c.CategoryID
-                                    from cur in datacontext.currencyrates.Where(x => x.CurrencyCode == p.SellingPriceCurrency).DefaultIfEmpty()
-                                    from sp in datacontext.sellerspickedproducts.Where(x => x.ParentProductID == p.ProductID && (filterOptions == 2 ? x.UserID != UserID : x.UserID == UserID)).DefaultIfEmpty()
-                                    where p.ParentProductID == null && !string.IsNullOrEmpty(p.Cost) && p.IsActive == 1
-                                    && (category > 0 ? category == p.CategoryID : true)
-                                    && (filterOptions == 1 ? !string.IsNullOrEmpty(sp.AliExpressProductID) : true)
-                                    && (filterOptions == 2 ? (string.IsNullOrEmpty(sp.AliExpressProductID) && sp == null) : true)
-                                    && (filterOptions == 3 ? (string.IsNullOrEmpty(sp.AliExpressProductID) && sp != null) : true)
-                                    && (!string.IsNullOrEmpty(DTReqModel.Search) ? p.Title.Contains(DTReqModel.Search) : true)
-                                    select new ProductViewModel
-                                    {
-                                        ProductID = p.ProductID,
-                                        Title = p.Title,
-                                        Brand = p.Brand,
-                                        OriginalProductID = p.OriginalProductID,
-                                        CategoryID = p.CategoryID,
-                                        CategoryName = c.Name,
-                                        Cost = p.Cost,
-                                        SellerCost = p.Cost,
-                                        Inventory = p.Inventory > 0 ? p.Inventory : 10,
-                                        ShippingWeight = p.ShippingWeight,
-                                        SellerPickedCount = datacontext.sellerspickedproducts.Where(x => x.ParentProductID == p.ProductID && x.UserID != UserID).Count(),
-                                        IsActive = p.IsActive,
-                                        UserID = sp.UserID,
-                                        AliExpressCategoryID = c.AliExpressCategoryID ?? 0,
-                                        hasProductSkuSync = sp == null ? false : true,
-                                        SellerPrice = sp.SellerPrice,
-                                        isProductPicked = string.IsNullOrEmpty(sp.AliExpressProductID) ? false : true,
-                                        OriginalCost = p.Cost,
-                                        Rate = cur.Rate != null && cur.Rate > 0 ? cur.Rate : 1
-                                    }).ToList().Where(x => double.TryParse(x.Cost, out num) == true).ToList();
+                    if (LoggedUserRoleName == StaticValues.admin)
+                    {
+                        mainproducts = (from p in datacontext.products
+                                        join c in datacontext.categories on p.CategoryID equals c.CategoryID
+                                        from cur in datacontext.currencyrates.Where(x => x.CurrencyCode == p.SellingPriceCurrency).DefaultIfEmpty()
+                                        from sp in datacontext.sellerspickedproducts.Where(x => x.ParentProductID == p.ProductID).DefaultIfEmpty()
+                                        where p.ParentProductID == null && !string.IsNullOrEmpty(p.Cost)
+                                        && (category > 0 ? category == p.CategoryID : true)
+                                        && (!string.IsNullOrEmpty(DTReqModel.Search) ? p.Title.Contains(DTReqModel.Search) : true)
+                                        select new ProductViewModel
+                                        {
+                                            ProductID = p.ProductID,
+                                            Title = p.Title,
+                                            Brand = p.Brand,
+                                            OriginalProductID = p.OriginalProductID,
+                                            CategoryID = p.CategoryID,
+                                            CategoryName = c.Name,
+                                            Cost = p.Cost,
+                                            SellerCost = p.Cost,
+                                            Inventory = p.Inventory > 0 ? p.Inventory : 10,
+                                            ShippingWeight = p.ShippingWeight,
+                                            SellerPickedCount = datacontext.sellerspickedproducts.Where(x => x.ParentProductID == p.ProductID && x.UserID != UserID).Count(),
+                                            IsActive = p.IsActive,
+                                            UserID = sp.UserID,
+                                            AliExpressCategoryID = c.AliExpressCategoryID ?? 0,
+                                            hasProductSkuSync = sp == null ? false : true,
+                                            SellerPrice = sp.SellerPrice,
+                                            isProductPicked = string.IsNullOrEmpty(sp.AliExpressProductID) ? false : true,
+                                            OriginalCost = p.Cost,
+                                            Rate = cur.Rate != null && cur.Rate > 0 ? cur.Rate : 1
+                                        }).ToList().Where(x => double.TryParse(x.Cost, out num) == true).ToList();
+
+                    }
+                    else
+                    {
+                        mainproducts = (from p in datacontext.products
+                                        join c in datacontext.categories on p.CategoryID equals c.CategoryID
+                                        from cur in datacontext.currencyrates.Where(x => x.CurrencyCode == p.SellingPriceCurrency).DefaultIfEmpty()
+                                        from sp in datacontext.sellerspickedproducts.Where(x => x.ParentProductID == p.ProductID && (filterOptions == 2 ? x.UserID != UserID : x.UserID == UserID)).DefaultIfEmpty()
+                                        where p.ParentProductID == null && !string.IsNullOrEmpty(p.Cost) && p.IsActive == 1
+                                        && (category > 0 ? category == p.CategoryID : true)
+                                        && (filterOptions == 1 ? !string.IsNullOrEmpty(sp.AliExpressProductID) : true)
+                                        && (filterOptions == 2 ? (string.IsNullOrEmpty(sp.AliExpressProductID) && sp == null) : true)
+                                        && (filterOptions == 3 ? (string.IsNullOrEmpty(sp.AliExpressProductID) && sp != null) : true)
+                                        && (!string.IsNullOrEmpty(DTReqModel.Search) ? p.Title.Contains(DTReqModel.Search) : true)
+                                        select new ProductViewModel
+                                        {
+                                            ProductID = p.ProductID,
+                                            Title = p.Title,
+                                            Brand = p.Brand,
+                                            OriginalProductID = p.OriginalProductID,
+                                            CategoryID = p.CategoryID,
+                                            CategoryName = c.Name,
+                                            Cost = p.Cost,
+                                            SellerCost = p.Cost,
+                                            Inventory = p.Inventory > 0 ? p.Inventory : 10,
+                                            ShippingWeight = p.ShippingWeight,
+                                            SellerPickedCount = datacontext.sellerspickedproducts.Where(x => x.ParentProductID == p.ProductID && x.UserID != UserID).Count(),
+                                            IsActive = p.IsActive,
+                                            UserID = sp.UserID,
+                                            AliExpressCategoryID = c.AliExpressCategoryID ?? 0,
+                                            hasProductSkuSync = sp == null ? false : true,
+                                            SellerPrice = sp.SellerPrice,
+                                            isProductPicked = string.IsNullOrEmpty(sp.AliExpressProductID) ? false : true,
+                                            OriginalCost = p.Cost,
+                                            Rate = cur.Rate != null && cur.Rate > 0 ? cur.Rate : 1
+                                        }).ToList().Where(x => double.TryParse(x.Cost, out num) == true).ToList();
+                    }
 
                     products = mainproducts;
                     recordsTotal = products.Count();
@@ -106,29 +143,57 @@ namespace DropshipPlatform.BLL.Services
                         {
                             products = mainproducts.Skip(DTReqModel.Skip).Take(DTReqModel.PageSize).ToList();
                         }
+                        if (LoggedUserRoleName == StaticValues.admin)
+                        {
 
-                        List<ProductViewModel> childList = (from p in datacontext.products
-                                                            join sps in datacontext.sellerpickedproductskus on p.ProductID equals sps.ProductId into sps1
-                                                            from sku in sps1.Where(s => s.UserId == UserID).DefaultIfEmpty()
-                                                            where p.ParentProductID != null && p.IsActive == 1
-                                                            select new ProductViewModel
-                                                            {
-                                                                ProductID = p.ProductID,
-                                                                ParentProductID = p.ParentProductID,
-                                                                Title = p.Title,
-                                                                Brand = p.Brand,
-                                                                OriginalProductID = p.OriginalProductID,
-                                                                Color = p.Color,
-                                                                Size = p.Size,
-                                                                Cost = p.Cost,
-                                                                SellerCost = p.Cost,
-                                                                Inventory = p.Inventory > 0 ? p.Inventory : 10,
-                                                                ShippingWeight = p.ShippingWeight,
-                                                                IsActive = p.IsActive,
-                                                                UpdatedPrice = sku.UpdatedPrice,
-                                                                SkuID = p.SkuID,
-                                                                OriginalCost = p.Cost,
-                                                            }).ToList();
+                            childList = (from p in datacontext.products
+                                         join sps in datacontext.sellerpickedproductskus on p.ProductID equals sps.ProductId into sps1
+                                         from sku in sps1.Where(s => s.UserId == UserID).DefaultIfEmpty()
+                                         where p.ParentProductID != null
+                                         select new ProductViewModel
+                                         {
+                                             ProductID = p.ProductID,
+                                             ParentProductID = p.ParentProductID,
+                                             Title = p.Title,
+                                             Brand = p.Brand,
+                                             OriginalProductID = p.OriginalProductID,
+                                             Color = p.Color,
+                                             Size = p.Size,
+                                             Cost = p.Cost,
+                                             SellerCost = p.Cost,
+                                             Inventory = p.Inventory > 0 ? p.Inventory : 10,
+                                             ShippingWeight = p.ShippingWeight,
+                                             IsActive = p.IsActive,
+                                             UpdatedPrice = sku.UpdatedPrice,
+                                             SkuID = p.SkuID,
+                                             OriginalCost = p.Cost,
+                                         }).ToList();
+                        }
+                        else
+                        {
+                            childList = (from p in datacontext.products
+                                         join sps in datacontext.sellerpickedproductskus on p.ProductID equals sps.ProductId into sps1
+                                         from sku in sps1.Where(s => s.UserId == UserID).DefaultIfEmpty()
+                                         where p.ParentProductID != null && p.IsActive == 1
+                                         select new ProductViewModel
+                                         {
+                                             ProductID = p.ProductID,
+                                             ParentProductID = p.ParentProductID,
+                                             Title = p.Title,
+                                             Brand = p.Brand,
+                                             OriginalProductID = p.OriginalProductID,
+                                             Color = p.Color,
+                                             Size = p.Size,
+                                             Cost = p.Cost,
+                                             SellerCost = p.Cost,
+                                             Inventory = p.Inventory > 0 ? p.Inventory : 10,
+                                             ShippingWeight = p.ShippingWeight,
+                                             IsActive = p.IsActive,
+                                             UpdatedPrice = sku.UpdatedPrice,
+                                             SkuID = p.SkuID,
+                                             OriginalCost = p.Cost,
+                                         }).ToList();
+                        }
 
                         if (products.Count > 0)
                         {
@@ -136,10 +201,10 @@ namespace DropshipPlatform.BLL.Services
                             {
                                 ProductGroupModel productGroup = new ProductGroupModel();
                                 // update child product cost as per usd rate
-                                productGroup.ChildProductList = childList.Where(x => x.ParentProductID == productViewModel.ProductID).ToList().Select(x => { x.Cost = StaticValues.GetUSDprice(x.Cost, productViewModel.Rate); x.SellerCost = StaticValues.CalcSellerCost(StaticValues.GetUSDprice(x.Cost, productViewModel.Rate));  return x; }).ToList();
+                                productGroup.ChildProductList = childList.Where(x => x.ParentProductID == productViewModel.ProductID).ToList().Select(x => { x.Cost = StaticValues.GetUSDprice(x.Cost, productViewModel.Rate); x.SellerCost = StaticValues.CalcSellerCost(StaticValues.GetUSDprice(x.Cost, productViewModel.Rate)); return x; }).ToList();
 
                                 productViewModel.Cost = StaticValues.GetUSDprice(productViewModel.Cost, productViewModel.Rate);
-                                productViewModel.SellerCost =StaticValues.CalcSellerCost(productViewModel.Cost);
+                                productViewModel.SellerCost = StaticValues.CalcSellerCost(productViewModel.Cost);
                                 productGroup.ParentProduct = productViewModel;
 
                                 productGroupList.Add(productGroup);
@@ -354,7 +419,7 @@ namespace DropshipPlatform.BLL.Services
                                         {
                                             ProductViewModel childProductModel = GenerateProductViewModel(dbChildProduct);
                                             //childProductModel.schemaProprtiesModel = schemaProprtiesModel;
-                                            childProductModel.Cost = StaticValues.GetUSDprice(childProductModel.Cost,productGroup.ParentProduct.Rate);
+                                            childProductModel.Cost = StaticValues.GetUSDprice(childProductModel.Cost, productGroup.ParentProduct.Rate);
                                             childProductModel = AddUpdatedValues(childProductModel);
                                             productGroup.ChildProductList.Add(childProductModel);
                                         }

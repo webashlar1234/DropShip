@@ -1,5 +1,7 @@
 ﻿var ProductsDt = null;
+var ProductsAdminDt = null;
 var table = '#ProductsDt';
+var adminTable = '#ProductsAdminDt';
 var jsonProducts = null;
 
 var product = {
@@ -39,7 +41,7 @@ var product = {
             pickedProducts.push({ productId: item, price: $('.parentChk[productid=' + item + ']').parents('tr').find('.updatedParentPrice').val(), SKUModels: [] });
             var tr = $('.parentChk[productid=' + item + ']').parents('tr');
             var row = ProductsDt.row(tr);
-             if (row.child() && row.child().length > 0) {
+            if (row.child() && row.child().length > 0) {
                 var innerTableData = row.child().find("tr.skuRow[data-for='" + item + "']");
 
                 if (innerTableData) {
@@ -127,6 +129,7 @@ $(document).ready(function () {
     debugger
     product.init();
     BindData();
+    BindProductsData();
 
     function SetPickedDisable() {
         var chkUpdatedPriceList = $('input[name=updatedPrice]');
@@ -163,7 +166,11 @@ $(document).ready(function () {
 
 
     $('#ProductsDt tbody').on('click', 'td.details-control', function () {
-        toggleChildRow(this);
+        toggleChildRow(this,"seller");
+    });
+
+    $('#ProductsAdminDt tbody').on('click', 'td.details-control', function () {
+        toggleChildRow(this,"admin");
     });
 
     $('#chkAllProduct').change(function (e) {
@@ -234,9 +241,15 @@ $(document).ready(function () {
         //$("#frmPickedProduct").valid();
     });
 
-    function toggleChildRow(selectedRow) {
+    function toggleChildRow(selectedRow,user) {
         var tr = $(selectedRow).closest('tr');
-        var row = ProductsDt.row(tr);
+        var row = null;
+        if (user === "seller") {
+            row = ProductsDt.row(tr);
+        }
+        else {
+            row = ProductsAdminDt.row(tr);
+        }
 
         if (row.child.isShown()) {
             // This row is already open - close it
@@ -486,4 +499,79 @@ function BindData() {
 
 
 
+}
+
+//Products data for Admin
+function BindProductsData() {
+    if (ProductsAdminDt) {
+        ProductsAdminDt.destroy();
+    }
+
+    ProductsAdminDt = $(adminTable).DataTable({
+        "ajax": {
+            "type": "POST",
+            "url": "/Products/getProductManagementDT",
+            "data": { category: $('#ddlProductCat').val(), filterOptions: "" },
+            "dataSrc": function (json) {
+                jsonProducts = FormatData(json.data);
+                return jsonProducts;
+            }
+        },
+        "processing": true,
+        "serverSide": true,
+        "bSort": true,
+        "language": {
+            "sSearch": "",
+            "searchPlaceholder": "Search Product",
+            "loadingRecords": '&nbsp;',
+            "processing": '<div class="spinner"></div>'
+        },
+        "initComplete": function (setting, json) {
+            var input = $('.dataTables_filter input').unbind(),
+                self = this.api(),
+                $searchButton = $('<button class="btn btn-sm btn-black mr-2 ml-2">')
+                    .text('Search')
+                    .click(function () {
+                        self.search(input.val()).draw();
+                    }),
+                $clearButton = $('<button class="btn btn-sm  btn-white">')
+                    .text('Clear')
+                    .click(function () {
+                        input.val('');
+                        $searchButton.click();
+                    })
+            $('.dataTables_filter').append($searchButton, $clearButton);
+        },
+        "columns": [{
+            "orderable": false,
+            "data": null,
+            "defaultContent": ''
+        },
+        { "data": "Title" },
+        { "data": "category" },
+        { "data": "cost" },
+        { "data": "inventory" },
+        { "data": "shippingweight" },
+        {
+            "data": "pick", "render": function (data, type, full) {
+                var rawHTML = "";
+                rawHTML = '<label class="mt-checkbox mt-checkbox-outline"><input type="checkbox" productid=' + full.ProductID + ' aliexpresscategoryid=' + full.AliExpressCategoryID + ' id="chk_prod_' + full.ProductID + '" class="chkProducts parentChk"><span></span></label>';
+                return rawHTML;
+            }
+        },
+
+        {
+            "data": "check", "render": function (data, type, full) {
+                var rawHTML = "";
+                rawHTML = full.IsActive ? "Online" : "Offline";
+                return rawHTML;
+            }
+        }
+        ],
+        "createdRow": function (row, data, dataIndex) {
+            if (data.ChildProductList.length > 0) {
+                $(row).find("td:eq(0)").addClass('details-control');
+            }
+        }
+    });
 }

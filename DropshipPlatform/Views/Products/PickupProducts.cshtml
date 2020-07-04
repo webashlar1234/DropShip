@@ -25,22 +25,37 @@
                     @Html.DropDownList("ddlProductCat", new List<SelectListItem> { new SelectListItem { Text = "", Value = "" }, }, new { @class = "selectpicker form-control" })
                 }
             </div>
-            <div class="col-lg-4">
-                <label for="">Filter By</label>
-                <select class="selectpicker form-control" title="Select" id="ddlPickupFilter">
-                    <option value="0">All</option>
-                    <option value="1">Picked products</option>
-                    <option value="2">Unpicked products</option>
-                    <option value="3">InProgress products</option>
-                </select>
-            </div>
-            <div class="col-lg-4">
-                <label for="exampleFormControlSelect1">Bulk Actions</label>
-                <select class="selectpicker form-control" title="Select" id="ddlProductBulkAction">
-                    <option value="">--Select --</option>
-                    <option value="1">Pick selected products</option>
-                </select>
-            </div>
+            @if (SessionManager.GetUserSession().LoggedUserRoleName == StaticValues.seller)
+            {
+                <div class="col-lg-4">
+                    <label for="">Filter By</label>
+                    <select class="selectpicker form-control" title="Select" id="ddlPickupFilter">
+                        <option value="0">All</option>
+                        <option value="1">Picked products</option>
+                        <option value="2">Unpicked products</option>
+                        <option value="3">InProgress products</option>
+                    </select>
+                </div>
+                <div class="col-lg-4">
+                    <label for="exampleFormControlSelect1">Bulk Actions</label>
+                    <select class="selectpicker form-control" title="Select" id="ddlProductBulkAction">
+                        <option value="">--Select --</option>
+                        <option value="1">Pick selected products</option>
+                    </select>
+                </div>
+            }
+            @if (SessionManager.GetUserSession().LoggedUserRoleName == StaticValues.admin)
+            {
+                <div class="col-lg-4">
+                    <label for="exampleFormControlSelect1">Bulk Actions</label>
+                    <select class="selectpicker form-control" title="Select" id="ddlProductBulkAction">
+                        <option value="">--Select --</option>
+                        <option value="1">Online</option>
+                        <option value="2">Offline</option>
+                    </select>
+                </div>
+                <div class="col-lg-4"></div>
+            }
         </div>
     </div>
 </section>
@@ -75,22 +90,22 @@
                 }
                 @if (SessionManager.GetUserSession().LoggedUserRoleName != StaticValues.seller)
                 {
-                    <table id="ProductsUserDt" class="display" style="width:100%">
+                    <table id="ProductsAdminDt" class="display" style="width:100%">
                         <thead>
                             <tr>
                                 <th></th>
-                                <th scope="col">Original Produt ID</th>
                                 <th scope="col">Product Title</th>
-                                <th scope="col">Source Product Link</th>
-                                <th scope="col">Total Sales</th>
-                                <th scope="col"># of Sellers Picked</th>
-                                <th scope="col">Service Status</th>
+                                <th scope="col">Category</th>
+                                <th scope="col">Cost (USD)</th>
+                                <th scope="col">Inventory</th>
+                                <th scope="col">Shipping Weight (KG)</th>
                                 <th scope="col" data-orderable="false">
                                     <label class="rememberme mt-checkbox">
                                         <input type="checkbox" id="chkAllProduct" name="remember" value="0">
                                         <span></span>&nbsp;Check All
                                     </label>
                                 </th>
+                                <th scope="col">Product Status</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
