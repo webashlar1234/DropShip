@@ -114,6 +114,7 @@ namespace DropshipPlatform.BLL.Services
                                         IsPolicyAccepted = u.IsPolicyAccepted,
                                         LoggedUserRoleName = r.Name,
                                         LoggedUserRoleID = r.RoleID,
+                                        SubscriptionID = s.StripeSubscriptionID
                                     }).FirstOrDefault();
                 }
             }

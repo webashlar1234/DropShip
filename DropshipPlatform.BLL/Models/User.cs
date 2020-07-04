@@ -30,6 +30,7 @@ namespace DropshipPlatform.BLL.Models
     {
         public string LoggedUserRoleName { get; set; }
         public int LoggedUserRoleID { get; set; }
+        public string SubscriptionID { get; set; }
     }
 
     public class Seller : user

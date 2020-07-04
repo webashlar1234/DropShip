@@ -111,5 +111,32 @@ namespace DropshipPlatform.Controllers
             }
             return Json(result, JsonRequestBehavior.AllowGet);
         }
+
+        [HttpPost]
+        public JsonResult UpgradeSubscription(string PlanID)
+        {
+            bool result = true;
+            LoggedUserModel user = SessionManager.GetUserSession();
+            result = _stripeService.UpgradeSubscription(user.SubscriptionID, PlanID);
+            if (result)
+            {
+                result = _stripeService.UpdateSubscriptionToDb(user.UserID, PlanID, user.SubscriptionID); 
+            }
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public JsonResult CancelSubscription(string PlanID)
+        {
+            bool result = true;
+            LoggedUserModel user = SessionManager.GetUserSession();
+            // subscription is cancled but need to check for refund is done or not
+            result = _stripeService.CancelSubscription(user.SubscriptionID);
+            if (result)
+            {
+                result = _stripeService.CancelSubscriptionToDb(user.UserID, user.SubscriptionID);
+            }
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
     }
 }

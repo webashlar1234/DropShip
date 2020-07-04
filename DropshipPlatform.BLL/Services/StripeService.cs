@@ -348,48 +348,126 @@ namespace DropshipPlatform.BLL.Services
             return subscription;
         }
 
-        public Stripe.Subscription UpgradeSubscription(string SubscriptionID, string PlanID)
+        public bool UpgradeSubscription(string SubscriptionID, string PlanID)
         {
-            Stripe.Subscription subscription = new Stripe.Subscription();
-            try
+            bool result = false;
+            if(!string.IsNullOrEmpty(SubscriptionID) && !string.IsNullOrEmpty(PlanID))
             {
-                var options = new SubscriptionUpdateOptions
+                Stripe.Subscription subscriptionRes = new Stripe.Subscription();
+                
+                try
                 {
-                    Items = new List<SubscriptionItemOptions>
+                    var service = new SubscriptionService();
+                    Subscription subscription = service.Get(SubscriptionID);
+
+                    var options = new SubscriptionUpdateOptions
+                    {
+                        Items = new List<SubscriptionItemOptions>
                             {
                                 new SubscriptionItemOptions {
+                                    Id = subscription.Items.Data[0].Id,
                                     Plan = PlanID
                                     },
-                            },
-                };
-                var service = new SubscriptionService();
-                subscription = service.Update(SubscriptionID, options);
+                            }
+                    };
+
+                    subscriptionRes = service.Update(SubscriptionID, options);
+
+                    if (subscriptionRes.StripeResponse.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        result = true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.Error(ex.ToString());
+                }
+            }
+            
+            return result;
+        }
+
+        public bool UpdateSubscriptionToDb(int UserID, string stripePlanID, string subscriptionID)
+        {
+            bool result = true;
+            try
+            {
+                using (DropshipDataEntities datacontext = new DropshipDataEntities())
+                {
+                    int newPlanID =  datacontext.membershiptypes.Where(x => x.StripePlanID == stripePlanID).Select(x => x.MembershipID).FirstOrDefault();
+                    
+                    var subscription = datacontext.subscriptions.Where(x => x.UserID == UserID && x.StripeSubscriptionID == subscriptionID && x.IsActive == true).FirstOrDefault();
+                    subscription.MembershipID = newPlanID;
+                    subscription.MembershipModifyOn = DateTime.Now;
+                    subscription.MembershipModifyBy = UserID;
+
+                    datacontext.Entry(subscription).State = EntityState.Modified;
+                    datacontext.SaveChanges();
+                }
             }
             catch (Exception ex)
             {
                 logger.Error(ex.ToString());
+                result = false;
             }
-            return subscription;
+
+            return result;
         }
 
-        public Stripe.Subscription CancelSubscription(string SubscriptionID)
+        public bool CancelSubscriptionToDb(int UserID, string subscriptionID)
         {
-            Stripe.Subscription subscription = new Stripe.Subscription();
+            bool result = true;
+            try
+            {
+                using (DropshipDataEntities datacontext = new DropshipDataEntities())
+                {
+                    var subscription = datacontext.subscriptions.Where(x => x.UserID == UserID && x.StripeSubscriptionID == subscriptionID && x.IsActive == true).FirstOrDefault();
+                    subscription.IsActive = false;
+                    subscription.MembershipModifyOn = DateTime.Now;
+                    subscription.MembershipModifyBy = UserID;
+
+                    var user = datacontext.users.Where(x => x.UserID == UserID && x.IsActive == true).FirstOrDefault();
+                    user.IsActive = false;
+                    user.ItemModifyWhen = DateTime.Now;
+                    user.ItemModifyBy = UserID;
+
+                    datacontext.Entry(subscription).State = EntityState.Modified;
+                    datacontext.Entry(user).State = EntityState.Modified;
+                    datacontext.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString());
+                result = false;
+            }
+
+            return result;
+        }
+
+        public bool CancelSubscription(string SubscriptionID)
+        {
+            bool result = false;
             try
             {
                 var service = new SubscriptionService();
                 var options = new SubscriptionCancelOptions
                 {
                     InvoiceNow = true,
-                    Prorate = false,
+                    Prorate = true,
                 };
-                service.Cancel(SubscriptionID, options);
+                var subscription = service.Cancel(SubscriptionID, options);
+
+                if (subscription.StripeResponse.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    result = true;
+                }
             }
             catch (Exception ex)
             {
                 logger.Error(ex.ToString());
             }
-            return subscription;
+            return result;
         }
 
         public bool AddCardToPaymentProfile(string StripeCustomerID, int UserID, string PaymentMethodId)
