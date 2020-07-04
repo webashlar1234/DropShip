@@ -2,11 +2,38 @@ var SellerDT = null;
 var seller = {
     init: function () {
         seller.initSellerTable();
+        seller.click();
+    },
+    click: function () {
+        $(document).on('click', '#updateUserStatus', function () {
+            ShowLoader();
+            var userID = $(this).attr('data-userid');
+            $.ajax({
+                type: "POST",
+                url: "/User/updateUserStatus",
+                dataType: "json",
+                async: false,
+                data: { UserID: userID },
+                success: function (data) {
+                    if (data) {
+                        SellerDT.clear().draw();
+                        SuccessMessage("Saved successfully");
+                    }
+                    else {
+                        ErrorMessage("Something went wrong please try again later");
+                    }
+                    HideLoader();
+                },
+                error: function (err) {
+                    HideLoader();
+                    ErrorMessage("Something went wrong please try again later");
+                }
+            });
+        });
     },
     change: function () {
-
+        
     },
-
     initSellerTable: function () {
         SellerDT = $('#SellerDT').DataTable({
             ajax: {
@@ -75,7 +102,7 @@ var seller = {
                 {
                     targets: 3,
                     sortable: true,
-                    width: "15%",
+                    width: "12%",
                     "render": function (data, type, full) {
                         return data;
                     }
@@ -83,15 +110,15 @@ var seller = {
                 {
                     targets: 4,
                     sortable: true,
-                    width: "15%",
+                    width: "12%",
                     "render": function (data, type, full) {
                         return data;
                     }
                 },
                 {
                     targets: 5,
-                    sortable: true,
-                    width: "10%",
+                    sortable: false,
+                    width: "8%",
                     "render": function (data, type, full) {
                         return data;
                     }
@@ -99,21 +126,43 @@ var seller = {
                 {
                     targets: 6,
                     sortable: false,
+                    width: "12%",
+                    "render": function (data, type, full) {
+                        if (data) {
+                            var pattern = /Date\(([^)]+)\)/;
+                            var results = pattern.exec(data);
+                            var dt = new Date(parseFloat(results[1]));
+                            var day = dt.getDate() > 9 ? dt.getDate() : "0" + dt.getDate();
+                            return day + "/" + (dt.getMonth() + 1) + "/" + dt.getFullYear();
+                        }
+                        else {
+                            return "";
+                        }
+                    }
+                },
+                {
+                    targets: 7,
+                    sortable: true,
+                    width: "10%",
+                    "render": function (data, type, full) {
+                        return data;
+                    }
+                },
+                {
+                    targets: 8,
+                    sortable: true,
                     width: "15%",
                     "render": function (data, type, full) {
                         return data;
                     }
                 },
                 {
-                    targets: 7,
+                    targets: 9,
                     sortable: false,
-                    width: "15%",
+                    width: "10%",
                     "render": function (data, type, full) {
-                        var pattern = /Date\(([^)]+)\)/;
-                        var results = pattern.exec(data);
-                        var dt = new Date(parseFloat(results[1]));
-                        var day = dt.getDate() > 9 ? dt.getDate() : "0" + dt.getDate();
-                        return day + "/" + (dt.getMonth() + 1) + "/" + dt.getFullYear();
+                        var text = full.IsActive == true ? "InActive" : "Active";
+                        return '<button class="btn btn-info btn-sm" id="updateUserStatus" data-userid="' + full.UserID + '">' + text + '</button>';
                     }
                 }
             ],
@@ -123,9 +172,11 @@ var seller = {
                 { "sTitle": 'Phone', "mData": 'Phone', sDefaultContent: "", className: "Phone" },
                 { "sTitle": 'AliExpress Seller ID', "mData": 'AliExpressLoginID', sDefaultContent: "", className: "AliExpressLoginID" },
                 { "sTitle": 'Stripe Customer ID', "mData": 'StripeCustomerID', sDefaultContent: "", className: "StripeCustomerID" },
-                { "sTitle": 'IsActive', "mData": 'IsActive', sDefaultContent: "", className: "IsActive" },
                 { "sTitle": 'IsPolicyAccepted', "mData": 'IsPolicyAccepted', sDefaultContent: "", className: "IsPolicyAccepted" },
-                { "sTitle": 'Date', "mData": 'ItemCreatedWhen', sDefaultContent: "", className: "ItemCreatedWhen" }
+                { "sTitle": 'Date', "mData": 'ItemCreatedWhen', sDefaultContent: "", className: "ItemCreatedWhen" },
+                { "sTitle": 'Membership', "mData": 'Membership', sDefaultContent: "", className: "Membership" },
+                { "sTitle": 'PickedProducts', "mData": 'NoOfPickedProducts', sDefaultContent: "", className: "NoOfPickedProducts" },
+                { "sTitle": '', "mData": '', sDefaultContent: "", className: "Actions" }
             ]
         });
     }

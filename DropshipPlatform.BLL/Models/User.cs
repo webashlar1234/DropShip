@@ -7,19 +7,6 @@ using System.Threading.Tasks;
 
 namespace DropshipPlatform.BLL.Models
 {
-    public class UserModel
-    {
-        public int UserID { get; set; }
-        public string Name { get; set; }
-        public string EmailID { get; set; }
-        public string Phone { get; set; }
-        public int CountryID { get; set; }
-        public string Password { get; set; }
-        public string AliExpressSellerID { get; set; }
-        public bool IsPolicyAccepted { get; set; }
-        public string StripeCustomerID { get; set; }
-    }
-
     public class RegisterUserModel
     {
         public int UserID { get; set; }
@@ -43,5 +30,11 @@ namespace DropshipPlatform.BLL.Models
     {
         public string LoggedUserRoleName { get; set; }
         public int LoggedUserRoleID { get; set; }
+    }
+
+    public class Seller : user
+    {
+        public string Membership { get; set; }
+        public int NoOfPickedProducts { get; set; }
     }
 }

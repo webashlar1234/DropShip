@@ -95,6 +95,7 @@ namespace DropshipPlatform.BLL.Services
                     dbLoggedUser = (from u in datacontext.users
                                     from ur in datacontext.user_roles.Where(x => x.UserID == u.UserID)
                                     from r in datacontext.roles.Where(x => x.RoleID == ur.RoleID)
+                                    from s in datacontext.subscriptions.Where(x => x.UserID == u.UserID).DefaultIfEmpty()
                                     where u.IsActive == true && u.UserID == UserID
                                     select new LoggedUserModel
                                     {
@@ -109,7 +110,7 @@ namespace DropshipPlatform.BLL.Services
                                         AliExpressAccessToken = u.AliExpressAccessToken,
                                         AliExpressTokenLastModified = u.AliExpressTokenLastModified,
                                         StripeCustomerID = u.StripeCustomerID,
-                                        IsActive = u.IsActive,
+                                        IsActive = r.RoleID == 3 ? (u.IsActive == true && s.IsActive == true ) :  u.IsActive,
                                         IsPolicyAccepted = u.IsPolicyAccepted,
                                         LoggedUserRoleName = r.Name,
                                         LoggedUserRoleID = r.RoleID,
@@ -221,16 +222,32 @@ namespace DropshipPlatform.BLL.Services
             return result;
         }
 
-        public List<user> getSellerUsers()
+        public List<Seller> getSellerUsers()
         {
-            List<user> SellerUsers = new List<user>();
+            List<Seller> SellerUsers = new List<Seller>();
             try
             {
                 using (DropshipDataEntities datacontext = new DropshipDataEntities())
                 {
                     SellerUsers = (from u in datacontext.users
                                    from ur in datacontext.user_roles.Where(x => x.RoleID == 3 && x.UserID == u.UserID)
-                                   select u).ToList();
+                                   from s in datacontext.subscriptions.Where(x => x.UserID == u.UserID).DefaultIfEmpty()
+                                   from mt in datacontext.membershiptypes.Where(x => x.MembershipID == s.MembershipID)
+                                   select new Seller {
+                                       Name = u.Name,
+                                       EmailID = u.EmailID,
+                                       Phone = u.Phone,
+                                       UserID = u.UserID,
+                                       AliExpressSellerID = u.AliExpressSellerID,
+                                       AliExpressLoginID = u.AliExpressLoginID,
+                                       StripeCustomerID = u.StripeCustomerID,
+                                       IsActive = u.IsActive,
+                                       //IsActive = (u.IsActive == true && s.IsActive == true) ? true : false,
+                                       IsPolicyAccepted = u.IsPolicyAccepted,
+                                       ItemCreatedBy = u.ItemCreatedBy,
+                                       Membership = mt.Name,
+                                       NoOfPickedProducts = datacontext.sellerspickedproducts.Where(x => x.UserID == u.UserID).Count()
+                                   }).ToList();
                 }
             }
             catch (Exception ex)
@@ -257,6 +274,39 @@ namespace DropshipPlatform.BLL.Services
             catch (Exception ex)
             {
                 result = true;
+                logger.Info(ex.ToString());
+            }
+            return result;
+        }
+
+        public bool UpdateUserStatus(int UserID)
+        {
+            bool result = true;
+            try
+            {
+                using (DropshipDataEntities datacontext = new DropshipDataEntities())
+                {
+                    var user = datacontext.users.Where(x => x.UserID == UserID).FirstOrDefault();
+                    if (user != null)
+                    {
+                        if (user.IsActive == true)
+                        {
+                            var subscription = datacontext.subscriptions.Where(x => x.UserID == UserID).FirstOrDefault();
+                            if(subscription != null)
+                            {
+                                subscription.IsActive = false;
+                                datacontext.Entry(subscription).State = EntityState.Modified;
+                            }
+                        }
+                        user.IsActive = !user.IsActive;
+                        datacontext.Entry(user).State = EntityState.Modified;
+                        datacontext.SaveChanges();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result = false;
                 logger.Info(ex.ToString());
             }
             return result;

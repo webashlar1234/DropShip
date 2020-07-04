@@ -40,14 +40,23 @@ namespace DropshipPlatform.Infrastructure
                         }
                         if (UserIsValid)
                         {
-                            if(user.LoggedUserRoleID == 3 && string.IsNullOrEmpty(user.AliExpressAccessToken))
+                            if(user.LoggedUserRoleID == 3)
                             {
                                 string actionName = filterContext.ActionDescriptor.ActionName;
                                 string controllerName = filterContext.ActionDescriptor.ControllerDescriptor.ControllerName;
+
                                 if (AccessTokenPages.Contains(controllerName))
                                 {
-                                    new RedirectHelper().RedirectToLogin(filterContext, "AliExpress", "Index");
+                                    if (string.IsNullOrEmpty(user.AliExpressAccessToken))
+                                    {
+                                        new RedirectHelper().RedirectToLogin(filterContext, "AliExpress", "Index");
+                                    }
+                                    else if (user.IsActive != true)
+                                    {
+                                        new RedirectHelper().RedirectToLogin(filterContext, "MyAccount", "Index");
+                                    }
                                 }
+                                
                             }
                         }
                         else

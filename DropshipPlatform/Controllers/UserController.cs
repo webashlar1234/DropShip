@@ -39,29 +39,19 @@ namespace DropshipPlatform.Controllers
             int recordsTotal = 0;
             string sortOrder = "";
 
-            List<user> Userlist = _userService.getSellerUsers();
+            List<Seller> result = _userService.getSellerUsers();
           
-            List<user> result = Userlist.Select(x => new user()
-            {
-                Name = x.Name,
-                EmailID = x.EmailID,
-                Phone = x.Phone,
-                AliExpressSellerID = x.AliExpressSellerID,
-                AliExpressLoginID = x.AliExpressLoginID,
-                StripeCustomerID = x.StripeCustomerID,
-                IsActive = x.IsActive,
-                IsPolicyAccepted = x.IsPolicyAccepted,
-                ItemCreatedWhen = DateTime.UtcNow
-            }).ToList();
-
-
             var retvalue = result;
 
             if (!string.IsNullOrEmpty(search))
             {
                 retvalue = retvalue.Where(x => x.Name != null && x.Name.ToLower().Contains(search.ToLower()) ||
                 x.EmailID != null && x.EmailID.ToString().ToLower().Contains(search.ToLower()) ||
-                x.AliExpressSellerID != null && x.AliExpressSellerID.ToString().ToLower().Contains(search.ToLower())
+                x.AliExpressSellerID != null && x.AliExpressSellerID.ToString().ToLower().Contains(search.ToLower()) ||
+                x.Phone != null && x.Phone.ToString().Contains(search) ||
+                x.Membership != null && x.Membership.ToString().ToLower().Contains(search.ToLower()) ||
+                x.NoOfPickedProducts.ToString() == search ||
+                x.StripeCustomerID != null && x.StripeCustomerID.ToString().ToLower().Contains(search.ToLower())
                 ).ToList();
             }
 
@@ -77,7 +67,7 @@ namespace DropshipPlatform.Controllers
 
             recordsTotal = retvalue.Count();
 
-            var data = new List<user>();
+            var data = new List<Seller>();
 
             if (pageSize != -1)
             {
@@ -92,5 +82,12 @@ namespace DropshipPlatform.Controllers
             jsonResult.MaxJsonLength = int.MaxValue;
             return jsonResult;
         }
-    }
+
+        [HttpPost]
+        [AjaxFilter]
+        public ActionResult updateUserStatus(int UserID)
+        {
+            return Json(_userService.UpdateUserStatus(UserID), JsonRequestBehavior.AllowGet);
+        }
+   }
 }
