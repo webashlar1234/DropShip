@@ -1516,5 +1516,94 @@ namespace DropshipPlatform.BLL.Services
 
             return result;
         }
+
+        public bool deleteProductAliExpressStore(List<scproductModel> products, bool status)
+        {
+            bool result = false;
+            AliExpressAccessToken accessTokenObj = null;
+            var accessToken = string.Empty;
+            try
+            {
+                ITopClient client = new DefaultTopClient(StaticValues.aliURL, StaticValues.aliAppkey, StaticValues.aliSecret);
+                AliexpressSolutionBatchProductDeleteRequest req = new AliexpressSolutionBatchProductDeleteRequest();
+                using (DropshipDataEntities datacontext = new DropshipDataEntities())
+                {
+                    foreach (scproductModel product in products)
+                    {
+                        if (status) {
+                            product productList = datacontext.products.Where(x => x.ProductID == product.productId).FirstOrDefault();
+                            if (productList != null)
+                            {
+                                productList.IsActive = 1;
+                            }
+                            datacontext.Entry(productList).State = System.Data.Entity.EntityState.Modified;
+                            datacontext.SaveChanges();
+                            result = true;
+                        }
+                        else
+                        {
+                            result = false;
+                            var obj = (from sp in datacontext.sellerspickedproducts
+                                       join u in datacontext.users on sp.UserID equals u.UserID
+                                       where sp.ParentProductID == product.productId
+                                       select new
+                                       {
+                                           AliExpressProductID = sp.AliExpressProductID,
+                                           AliExpressAccessToken = u.AliExpressAccessToken,
+                                           UserId = u.UserID,
+                                           ProductId = sp.ParentProductID,
+                                       }).ToList();
+                            if (obj != null && obj.Count() > 0)
+                            {
+                                foreach (var item in obj)
+                                {
+                                    if (!string.IsNullOrEmpty(item.AliExpressAccessToken))
+                                    {
+                                        accessTokenObj = Newtonsoft.Json.JsonConvert.DeserializeObject<AliExpressAccessToken>(item.AliExpressAccessToken);
+                                        accessToken = accessTokenObj.access_token;
+                                    }
+                                    if (!string.IsNullOrEmpty(item.AliExpressProductID))
+                                    {
+                                        req.ProductIds = item.AliExpressProductID;
+                                        AliexpressSolutionBatchProductDeleteResponse rsp = client.Execute(req, accessToken);
+                                        if (rsp.IsError == false)
+                                        {
+                                            sellerspickedproduct sellerspickedproductList = datacontext.sellerspickedproducts.Where(x => x.UserID == item.UserId && x.ParentProductID == item.ProductId).FirstOrDefault();
+                                            if (sellerspickedproductList != null)
+                                            {
+                                                List<sellerpickedproductsku> skulist = datacontext.sellerpickedproductskus.Where(x => x.SellerPickedId == sellerspickedproductList.SellersPickedID).ToList();
+                                                if (product.SKUModels != null && product.SKUModels.Count > 0)
+                                                {
+                                                    foreach (var sku in skulist)
+                                                    {
+                                                        datacontext.sellerpickedproductskus.Remove(sku);
+                                                    }
+                                                }
+                                                datacontext.sellerspickedproducts.Remove(sellerspickedproductList);
+                                                product productList = datacontext.products.Where(x => x.ProductID == item.ProductId).FirstOrDefault();
+                                                if(productList != null)
+                                                {
+                                                    productList.IsActive = 0;
+                                                }
+                                                datacontext.Entry(productList).State = System.Data.Entity.EntityState.Modified;
+                                                datacontext.SaveChanges();
+                                                result = true;
+                                            }
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                logger.Info(ex.ToString());
+            }
+            return result;
+        }
     }
 }

@@ -1,8 +1,7 @@
 ﻿var ProductsDt = null;
-var ProductsAdminDt = null;
 var table = '#ProductsDt';
-var adminTable = '#ProductsAdminDt';
 var jsonProducts = null;
+var loggedUserRole = "";
 
 var product = {
     init: function () {
@@ -15,7 +14,7 @@ var product = {
         });
         $(document).on('change', '#ddlProductBulkAction', function () {
             //$('.spinner').show();
-            if (Number($(this).val()) === 1) {
+            if (Number($(this).val()) > 0) {
                 var selectedItems = global.getSelectedCheckboxList('.chkProducts', 'productid');
                 var pickedProducts = [];
                 $.each(selectedItems, function (index, item) {
@@ -30,6 +29,9 @@ var product = {
                 }
                 $('#ddlProductBulkAction').val('');
                 $('#ddlProductBulkAction').selectpicker('refresh');
+            }
+            else {
+               
             }
         });
     },
@@ -90,23 +92,48 @@ var product = {
         });
         if (update_price) {
             $('.spinner').show();
-            $.ajax({
-                type: "POST",
-                url: "/Products/pickSellerProducts",
-                dataType: "json",
-                async: false,
-                data: { products: pickedProducts },
-                success: function (data) {
-                    if (data) {
-                        SuccessMessage("Submitted to aliExpress for pickup process");
-                    }
-                    else {
-                        ErrorMessage("Product not submitted");
-                    }
-                    BindData();
-                    $('.spinner').hide();
+            if (loggedUserRole != "Seller") {
+                var status = false;
+                if (Number($("#ddlProductBulkAction").val()) == 2) {
+                    status = true;
                 }
-            });
+                $.ajax({
+                    type: "POST",
+                    url: "/Products/deleteProductAliExpressStore",
+                    dataType: "json",
+                    async: false,
+                    data: { products: pickedProducts, status: status },
+                    success: function (data) {
+                        if (data) {
+                            SuccessMessage("Product Status Updated successfully");
+                        }
+                        else {
+                            ErrorMessage("Product Status not updated");
+                        }
+                        BindData();
+                        $('.spinner').hide();
+                    }
+                });
+            }
+            else {
+                $.ajax({
+                    type: "POST",
+                    url: "/Products/pickSellerProducts",
+                    dataType: "json",
+                    async: false,
+                    data: { products: pickedProducts },
+                    success: function (data) {
+                        if (data) {
+                            SuccessMessage("Submitted to aliExpress for pickup process");
+                        }
+                        else {
+                            ErrorMessage("Product not submitted");
+                        }
+                        BindData();
+                        $('.spinner').hide();
+                    }
+                });
+            }
         }
         else {
             $("#ddlProductBulkAction").val("");
@@ -126,11 +153,9 @@ var product = {
 };
 
 $(document).ready(function () {
-    debugger
     product.init();
-    BindData();
-    BindProductsData();
-
+    //BindData();
+  
     function SetPickedDisable() {
         var chkUpdatedPriceList = $('input[name=updatedPrice]');
         if (chkUpdatedPriceList && chkUpdatedPriceList.length > 0) {
@@ -166,11 +191,7 @@ $(document).ready(function () {
 
 
     $('#ProductsDt tbody').on('click', 'td.details-control', function () {
-        toggleChildRow(this,"seller");
-    });
-
-    $('#ProductsAdminDt tbody').on('click', 'td.details-control', function () {
-        toggleChildRow(this,"admin");
+        toggleChildRow(this);
     });
 
     $('#chkAllProduct').change(function (e) {
@@ -241,15 +262,9 @@ $(document).ready(function () {
         //$("#frmPickedProduct").valid();
     });
 
-    function toggleChildRow(selectedRow,user) {
+    function toggleChildRow(selectedRow) {
         var tr = $(selectedRow).closest('tr');
-        var row = null;
-        if (user === "seller") {
-            row = ProductsDt.row(tr);
-        }
-        else {
-            row = ProductsAdminDt.row(tr);
-        }
+        var row = ProductsDt.row(tr);
 
         if (row.child.isShown()) {
             // This row is already open - close it
@@ -353,6 +368,7 @@ function format(d) {
         var childUpdatedPrice = value.UpdatedPrice || childProductSellerCost;
         var childProductTitle = value.Title || parentProductTitle;
         var childProductBrand = value.Brand || parentProductBrand;
+        var sellingPriceTd = loggedUserRole == "Seller" ? "<input name='updatedPrice'  disabled dataParentID=" + value.ParentProductID + "  dataSKU='" + value.SkuID + "' type='number' value=" + childUpdatedPrice + " class='updatedPrice txtEdit_" + value.ParentProductID + "'>" : "";
         trs +=
             '<tr class="skuRow" data-for="' + value.ParentProductID + '" data-inventory="' + value.Inventory + '" data-sku="' + value.SkuID + '" data-childProductId="' + value.ProductID + '"><td>' + parentProductTitle +
             '</td> <td>' + parentProductBrand +
@@ -361,11 +377,12 @@ function format(d) {
             '</td><td>' + value.Size +
             '</td><td>' + value.Inventory +
             '</td><td>' + "$" + childProductCost +
-            '</td><td>' + "<input name='updatedPrice'  disabled dataParentID=" + value.ParentProductID + "  dataSKU='" + value.SkuID + "' type='number' value=" + childUpdatedPrice + " class='updatedPrice txtEdit_" + value.ParentProductID + "'>" +
+            '</td><td>' + sellingPriceTd +
             //'</td><td>' + value.Description +
             '</td></tr>';
     })
     // `d` is the original data object for the row
+    var sellingPriceTh = loggedUserRole == "Seller" ? '<th>Product Selling Price(USD)</th>' : "";
     return '<table class="table table-border table-hover innertable">' +
         '<thead>' +
         '<th style="width:15%">Title</th>' +
@@ -375,7 +392,7 @@ function format(d) {
         '<th>Size</th>' +
         '<th>Inventory</th>' +
         '<th>Price</th>' +
-        '<th>Product Selling Price(USD)</th>' +
+        sellingPriceTh +
         //'<th style="width:30%">Description</th>' +
         //'<th>Rating</th>' +
         '</thead><tbody>' +
@@ -398,7 +415,9 @@ function GeneratePropertyList(propertyList, elementName, Id) {
     return selectHTML;
 }
 
-function BindData() {
+function BindData(user) {
+    loggedUserRole = user;
+
     if (ProductsDt) {
         ProductsDt.destroy();
     }
@@ -409,7 +428,7 @@ function BindData() {
             "url": "/Products/getProductManagementDT",
             "data": { category: $('#ddlProductCat').val(), filterOptions: $('#ddlPickupFilter').val() },
             "dataSrc": function (json) {
-                jsonProducts = FormatData(json.data);
+                jsonProducts = FormatData(json.data, user);
                 return jsonProducts;
             }
         },
@@ -462,14 +481,19 @@ function BindData() {
         {
             "data": "pick", "render": function (data, type, full) {
                 var rawHTML = "";
-                if (full.isProductPicked) {
-                    rawHTML = "Picked";
-                }
-                else if (full.hasProductSkuSync) {
-                    rawHTML = '<label class="mt-checkbox mt-checkbox-outline disabled"><input disabled type="checkbox" aliexpresscategoryid=' + full.AliExpressCategoryID + ' productid=' + full.ProductID + ' id="chk_prod_' + full.ProductID + '" class="chkProducts parentChk"><span></span></label>';
+                if (loggedUserRole != "Seller") {
+                    rawHTML = '<label class="mt-checkbox mt-checkbox-outline"><input type="checkbox" productid=' + full.ProductID + ' aliexpresscategoryid=' + full.AliExpressCategoryID + ' id="chk_prod_' + full.ProductID + '" class="chkProducts parentChk"><span></span></label>';
                 }
                 else {
-                    rawHTML = '<label class="mt-checkbox mt-checkbox-outline"><input type="checkbox" productid=' + full.ProductID + ' aliexpresscategoryid=' + full.AliExpressCategoryID + ' id="chk_prod_' + full.ProductID + '" class="chkProducts parentChk"><span></span></label>';
+                    if (full.isProductPicked) {
+                        rawHTML = "Picked";
+                    }
+                    else if (full.hasProductSkuSync) {
+                        rawHTML = '<label class="mt-checkbox mt-checkbox-outline disabled"><input disabled type="checkbox" aliexpresscategoryid=' + full.AliExpressCategoryID + ' productid=' + full.ProductID + ' id="chk_prod_' + full.ProductID + '" class="chkProducts parentChk"><span></span></label>';
+                    }
+                    else {
+                        rawHTML = '<label class="mt-checkbox mt-checkbox-outline"><input type="checkbox" productid=' + full.ProductID + ' aliexpresscategoryid=' + full.AliExpressCategoryID + ' id="chk_prod_' + full.ProductID + '" class="chkProducts parentChk"><span></span></label>';
+                    }
                 }
                 return rawHTML;
             }
@@ -478,13 +502,17 @@ function BindData() {
         {
             "data": "check", "render": function (data, type, full) {
                 var rawHTML = "";
-                if (full.hasProductSkuSync && !full.isProductPicked) {
-                    rawHTML = "In Progress"
+                if (loggedUserRole != "Seller") {
+                    rawHTML = full.IsActive ? "Online" : "Offline";
                 }
                 else {
-                    rawHTML = full.SellerPickedCount > 0 ? ("Picked by " + full.SellerPickedCount + " sellers") : (full.IsActive ? "Online" : "Offline");
+                    if (full.hasProductSkuSync && !full.isProductPicked) {
+                        rawHTML = "In Progress"
+                    }
+                    else {
+                        rawHTML = full.SellerPickedCount > 0 ? ("Picked by " + full.SellerPickedCount + " sellers") : (full.IsActive ? "Online" : "Offline");
+                    }
                 }
-
                 return rawHTML;
             }
         }
@@ -497,81 +525,18 @@ function BindData() {
     });
 
 
-
+    showHideColumn();
 
 }
 
-//Products data for Admin
-function BindProductsData() {
-    if (ProductsAdminDt) {
-        ProductsAdminDt.destroy();
+function showHideColumn() {
+    var tableDT = $('#ProductsDt').DataTable();
+    if (loggedUserRole != "Seller") {
+        //hide column Product Selling Price(USD)
+        tableDT.column(6).visible(false);
     }
-
-    ProductsAdminDt = $(adminTable).DataTable({
-        "ajax": {
-            "type": "POST",
-            "url": "/Products/getProductManagementDT",
-            "data": { category: $('#ddlProductCat').val(), filterOptions: "" },
-            "dataSrc": function (json) {
-                jsonProducts = FormatData(json.data);
-                return jsonProducts;
-            }
-        },
-        "processing": true,
-        "serverSide": true,
-        "bSort": true,
-        "language": {
-            "sSearch": "",
-            "searchPlaceholder": "Search Product",
-            "loadingRecords": '&nbsp;',
-            "processing": '<div class="spinner"></div>'
-        },
-        "initComplete": function (setting, json) {
-            var input = $('.dataTables_filter input').unbind(),
-                self = this.api(),
-                $searchButton = $('<button class="btn btn-sm btn-black mr-2 ml-2">')
-                    .text('Search')
-                    .click(function () {
-                        self.search(input.val()).draw();
-                    }),
-                $clearButton = $('<button class="btn btn-sm  btn-white">')
-                    .text('Clear')
-                    .click(function () {
-                        input.val('');
-                        $searchButton.click();
-                    })
-            $('.dataTables_filter').append($searchButton, $clearButton);
-        },
-        "columns": [{
-            "orderable": false,
-            "data": null,
-            "defaultContent": ''
-        },
-        { "data": "Title" },
-        { "data": "category" },
-        { "data": "cost" },
-        { "data": "inventory" },
-        { "data": "shippingweight" },
-        {
-            "data": "pick", "render": function (data, type, full) {
-                var rawHTML = "";
-                rawHTML = '<label class="mt-checkbox mt-checkbox-outline"><input type="checkbox" productid=' + full.ProductID + ' aliexpresscategoryid=' + full.AliExpressCategoryID + ' id="chk_prod_' + full.ProductID + '" class="chkProducts parentChk"><span></span></label>';
-                return rawHTML;
-            }
-        },
-
-        {
-            "data": "check", "render": function (data, type, full) {
-                var rawHTML = "";
-                rawHTML = full.IsActive ? "Online" : "Offline";
-                return rawHTML;
-            }
-        }
-        ],
-        "createdRow": function (row, data, dataIndex) {
-            if (data.ChildProductList.length > 0) {
-                $(row).find("td:eq(0)").addClass('details-control');
-            }
-        }
-    });
+    else {
+        //show column Product Selling Price(USD)
+        tableDT.column(6).visible(true);
+    }
 }

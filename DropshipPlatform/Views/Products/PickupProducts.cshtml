@@ -6,7 +6,6 @@
     <link href="~/Content/custom/my-product.css" rel="stylesheet" />
     <link href="~/Content/custom/product-management.css" rel="stylesheet" />
 
-    <script src="~/Scripts/custom/PickupProducts.js?v=2020.04.16"></script>
 }
 
 
@@ -36,26 +35,22 @@
                         <option value="3">InProgress products</option>
                     </select>
                 </div>
-                <div class="col-lg-4">
-                    <label for="exampleFormControlSelect1">Bulk Actions</label>
-                    <select class="selectpicker form-control" title="Select" id="ddlProductBulkAction">
-                        <option value="">--Select --</option>
+            }
+            <div class="col-lg-4">
+                <label for="exampleFormControlSelect1">Bulk Actions</label>
+                <select class="selectpicker form-control" title="Select" id="ddlProductBulkAction">
+                    <option value="">--Select --</option>
+                    @if (SessionManager.GetUserSession().LoggedUserRoleName == StaticValues.seller)
+                    {
                         <option value="1">Pick selected products</option>
+                    }
+                    @if (SessionManager.GetUserSession().LoggedUserRoleName != StaticValues.seller)
+                    {
+                        <option value="2">Online</option>
+                        <option value="3">Offline</option>
+                    }
                     </select>
-                </div>
-            }
-            @if (SessionManager.GetUserSession().LoggedUserRoleName == StaticValues.admin)
-            {
-                <div class="col-lg-4">
-                    <label for="exampleFormControlSelect1">Bulk Actions</label>
-                    <select class="selectpicker form-control" title="Select" id="ddlProductBulkAction">
-                        <option value="">--Select --</option>
-                        <option value="1">Online</option>
-                        <option value="2">Offline</option>
-                    </select>
-                </div>
-                <div class="col-lg-4"></div>
-            }
+            </div>
         </div>
     </div>
 </section>
@@ -64,54 +59,36 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12 table-responsive  mb-5">
-                @if (SessionManager.GetUserSession().LoggedUserRoleName == StaticValues.seller)
-                {
-                    <table id="ProductsDt" class="display" style="width:100%">
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th scope="col">Product Title</th>
-                                <th scope="col">Category</th>
-                                <th scope="col">Cost (USD)</th>
-                                <th scope="col">Inventory</th>
-                                <th scope="col">Shipping Weight (KG)</th>
-                                <th scope="col">Product Selling Price(USD)</th>
-                                <th scope="col" data-orderable="false">
-                                    <label class="rememberme mt-checkbox">
-                                        <input type="checkbox" id="chkAllProduct" name="remember" value="0">
-                                        <span></span>&nbsp;Check All
-                                    </label>
-                                </th>
-                                <th scope="col">Product Status</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                }
-                @if (SessionManager.GetUserSession().LoggedUserRoleName != StaticValues.seller)
-                {
-                    <table id="ProductsAdminDt" class="display" style="width:100%">
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th scope="col">Product Title</th>
-                                <th scope="col">Category</th>
-                                <th scope="col">Cost (USD)</th>
-                                <th scope="col">Inventory</th>
-                                <th scope="col">Shipping Weight (KG)</th>
-                                <th scope="col" data-orderable="false">
-                                    <label class="rememberme mt-checkbox">
-                                        <input type="checkbox" id="chkAllProduct" name="remember" value="0">
-                                        <span></span>&nbsp;Check All
-                                    </label>
-                                </th>
-                                <th scope="col">Product Status</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                }
+                <table id="ProductsDt" class="display" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th scope="col">Product Title</th>
+                            <th scope="col">Category</th>
+                            <th scope="col">Cost (USD)</th>
+                            <th scope="col">Inventory</th>
+                            <th scope="col">Shipping Weight (KG)</th>
+                            <th scope="col">Product Selling Price(USD)</th>
+                            <th scope="col" data-orderable="false">
+                                <label class="rememberme mt-checkbox">
+                                    <input type="checkbox" id="chkAllProduct" name="remember" value="0">
+                                    <span></span>&nbsp;Check All
+                                </label>
+                            </th>
+                            <th scope="col">Product Status</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div>
         </div>
     </div>
 </section>
+
+<script>
+    $(document).ready(function () {
+        var user = "@SessionManager.GetUserSession().LoggedUserRoleName";
+        BindData(user);
+    });
+</script>
+<script src="~/Scripts/custom/PickupProducts.js?v=2020.04.16"></script>

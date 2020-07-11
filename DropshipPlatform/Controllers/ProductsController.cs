@@ -100,5 +100,13 @@ namespace DropshipPlatform.Controllers
             ProductService _productService = new ProductService();
             return Json(_productService.updateProductStatuts(id, status), JsonRequestBehavior.AllowGet);
         }
+
+        [HttpPost]
+        [AjaxFilter]
+        public JsonResult deleteProductAliExpressStore(List<scproductModel> products, bool status)
+        {
+            ProductService _productService = new ProductService();
+            return Json(_productService.deleteProductAliExpressStore(products,status), JsonRequestBehavior.AllowGet);
+        }
     }
 }
